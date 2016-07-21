@@ -1,0 +1,17 @@
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/profctg/LevelProfCatgDAO.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/aptitude/AptitudeTypeDAOImpl.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/domain/LevelProfCatg.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/domain/TimeOff.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/aptitude/AptitudeDAO.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/domain/Aptitude.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/service/person/PersonService.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/domain/Person.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/person/PersonDAO.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/timeoff/TimeOffDAO.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/service/person/PersonServiceImpl.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/aptitude/AptitudeTypeDAO.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/person/PersonDAOImpl.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/profctg/LevelProfCatgDAOImpl.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/domain/AptitudeType.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/aptitude/AptitudeDAOImpl.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/timeoff/TimeOffDAOImpl.java
