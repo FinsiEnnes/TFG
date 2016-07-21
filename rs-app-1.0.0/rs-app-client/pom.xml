@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>es.udc.rs.app</groupId>
+		<artifactId>rs-app</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>rs-app-client</artifactId>
+	<packaging>jar</packaging>
+	<name>RS-App Client Subsystem</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>es.udc.ws</groupId>
+			<artifactId>ws-util</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>es.udc.rs.app</groupId>
+			<artifactId>rs-app-util</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+		</dependency>            
+	</dependencies>
+
+	<build>
+		<plugins>
+			
+			<!-- Uncomment this plugin to generate the client JAXB classes
+			     from the server schemas
+			-->
+			<!-- 
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>${jaxb2MavenPlugin}</version>
+				<executions>
+					<execution>
+						<id>xjc_app</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+						<configuration>
+							<schemaDirectory>../rs-app-service/target/generated-resources/schemagen/</schemaDirectory>
+							<schemaFiles>schema1.xsd</schemaFiles>
+							<bindingDirectory>src/main/resources/</bindingDirectory>
+							<bindingFiles>appBindings.xjb</bindingFiles>
+							<outputDirectory>src/main/java</outputDirectory>
+							<clearOutputDir>false</clearOutputDir>
+							<packageName>es.udc.rs.app.client.service.rest.dto</packageName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			 -->
+
+		</plugins>
+	</build>
+
+</project>
