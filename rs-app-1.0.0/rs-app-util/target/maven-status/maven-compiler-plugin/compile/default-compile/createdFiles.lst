@@ -1,0 +1,3 @@
+es/udc/rs/app/exceptions/InputValidationException.class
+es/udc/rs/app/exceptions/InstanceNotFoundException.class
+es/udc/rs/app/validation/PropertyValidator.class
