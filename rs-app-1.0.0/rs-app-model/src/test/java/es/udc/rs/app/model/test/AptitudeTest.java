@@ -22,7 +22,6 @@ import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Aptitude;
 import es.udc.rs.app.model.domain.AptitudeType;
 import es.udc.rs.app.model.domain.Person;
-import es.udc.rs.app.model.domain.TimeOff;
 import es.udc.rs.app.model.service.person.PersonService;
 
 @RunWith(SpringJUnit4ClassRunner.class)

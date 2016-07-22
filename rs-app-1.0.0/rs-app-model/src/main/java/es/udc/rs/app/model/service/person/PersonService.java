@@ -8,6 +8,7 @@ import es.udc.rs.app.model.domain.Aptitude;
 import es.udc.rs.app.model.domain.AptitudeType;
 import es.udc.rs.app.model.domain.LevelProfCatg;
 import es.udc.rs.app.model.domain.Person;
+import es.udc.rs.app.model.domain.ProfessionalCategory;
 import es.udc.rs.app.model.domain.TimeOff;
 
 public interface PersonService {
@@ -43,11 +44,13 @@ public interface PersonService {
 	public void removeTimeOff(Long id) throws InstanceNotFoundException;
 	
 	
-	// ============================ Aptitude operations ===========================
+	// ========================== AptitudeType operations =========================
 	public AptitudeType findAptitudeType(String id) throws InstanceNotFoundException;
 	
 	public List<AptitudeType> findAllAptitudeTypes();
 	
+	
+	// ============================ Aptitude operations ===========================
 	public Long createAptitude(Aptitude aptitude) throws InstanceNotFoundException, InputValidationException;
 	
 	public Aptitude findAptitude(Long id) throws InstanceNotFoundException;
@@ -60,9 +63,26 @@ public interface PersonService {
 	
 	public void removeAptitude(Long id) throws InstanceNotFoundException;
 	
-	// ====================== ProfessionalCategory operations =====================
+	
+	// ========================= LevelProfCatg operations =========================
 	public LevelProfCatg findLevelProfCatg(String id) throws InstanceNotFoundException;
 	
 	public List<LevelProfCatg> findAllLevelsProfCatg();
+	
+	
+	// ====================== ProfessionalCategory operations =====================
+	public Long createProfessionalCategory(ProfessionalCategory profCtg)  throws InputValidationException;
+	
+	public ProfessionalCategory findProfessionalCategory(Long id)  throws InstanceNotFoundException;
+	
+	public List<ProfessionalCategory> findAllProfessionalCategories();
+	
+	public List<ProfessionalCategory> findProfessionalCategoryByNameAndLevel(String name, LevelProfCatg level)
+			throws InputValidationException;
+		
+	public void updateProfessionalCategory(ProfessionalCategory profCtg)  
+			throws InstanceNotFoundException, InputValidationException;
+	
+	public void removeProfessionalCategory(Long id) throws InstanceNotFoundException;
 
 }

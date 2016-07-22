@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -16,11 +15,13 @@ import es.udc.rs.app.model.dao.aptitude.AptitudeDAO;
 import es.udc.rs.app.model.dao.aptitude.AptitudeTypeDAO;
 import es.udc.rs.app.model.dao.person.PersonDAO;
 import es.udc.rs.app.model.dao.profctg.LevelProfCatgDAO;
+import es.udc.rs.app.model.dao.profctg.ProfessionalCategoryDAO;
 import es.udc.rs.app.model.dao.timeoff.TimeOffDAO;
 import es.udc.rs.app.model.domain.Aptitude;
 import es.udc.rs.app.model.domain.AptitudeType;
 import es.udc.rs.app.model.domain.LevelProfCatg;
 import es.udc.rs.app.model.domain.Person;
+import es.udc.rs.app.model.domain.ProfessionalCategory;
 import es.udc.rs.app.model.domain.TimeOff;
 import es.udc.rs.app.validation.PropertyValidator;
 
@@ -29,6 +30,9 @@ public class PersonServiceImpl implements PersonService{
 
 	static Logger log = Logger.getLogger("project");
 	
+	// ============================================================================
+	// ============================== DAO Injection ===============================
+	// ============================================================================
 	@Autowired
 	private PersonDAO personDAO;
 	
@@ -44,22 +48,35 @@ public class PersonServiceImpl implements PersonService{
 	@Autowired
 	private LevelProfCatgDAO levelProfCatgDAO;
 	
+	@Autowired
+	private ProfessionalCategoryDAO profCatgDAO;
+	
+	
 	// ============================================================================
 	// ============================ Validate Instance =============================
 	// ============================================================================
-	private void validatePerson (Person person) throws InputValidationException {
+	private void validatePerson(Person person) throws InputValidationException {
 
 		// Check if the email and nif format is correct.
 		PropertyValidator.validateNif("nifPerson", person.getNif());
 		PropertyValidator.validateEmail(person.getEmail());
 	}
 	
-	private void validateAptitude (Aptitude aptitude) throws InputValidationException {
+	private void validateAptitude(Aptitude aptitude) throws InputValidationException {
 
 		// If the valueApt is not null, it must be between 0 and 10.
 		if (aptitude.getValue() != null) {
 			PropertyValidator.validateIntWithinRange("valueApt", aptitude.getValue(), 0, 10);
 		}
+	}
+	
+	private void validateProfessionalCategory(ProfessionalCategory pc) throws InputValidationException {
+		PropertyValidator.validateIntWithinRange("minExpProfCatg", pc.getMinExp(), 0, 50);
+		PropertyValidator.validatePositiveInt("salProfCatg", pc.getSal());
+		
+		if (pc.getSalExtra() != null) {
+			PropertyValidator.validatePositiveInt("salExtraProfCatg", pc.getSalExtra());
+		}	
 	}
 		
 	
@@ -78,12 +95,12 @@ public class PersonServiceImpl implements PersonService{
 		// If the data person is correct, we create the person.
 		try{
 			idPerson = personDAO.create(person);
-			log.info("Successfull insertion: "+person.toString());
 		}
 		catch (DataAccessException e){
 			throw e;
 		}
 		
+		log.info("Successfull insertion: "+person.toString());
 		return idPerson;
 	}
 
@@ -97,7 +114,8 @@ public class PersonServiceImpl implements PersonService{
 		// Find the Person by id.
 		try {
 			person = personDAO.find(id);
-		} catch (DataAccessException e){
+		} 
+		catch (DataAccessException e){
 			throw e;
 		}
 		
@@ -120,7 +138,8 @@ public class PersonServiceImpl implements PersonService{
 		// We get all the Persons in the database.
 		try {
 			persons = personDAO.findAll();
-		} catch (DataAccessException e){
+		} 
+		catch (DataAccessException e){
 			throw e;
 		}
 
@@ -141,7 +160,8 @@ public class PersonServiceImpl implements PersonService{
 		// We search the persons by the name.
 		try {
 			person = personDAO.findByNif(nif);
-		} catch (DataAccessException e){
+		} 
+		catch (DataAccessException e){
 			throw e;
 		}
 
@@ -168,7 +188,8 @@ public class PersonServiceImpl implements PersonService{
 		// We search the persons by the name.
 		try {
 			persons = personDAO.findByName(name, surname1, surname2);
-		} catch (DataAccessException e){
+		} 
+		catch (DataAccessException e){
 			throw e;
 		}
 
@@ -195,13 +216,13 @@ public class PersonServiceImpl implements PersonService{
 		
 		// Now, we update the data.
 		try {
-			personDAO.update(person);
-			log.info("Successfull updated: "+person.toString());
-			
-		} catch (DataAccessException e){
+			personDAO.update(person);			
+		} 
+		catch (DataAccessException e){
 			throw e;
 		}
 		
+		log.info("Successfull updated: "+person.toString());
 	}
 
 	// ============================================================================
@@ -214,13 +235,15 @@ public class PersonServiceImpl implements PersonService{
 		
 		// Now, we remove the data.
 		try {
-			personDAO.remove(person);
-			log.info("Successfull deleted: "+person.toString());
-			
-		} catch (DataAccessException e){
+			personDAO.remove(person);			
+		} 
+		catch (DataAccessException e){
 			throw e;
 		}	
+		
+		log.info("Successfull deleted: "+person.toString());
 	}
+	
 	
 	// ============================================================================
 	// ============================ TimeOff operations ============================
@@ -240,12 +263,12 @@ public class PersonServiceImpl implements PersonService{
 		// In this case we don't need to validate the data, so we create the TimeOff.
 		try{
 			idTimeOff = timeoffDAO.create(timeoff);
-			log.info("Successfull insertion: "+timeoff.toString());
 		}
 		catch (DataAccessException e){
 			throw e;
 		}
 		
+		log.info("Successfull insertion: "+timeoff.toString());
 		return idTimeOff;
 	}
 	
@@ -327,10 +350,16 @@ public class PersonServiceImpl implements PersonService{
 	public void updateTimeOff(TimeOff timeoff) throws InstanceNotFoundException {
 		
 		Long id = timeoff.getId();
+		Long idPerson = timeoff.getPerson().getId();
 			
 		// Checks if the instance exists.
 		if (!timeoffDAO.timeoffExists(id)) {
 			throw new InstanceNotFoundException(id, Person.class.getName());
+		}
+		
+		// Checks if the Person exits.
+		if (!personDAO.personExists(idPerson)) {
+			throw new InstanceNotFoundException(idPerson, Person.class.getName());
 		}
 		
 		try{
@@ -354,15 +383,17 @@ public class PersonServiceImpl implements PersonService{
 		// Now, we remove the data.
 		try {
 			timeoffDAO.remove(timeoff);
-			log.info("Successfull deleted: "+timeoff.toString());
-			
-		} catch (DataAccessException e){
+		} 
+		catch (DataAccessException e){
 			throw e;
 		}	
+
+		log.info("Successfull deleted: "+timeoff.toString());	
 	}
 
+	
 	// ============================================================================
-	// ============================ Aptitude operations ===========================
+	// ========================== AptitudeType operations =========================
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
@@ -408,6 +439,10 @@ public class PersonServiceImpl implements PersonService{
 		
 	}
 	
+	
+	// ============================================================================
+	// ============================ Aptitude operations ===========================
+	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
 	public Long createAptitude(Aptitude aptitude) throws InstanceNotFoundException, InputValidationException {
@@ -513,14 +548,20 @@ public class PersonServiceImpl implements PersonService{
 	public void updateAptitude(Aptitude aptitude) throws InstanceNotFoundException, InputValidationException {
 		
 		Long id = aptitude.getId();
-			
-		// Check the Aptitude data
-		validateAptitude(aptitude);
+		Long idPerson = aptitude.getPerson().getId();
 		
 		// Check if the instance exists.
 		if (!aptitudeDAO.aptitudeExists(id)) {
 			throw new InstanceNotFoundException(id, Aptitude.class.getName());
 		}
+		
+		// Also we check if the Person exits.
+		if (!personDAO.personExists(idPerson)) {
+			throw new InstanceNotFoundException(idPerson, Person.class.getName());
+		}
+		
+		// Now, we check the Aptitude data
+		validateAptitude(aptitude);
 		
 		try{
 			aptitudeDAO.update(aptitude);
@@ -543,15 +584,16 @@ public class PersonServiceImpl implements PersonService{
 		// Now, we remove the data.
 		try {
 			aptitudeDAO.remove(aptitude);
-			log.info("Successfull deleted: "+aptitude.toString());
 			
 		} catch (DataAccessException e){
 			throw e;
 		}	
+		
+		log.info("Successfull deleted: "+aptitude.toString());
 	}
 	
 	// ============================================================================
-	// ====================== ProfessionalCategory operations =====================
+	// ========================== LevelProfCatg operations ========================
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
@@ -594,4 +636,147 @@ public class PersonServiceImpl implements PersonService{
 		log.info("There are a total of "+lpcs.size()+ " aptitude types.");
 		return lpcs;
 	}
+	
+	
+	// ============================================================================
+	// ====================== ProfessionalCategory operations =====================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createProfessionalCategory(ProfessionalCategory profCtg)  throws InputValidationException {
+		
+		Long id = null;
+		
+		// We validate the data.
+		validateProfessionalCategory(profCtg);
+		
+		// Now, we create the ProfessionalCategory.
+		try{
+			id = profCatgDAO.create(profCtg);			
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result.
+		log.info("Successfull insertion: "+profCtg.toString());
+		return id;
+	}
+
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public ProfessionalCategory findProfessionalCategory(Long id)  throws InstanceNotFoundException {
+		
+		ProfessionalCategory pc = null;
+		
+		try{
+			pc = profCatgDAO.find(id);		
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		if (pc == null) {
+			throw new InstanceNotFoundException(id, ProfessionalCategory.class.getName());
+		}
+		
+		// Return the result.
+		log.info("Successfull search by id: "+pc.toString());
+		return pc;
+	}
+
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<ProfessionalCategory> findAllProfessionalCategories() {
+		
+		List<ProfessionalCategory> pcs = new ArrayList<ProfessionalCategory>();
+		
+		try{
+			pcs = profCatgDAO.findAll();	
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("There are a total of "+pcs.size()+ " registred professional categories.");
+		return pcs;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<ProfessionalCategory> findProfessionalCategoryByNameAndLevel(String name, LevelProfCatg level)
+		throws InputValidationException {
+		
+		if (name == null && level == null) {
+			throw new InputValidationException("At least one of the params (name or level) must be not null.");
+		}
+		
+		List<ProfessionalCategory> pcs = new ArrayList<ProfessionalCategory>();
+		
+		try{
+			pcs = profCatgDAO.findByNameAndLevel(name, level);	
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Create the message for the log.
+		String msg;
+		if (name == null) {
+			msg = "level["+level.getName()+"]";
+		} else if (level == null) {
+			msg = "name["+name+"]";
+		} else {
+			msg = "name["+name+"] and level["+level.getName()+"]";
+		}
+		
+		log.info("There are a total of "+pcs.size()+ " professional categories with "+msg+".");
+		return pcs;
+	}
+		
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updateProfessionalCategory(ProfessionalCategory profCtg)  
+			throws InstanceNotFoundException, InputValidationException {
+		
+		// First we check if this professional category exists.
+		if (!profCatgDAO.ProfessionalCategoryExists(profCtg.getId())) {
+			throw new InstanceNotFoundException(profCtg.getId(), ProfessionalCategory.class.getName());
+		}
+		
+		validateProfessionalCategory(profCtg);
+		
+		// If it exists, we update the object.
+		try{
+			profCatgDAO.update(profCtg);	
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("Successfull updated: "+profCtg.toString());	
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removeProfessionalCategory(Long id) throws InstanceNotFoundException {
+		
+		// First we check if this professional category exists.
+		ProfessionalCategory pc = findProfessionalCategory(id);
+		
+		try{
+			profCatgDAO.remove(pc);	
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("Successfull deleted: "+pc.toString());		
+	}
+
 }
