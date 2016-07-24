@@ -1,6 +1,7 @@
 es/udc/rs/app/model/domain/LevelProfCatg.class
 es/udc/rs/app/model/domain/TimeOff.class
 es/udc/rs/app/model/dao/profctg/LevelProfCatgDAO.class
+es/udc/rs/app/model/dao/historyperson/HistoryPersonDAO.class
 es/udc/rs/app/model/domain/HistoryPerson.class
 es/udc/rs/app/model/domain/Aptitude.class
 es/udc/rs/app/model/dao/profctg/ProfessionalCategoryDAOImpl.class
@@ -12,6 +13,7 @@ es/udc/rs/app/model/dao/timeoff/TimeOffDAOImpl.class
 es/udc/rs/app/model/dao/person/PersonDAOImpl.class
 es/udc/rs/app/model/dao/aptitude/AptitudeTypeDAOImpl.class
 es/udc/rs/app/model/domain/AptitudeType.class
+es/udc/rs/app/model/dao/historyperson/HistoryPersonDAOImpl.class
 es/udc/rs/app/model/service/person/PersonServiceImpl.class
 es/udc/rs/app/model/dao/aptitude/AptitudeTypeDAO.class
 es/udc/rs/app/model/dao/timeoff/TimeOffDAO.class

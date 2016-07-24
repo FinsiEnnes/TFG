@@ -13,12 +13,14 @@ import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.dao.aptitude.AptitudeDAO;
 import es.udc.rs.app.model.dao.aptitude.AptitudeTypeDAO;
+import es.udc.rs.app.model.dao.historyperson.HistoryPersonDAO;
 import es.udc.rs.app.model.dao.person.PersonDAO;
 import es.udc.rs.app.model.dao.profctg.LevelProfCatgDAO;
 import es.udc.rs.app.model.dao.profctg.ProfessionalCategoryDAO;
 import es.udc.rs.app.model.dao.timeoff.TimeOffDAO;
 import es.udc.rs.app.model.domain.Aptitude;
 import es.udc.rs.app.model.domain.AptitudeType;
+import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.LevelProfCatg;
 import es.udc.rs.app.model.domain.Person;
 import es.udc.rs.app.model.domain.ProfessionalCategory;
@@ -51,6 +53,9 @@ public class PersonServiceImpl implements PersonService{
 	@Autowired
 	private ProfessionalCategoryDAO profCatgDAO;
 	
+	@Autowired
+	private HistoryPersonDAO historyPersonDAO;
+	
 	
 	// ============================================================================
 	// ============================ Validate Instance =============================
@@ -77,6 +82,14 @@ public class PersonServiceImpl implements PersonService{
 		if (pc.getSalExtra() != null) {
 			PropertyValidator.validatePositiveInt("salExtraProfCatg", pc.getSalExtra());
 		}	
+	}
+	
+	private void validateHistoryPerson(HistoryPerson historyPerson) throws InputValidationException {
+		PropertyValidator.validatePositiveInt("salHPerson", historyPerson.getSal());
+		
+		if (historyPerson.getSalExtra() != null) {
+			PropertyValidator.validatePositiveInt("salExtraHPerson", historyPerson.getSal());
+		}
 	}
 		
 	
@@ -778,5 +791,159 @@ public class PersonServiceImpl implements PersonService{
 		
 		log.info("Successfull deleted: "+pc.toString());		
 	}
-
+	
+	
+	// ============================================================================
+	// ========================= HistoryPerson operations =========================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createHistoryPerson(HistoryPerson historyPerson) throws InputValidationException {
+		
+		Long id;
+		validateHistoryPerson(historyPerson);
+		
+		// Now, we create the HistoryPerson.
+		try{
+			id = historyPersonDAO.create(historyPerson);	
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result.
+		log.info("Successfull insertion: "+historyPerson.toString());
+		return id;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public HistoryPerson findHistoryPerson(Long id) throws InstanceNotFoundException {
+		
+		HistoryPerson historyPerson = null;
+		
+		// Find the history person by it id.
+		try{
+			historyPerson = historyPersonDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Checks if this history person exits.
+		if (historyPerson == null) {
+			throw new InstanceNotFoundException(id, HistoryPerson.class.getName());
+		}
+		
+		// Return the result.
+		log.info("Successfull search by id: "+historyPerson.toString());
+		return historyPerson;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<HistoryPerson> findAllHistoryPerson() {
+		
+		List<HistoryPerson> hps = new ArrayList<HistoryPerson>();
+		
+		// Find all person histories.
+		try{
+			hps = historyPersonDAO.findAll();
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("There are a total of "+hps.size()+ " registred person histories.");
+		return hps;		
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager") 
+	public List<HistoryPerson> findHistoryPersonByPerson(Person person) {
+		
+		List<HistoryPerson> hps = new ArrayList<HistoryPerson>();
+		
+		try{
+			hps = historyPersonDAO.findByPerson(person);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("This Person[id:"+person.getId()+"] has a total of "+hps.size()+ " person histories.");
+		return hps;		
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager") 
+	public List<HistoryPerson> findHistoryPersonByProfCatg(ProfessionalCategory profcatg) {
+		
+		List<HistoryPerson> hps = new ArrayList<HistoryPerson>();
+		
+		try{
+			hps = historyPersonDAO.findByProfCatg(profcatg);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("There are a total of "+hps.size()+ 
+				 " person histories with this ProfessionalCategory[id:"+profcatg.getId()+"].");
+		return hps;	
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager") 
+	public void updateHistoryPerson(HistoryPerson historyPerson) throws InstanceNotFoundException {
+			
+		// Checks if the historyPerson exists.
+		if (!historyPersonDAO.historyPersonExists(historyPerson.getId())) {
+			throw new InstanceNotFoundException(historyPerson.getId(), HistoryPerson.class.getName());
+		}
+		
+		// Now, we update the HistoryPerson.
+		try{
+			historyPersonDAO.update(historyPerson);	
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Log the result.
+		log.info("Successfull update: "+historyPerson.toString());
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager") 
+	public void removeHistoryPerson(Long id) throws InstanceNotFoundException {
+		
+		HistoryPerson historyPerson = findHistoryPerson(id);
+		
+		// Now, we delete the HistoryPerson.
+		try{
+			historyPersonDAO.remove(historyPerson);	
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("Successfull delete: "+historyPerson.toString());
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

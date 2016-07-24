@@ -6,6 +6,7 @@ import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Aptitude;
 import es.udc.rs.app.model.domain.AptitudeType;
+import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.LevelProfCatg;
 import es.udc.rs.app.model.domain.Person;
 import es.udc.rs.app.model.domain.ProfessionalCategory;
@@ -73,7 +74,7 @@ public interface PersonService {
 	// ====================== ProfessionalCategory operations =====================
 	public Long createProfessionalCategory(ProfessionalCategory profCtg)  throws InputValidationException;
 	
-	public ProfessionalCategory findProfessionalCategory(Long id)  throws InstanceNotFoundException;
+	public ProfessionalCategory findProfessionalCategory(Long id) throws InstanceNotFoundException;
 	
 	public List<ProfessionalCategory> findAllProfessionalCategories();
 	
@@ -84,5 +85,21 @@ public interface PersonService {
 			throws InstanceNotFoundException, InputValidationException;
 	
 	public void removeProfessionalCategory(Long id) throws InstanceNotFoundException;
+	
+	
+	// ========================= HistoryPerson operations =========================
+	public Long createHistoryPerson(HistoryPerson historyPerson) throws InputValidationException;
+	
+	public HistoryPerson findHistoryPerson(Long id) throws InstanceNotFoundException;
+	
+	public List<HistoryPerson> findAllHistoryPerson();
+	
+	public List<HistoryPerson> findHistoryPersonByPerson(Person person);
+	
+	public List<HistoryPerson> findHistoryPersonByProfCatg(ProfessionalCategory profcatg);
+	
+	public void updateHistoryPerson(HistoryPerson historyPerson) throws InstanceNotFoundException;
+	
+	public void removeHistoryPerson(Long id) throws InstanceNotFoundException;	
 
 }

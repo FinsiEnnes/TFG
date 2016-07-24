@@ -12,8 +12,10 @@
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/person/PersonDAO.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/timeoff/TimeOffDAO.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/service/person/PersonServiceImpl.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/historyperson/HistoryPersonDAO.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/domain/ProfessionalCategory.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/aptitude/AptitudeTypeDAO.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/historyperson/HistoryPersonDAOImpl.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/person/PersonDAOImpl.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/profctg/LevelProfCatgDAOImpl.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/domain/AptitudeType.java

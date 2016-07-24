@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
+import es.udc.rs.app.model.domain.LevelProfCatg;
 import es.udc.rs.app.model.domain.Person;
+import es.udc.rs.app.model.domain.ProfessionalCategory;
 import es.udc.rs.app.model.service.person.PersonService;
 
 public class TestUtils {
@@ -21,8 +23,15 @@ public class TestUtils {
 	public Person p3;
 	public Person p4;
 	
+	public ProfessionalCategory pc1;
+	public ProfessionalCategory pc2;
+	public ProfessionalCategory pc3;
+	public ProfessionalCategory pc4;
+	public ProfessionalCategory pc5;
+	public ProfessionalCategory pc6;
 	
-	public void createDataSet() throws ParseException, InputValidationException {
+	
+	public void createDataSet() throws ParseException, InputValidationException, InstanceNotFoundException {
 		
 		// ============================== Person ==============================
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
@@ -37,7 +46,20 @@ public class TestUtils {
 		personService.createPerson(p3);
 		personService.createPerson(p4);	
 		
+		// ====================== Professional Category =======================
+		LevelProfCatg jun = personService.findLevelProfCatg("JUN");
+		LevelProfCatg sen = personService.findLevelProfCatg("SEN");
+		LevelProfCatg sjn = personService.findLevelProfCatg("SJN");
+		LevelProfCatg esp = personService.findLevelProfCatg("ESP");
+		LevelProfCatg pds = personService.findLevelProfCatg("PDS");
 		
+		pc1 = new ProfessionalCategory("Desarrollador SW", 0, sen, 5, null);
+		pc2 = new ProfessionalCategory("Desarrollador SW", 3, jun, 8, 12);
+		pc3 = new ProfessionalCategory("Diseñador Personajes", 1, sjn, 6, 7);
+		pc4 = new ProfessionalCategory("Arquitecto SW", 5, sen, 9, 13);
+		pc5 = new ProfessionalCategory("SysAdmin", 7, esp, 10, 14);
+		pc6 = new ProfessionalCategory("Jefe de proyectos", 10, pds, 12, 18);
+
 	}
 	
 	
@@ -48,6 +70,13 @@ public class TestUtils {
 		
 		for (Person p : persons) {
 			personService.removePerson(p.getId());
+		}
+		
+		// ====================== ProfessionalCategory =======================
+		List<ProfessionalCategory> profiles = personService.findAllProfessionalCategories();
+		
+		for (ProfessionalCategory p : profiles) {
+			personService.removeHistoryPerson(p.getId());
 		}
 	}
 	
