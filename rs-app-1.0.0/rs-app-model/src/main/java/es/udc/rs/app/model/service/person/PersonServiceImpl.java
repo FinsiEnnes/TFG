@@ -88,7 +88,7 @@ public class PersonServiceImpl implements PersonService{
 		PropertyValidator.validatePositiveInt("salHPerson", historyPerson.getSal());
 		
 		if (historyPerson.getSalExtra() != null) {
-			PropertyValidator.validatePositiveInt("salExtraHPerson", historyPerson.getSal());
+			PropertyValidator.validatePositiveInt("salExtraHPerson", historyPerson.getSalExtra());
 		}
 	}
 		

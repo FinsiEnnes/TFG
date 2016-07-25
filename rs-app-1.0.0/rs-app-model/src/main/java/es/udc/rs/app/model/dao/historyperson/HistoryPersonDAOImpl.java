@@ -88,7 +88,7 @@ public class HistoryPersonDAOImpl implements HistoryPersonDAO {
 
 	@Override
 	public void update(HistoryPerson historyPerson) {
-		if (historyPerson.getId() != null) {
+		if (historyPerson.getId() == null) {
 			throw new RuntimeException("The object is not persistent.");
 		}
 		

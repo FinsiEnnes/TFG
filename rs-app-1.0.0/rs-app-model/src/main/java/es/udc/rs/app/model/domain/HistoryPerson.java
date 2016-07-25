@@ -37,6 +37,16 @@ public class HistoryPerson {
 		this.sal = sal;
 		this.salExtra = salExtra;
 	}
+	
+	public HistoryPerson(Person person, ProfessionalCategory profcatg, 
+			Date ini, Date end, Integer sal, Integer salExtra, String comment) {
+		this.person = person;
+		this.profcatg = profcatg;
+		this.ini = ini;
+		this.end = end;
+		this.sal = sal;
+		this.salExtra = salExtra;
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

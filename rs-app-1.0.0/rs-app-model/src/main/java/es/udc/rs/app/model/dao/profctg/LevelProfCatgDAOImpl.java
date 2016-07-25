@@ -28,7 +28,8 @@ public class LevelProfCatgDAOImpl implements LevelProfCatgDAO {
 
 		// Get the persons
 		@SuppressWarnings("unchecked")
-		List<LevelProfCatg> lpcs = (List<LevelProfCatg>) sessionFactory.getCurrentSession().createQuery(query).list();
+		List<LevelProfCatg> lpcs = (List<LevelProfCatg>) sessionFactory.getCurrentSession()
+														 .createQuery(query).list();
 
 		return lpcs;
 	}

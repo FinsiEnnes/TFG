@@ -59,6 +59,13 @@ public class TestUtils {
 		pc4 = new ProfessionalCategory("Arquitecto SW", 5, sen, 9, 13);
 		pc5 = new ProfessionalCategory("SysAdmin", 7, esp, 10, 14);
 		pc6 = new ProfessionalCategory("Jefe de proyectos", 10, pds, 12, 18);
+		
+		personService.createProfessionalCategory(pc1);
+		personService.createProfessionalCategory(pc2);
+		personService.createProfessionalCategory(pc3);
+		personService.createProfessionalCategory(pc4);
+		personService.createProfessionalCategory(pc5);
+		personService.createProfessionalCategory(pc6);
 
 	}
 	
@@ -75,8 +82,8 @@ public class TestUtils {
 		// ====================== ProfessionalCategory =======================
 		List<ProfessionalCategory> profiles = personService.findAllProfessionalCategories();
 		
-		for (ProfessionalCategory p : profiles) {
-			personService.removeHistoryPerson(p.getId());
+		for (ProfessionalCategory prof : profiles) {
+			personService.removeProfessionalCategory(prof.getId());
 		}
 	}
 	
