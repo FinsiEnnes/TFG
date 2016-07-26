@@ -6,23 +6,23 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "BusinessType")
-public class BusinessType {
+@Table(name = "BusinessCategory")
+public class BusinessCategory {
 	
 	private String id;
 	private String name;
 	
-	public BusinessType() {
+	public BusinessCategory() {
 		
 	}
-	
-	public BusinessType(String id, String name) {
+
+	public BusinessCategory(String id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 
 	@Id
-	@Column(name = "idBusinessType")
+	@Column(name = "idBusinessCatg")
 	public String getId() {
 		return id;
 	}
@@ -31,7 +31,7 @@ public class BusinessType {
 		this.id = id;
 	}
 
-	@Column(name = "nameBusinessType", nullable = true, unique = true)
+	@Column(name = "nameBusinessCatg", nullable = true, unique = true)
 	public String getName() {
 		return name;
 	}
@@ -57,7 +57,7 @@ public class BusinessType {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		BusinessType other = (BusinessType) obj;
+		BusinessCategory other = (BusinessCategory) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -73,7 +73,7 @@ public class BusinessType {
 
 	@Override
 	public String toString() {
-		return "BusinessType [id=" + id + ", name=" + name + "]";
+		return "BusinessCategory [id=" + id + ", name=" + name + "]";
 	}
-
+	
 }

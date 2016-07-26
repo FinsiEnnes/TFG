@@ -10,11 +10,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
+import es.udc.rs.app.model.dao.business.BusinessCategoryDAO;
+import es.udc.rs.app.model.dao.business.BusinessSizeDAO;
 import es.udc.rs.app.model.dao.business.BusinessTypeDAO;
+import es.udc.rs.app.model.dao.customer.CustomerDAO;
 import es.udc.rs.app.model.dao.location.CountryDAO;
 import es.udc.rs.app.model.dao.location.ProvinceDAO;
+import es.udc.rs.app.model.domain.BusinessCategory;
+import es.udc.rs.app.model.domain.BusinessSize;
 import es.udc.rs.app.model.domain.BusinessType;
 import es.udc.rs.app.model.domain.Country;
+import es.udc.rs.app.model.domain.Customer;
 import es.udc.rs.app.model.domain.Province;
 
 @Service
@@ -33,6 +39,15 @@ public class CustomerServiceImpl implements CustomerService {
 	
 	@Autowired
 	private BusinessTypeDAO businessTypeDAO;
+	
+	@Autowired
+	private BusinessCategoryDAO businessCatgDAO;
+	
+	@Autowired
+	private BusinessSizeDAO businessSizeDAO;
+	
+	@Autowired
+	private CustomerDAO customerDAO;
 	
 	
 	// ============================================================================
@@ -188,6 +203,210 @@ public class CustomerServiceImpl implements CustomerService {
 		
 		log.info("There are a total of "+bts.size()+ " registred business types");
 		return bts;
+	}
+	
+	
+	// ============================================================================
+	// ======================= BusinessCategory operations ========================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public BusinessCategory findBusinessCategory(String id) throws InstanceNotFoundException {
+		
+		BusinessCategory businessCatg = null;
+		
+		// Find businessCategory by id.
+		try {
+			businessCatg = businessCatgDAO.find(id);
+		} 
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if there is result.
+		if (businessCatg == null) {
+			throw new InstanceNotFoundException(id, BusinessCategory.class.getName());
+		}
+
+		log.info("Successfull search by id: "+businessCatg.toString());
+		return businessCatg;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<BusinessCategory> findAllBusinessCategories() {
+		
+		List<BusinessCategory> businessCatgs = new ArrayList<BusinessCategory>();
+		
+		// Find all businessCategories
+		try {
+			businessCatgs = businessCatgDAO.findAll();
+		} 
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("There are a total of "+businessCatgs.size()+ " registred business categories");
+		return businessCatgs;
+	}
+	
+	// ============================================================================
+	// ========================= BusinessSize operations ==========================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public BusinessSize findBusinessSize(String id) throws InstanceNotFoundException {
+		
+		BusinessSize businessSize = null;
+		
+		// Find businessSize by id.
+		try {
+			businessSize = businessSizeDAO.find(id);
+		} 
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check
+		if (businessSize == null) {
+			throw new InstanceNotFoundException(id, BusinessSize.class.getName());
+		}
+
+		log.info("Successfull search by id: "+businessSize.toString());
+		return businessSize;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<BusinessSize> findAllBusinessSizes() {
+		
+		List<BusinessSize> businessSizes = new ArrayList<BusinessSize>();
+		
+		// Find all businessSizes.
+		try {
+			businessSizes = businessSizeDAO.findAll();
+		} 
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("There are a total of "+businessSizes.size()+ " registred business sizes");
+		return businessSizes;
+	}
+	
+	
+	// ============================================================================
+	// =========================== Customer operations ============================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createCustomer(Customer customer) {
+		Long id = null;
+		
+		try{
+			id = customerDAO.create(customer);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("Successfull insertion: "+customer.toString());
+		return id;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Customer findCustomer(Long id)  throws InstanceNotFoundException {
+		Customer customer = null;
+		
+		try{
+			customer = customerDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		if (customer == null) {
+			throw new InstanceNotFoundException(id, Customer.class.getName()); 
+		}
+		
+		log.info("Successfull search by id: "+customer.toString());
+		return customer;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<Customer> findAllCustomers() {
+		List<Customer> customers = new ArrayList<Customer>();
+		
+		try{
+			customers = customerDAO.findAll();
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("There are a total of "+customers.size()+ " registred customers.");
+		return customers;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<Customer> findCustomerByName(String name) {
+		List<Customer> customers = new ArrayList<Customer>();
+		
+		try{
+			customers = customerDAO.findByName(name);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("There are a total of "+customers.size()+ " registred customers with name like "+name+".");
+		return customers;
+	}
+		
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updateCustomer(Customer customer) throws InstanceNotFoundException {
+		
+		Long idCustomer = customer.getId();
+		
+		if (!customerDAO.CustomerExists(idCustomer)) {
+			throw new InstanceNotFoundException(idCustomer, Customer.class.getName());
+		}
+		
+		try{
+			customerDAO.update(customer);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("Successfull updated: "+customer.toString());
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removeCustomer(Long id) throws InstanceNotFoundException {
+	
+		Customer customer = findCustomer(id);
+		
+		try{
+			customerDAO.remove(customer);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info("Successfull deleted: "+customer.toString());
 	}
 
 }
