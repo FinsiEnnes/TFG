@@ -56,6 +56,15 @@ public class PropertyValidator {
         }
     }
     
+    public static void validatePositiveInt(String propertyName,
+            Integer intValue) throws InputValidationException {
+
+        if ((intValue < 0)) {
+            throw new InputValidationException("Invalid " + propertyName +
+                    " value. It must be positive.");
+        }
+    }
+    
     public static void validateIntWithinRange(String propertyName,
             int intValue, int min, int max) throws InputValidationException {
 
