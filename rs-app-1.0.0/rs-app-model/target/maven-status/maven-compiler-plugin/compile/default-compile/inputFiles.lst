@@ -33,6 +33,8 @@
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/project/ProjectDAOImpl.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/timeoff/TimeOffDAOImpl.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/domain/Aptitude.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/phase/PhaseDAOImpl.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/milestone/MilestoneDAOImpl.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/person/PersonDAO.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/service/person/PersonServiceImpl.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/service/material/MaterialService.java
@@ -46,6 +48,7 @@
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/domain/BusinessSize.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/util/ModelConstants.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/customer/CustomerDAOImpl.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/domain/Phase.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/service/person/PersonService.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/material/MaterialDAOImpl.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/profctg/ProfessionalCategoryDAO.java
@@ -53,6 +56,9 @@
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/historyperson/HistoryPersonDAO.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/aptitude/AptitudeTypeDAO.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/historyperson/HistoryPersonDAOImpl.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/phase/PhaseDAO.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/milestone/MilestoneDAO.java
+/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/domain/Milestone.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/domain/Customer.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/dao/material/MaterialDAO.java
 /home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/java/es/udc/rs/app/model/service/project/ProjectService.java

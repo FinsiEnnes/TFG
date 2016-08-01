@@ -43,7 +43,7 @@ public class HistoryProjectDAOImpl implements HistoryProjectDAO {
 	public List<HistoryProject> findByProject(Project project) {
 		
 		// Create the query
-		String queryString = "FROM HistoryProject H WHERE H.project = :project ORDER BY H.id";
+		String queryString = "FROM HistoryProject H WHERE H.project = :project ORDER BY H.id ASC";
 		
 		// Execute the query
 		Query query = sessionFactory.getCurrentSession().createQuery(queryString);

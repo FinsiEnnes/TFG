@@ -12,9 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.dao.historyproject.HistoryProjectDAO;
+import es.udc.rs.app.model.dao.milestone.MilestoneDAO;
+import es.udc.rs.app.model.dao.phase.PhaseDAO;
 import es.udc.rs.app.model.dao.project.ProjectDAO;
 import es.udc.rs.app.model.dao.state.StateDAO;
 import es.udc.rs.app.model.domain.HistoryProject;
+import es.udc.rs.app.model.domain.Milestone;
+import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.util.ModelConstants;
@@ -36,6 +40,13 @@ public class ProjectServiceImpl implements ProjectService {
 	
 	@Autowired
 	private HistoryProjectDAO historyProjectDAO;
+	
+	@Autowired 
+	private PhaseDAO phaseDAO;
+	
+	@Autowired
+	private MilestoneDAO milestoneDAO;
+	
 	
 	// ============================================================================
 	// ============================ Validate Instance =============================
@@ -332,7 +343,224 @@ public class ProjectServiceImpl implements ProjectService {
 		catch (DataAccessException e){
 			throw e;
 		}
+		
 		log.info(ModelConstants.DELETE + historyProject.toString());
+	}
+	
+	
+	// ============================================================================
+	// ============================ Phase operations ==============================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createPhase(Phase phase) throws InstanceNotFoundException {
+		
+		Long idProject = phase.getProject().getId();
+		Long idPhase = null;
+		
+		// Check if the selected project exists
+		if (!projectDAO.ProjectExists(idProject)) {
+			throw new InstanceNotFoundException(idProject, Project.class.getName());
+		}
+		
+		// Now we create the new project phase
+		try{
+			idPhase = phaseDAO.create(phase);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.CREATE + phase.toString());
+		return idPhase;	
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Phase findPhase(Long id) throws InstanceNotFoundException {
+		
+		Phase phase = null;
+		
+		// Find the phase by id
+		try{
+			phase = phaseDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if there is any result
+		if (phase == null) {
+			throw new InstanceNotFoundException(id, Phase.class.getName());
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + phase.toString());
+		return phase;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<Phase> findPhaseByProject(Project project) {
+		
+		// Initialize the phase list
+		List<Phase> phases = new ArrayList<Phase>();
+		
+		// Get the phases of the project
+		try{
+			phases = phaseDAO.findByProject(project);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + phases.size() + " phases in the project with idProject[" 
+				 + project.getId() + "]");
+		return phases;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updatePhase(Phase phase) throws InstanceNotFoundException {
+		
+		Long id = phase.getId();
+		
+		// Check if the phase exists
+		if (!phaseDAO.PhaseExists(id)) {
+			throw new InstanceNotFoundException(id, Phase.class.getName());
+		}
+		
+		// Update
+		try{
+			phaseDAO.update(phase);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info(ModelConstants.UPDATE + phase.toString());
+		
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removePhase(Long id) throws InstanceNotFoundException {
+		
+		// Get the Phase
+		Phase phase = findPhase(id);
+		
+		// Remove the phase
+		try{
+			phaseDAO.remove(phase);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info(ModelConstants.DELETE + phase.toString());
+	}
+	
+	
+	// ============================================================================
+	// =========================== Milestone operations ===========================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createMilestone(Milestone milestone) throws InstanceNotFoundException {
+		
+		Long idPhase = milestone.getPhase().getId();
+		Long idMilestone = null;
+		
+		// Check if the selected phase exists
+		if (!phaseDAO.PhaseExists(idPhase)) {
+			throw new InstanceNotFoundException(idPhase, Phase.class.getName());
+		}
+		
+		// Now we create the new milestone
+		try{
+			idMilestone = milestoneDAO.create(milestone);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.CREATE + milestone.toString());
+		return idMilestone;	
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")	
+	public Milestone findMilestone(Long id) throws InstanceNotFoundException {
+		
+		Milestone milestone = null; 
+		
+		// Find the milestone
+		try{
+			milestone = milestoneDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if the milestone exists
+		if (milestone == null) {
+			throw new InstanceNotFoundException(id, Milestone.class.getName());
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + milestone.toString());
+		return milestone;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updateMilestone(Milestone milestone) throws InstanceNotFoundException {
+		
+		Long id = milestone.getId();
+		
+		// First we check if the milestone exists
+		if (!milestoneDAO.MilestoneExists(id)) {
+			throw new InstanceNotFoundException(id, Milestone.class.getName());
+		}
+		
+		// Update the milestone
+		try{
+			milestoneDAO.update(milestone);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info(ModelConstants.UPDATE + milestone.toString());
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removeMilestone(Long id) throws InstanceNotFoundException {
+		
+		// Find the milestone by id
+		Milestone milestone = milestoneDAO.find(id);
+		
+		// Remove the milestone
+		try{
+			milestoneDAO.remove(milestone);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info(ModelConstants.DELETE + milestone.toString());
+		
 	}
 
 }

@@ -7,7 +7,9 @@ es/udc/rs/app/model/test/PersonTest.class
 es/udc/rs/app/model/test/HistoryProjectTest.class
 es/udc/rs/app/model/test/HistoryPersonTest.class
 es/udc/rs/app/model/test/util/TestUtils.class
+es/udc/rs/app/model/test/PhaseTest.class
 es/udc/rs/app/model/test/CustomerTest.class
 es/udc/rs/app/model/test/TimeOffTest.class
 es/udc/rs/app/model/test/CountryAndProvinceTest.class
 es/udc/rs/app/model/test/BusinessTest.class
+es/udc/rs/app/model/test/MilestoneTest.class

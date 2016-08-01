@@ -15,12 +15,16 @@ es/udc/rs/app/model/dao/customer/CustomerDAO.class
 es/udc/rs/app/model/dao/timeoff/TimeOffDAOImpl.class
 es/udc/rs/app/model/dao/person/PersonDAOImpl.class
 es/udc/rs/app/model/dao/aptitude/AptitudeTypeDAOImpl.class
+es/udc/rs/app/model/dao/phase/PhaseDAO.class
 es/udc/rs/app/model/domain/AptitudeType.class
+es/udc/rs/app/model/domain/Milestone.class
+es/udc/rs/app/model/dao/milestone/MilestoneDAO.class
 es/udc/rs/app/model/service/person/PersonServiceImpl.class
 es/udc/rs/app/model/domain/BusinessType.class
 es/udc/rs/app/model/dao/aptitude/AptitudeTypeDAO.class
 es/udc/rs/app/model/service/material/MaterialServiceImpl.class
 es/udc/rs/app/model/dao/timeoff/TimeOffDAO.class
+es/udc/rs/app/model/dao/phase/PhaseDAOImpl.class
 es/udc/rs/app/model/util/ModelConstants.class
 es/udc/rs/app/model/domain/Material.class
 es/udc/rs/app/model/dao/business/BusinessCategoryDAOImpl.class
@@ -36,6 +40,7 @@ es/udc/rs/app/model/dao/profctg/LevelProfCatgDAO.class
 es/udc/rs/app/model/domain/HistoryPerson.class
 es/udc/rs/app/model/domain/HistoryProject.class
 es/udc/rs/app/model/domain/Aptitude.class
+es/udc/rs/app/model/domain/Phase.class
 es/udc/rs/app/model/dao/historyproject/HistoryProjectDAO.class
 es/udc/rs/app/model/domain/ProfessionalCategory.class
 es/udc/rs/app/model/dao/business/BusinessCategoryDAO.class
@@ -54,6 +59,7 @@ es/udc/rs/app/model/dao/location/CountryDAO.class
 es/udc/rs/app/model/domain/BusinessSize.class
 es/udc/rs/app/model/dao/person/PersonDAO.class
 es/udc/rs/app/model/dao/profctg/LevelProfCatgDAOImpl.class
+es/udc/rs/app/model/dao/milestone/MilestoneDAOImpl.class
 es/udc/rs/app/model/dao/business/BusinessSizeDAOImpl.class
 es/udc/rs/app/model/dao/aptitude/AptitudeDAOImpl.class
 es/udc/rs/app/model/service/person/PersonService.class

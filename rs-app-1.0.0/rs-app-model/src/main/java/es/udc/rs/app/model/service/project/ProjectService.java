@@ -5,6 +5,8 @@ import java.util.List;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.HistoryProject;
+import es.udc.rs.app.model.domain.Milestone;
+import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.State;
 
@@ -40,4 +42,25 @@ public interface ProjectService {
 	public void updateHistoryProject(HistoryProject historyProject) throws InstanceNotFoundException;
 	
 	public void removeHistoryProject(Long id) throws InstanceNotFoundException;
+	
+	
+	// ============================= Phase operations =============================
+	public Long createPhase(Phase phase) throws InstanceNotFoundException;
+	
+	public Phase findPhase(Long id) throws InstanceNotFoundException;
+		
+	public List<Phase> findPhaseByProject(Project project);
+			
+	public void updatePhase(Phase phase) throws InstanceNotFoundException;
+	
+	public void removePhase(Long id) throws InstanceNotFoundException;
+	
+	// =========================== Milestone operations ===========================
+	public Long createMilestone(Milestone milestone) throws InstanceNotFoundException;
+	
+	public Milestone findMilestone(Long id) throws InstanceNotFoundException;
+					
+	public void updateMilestone(Milestone milestone) throws InstanceNotFoundException;
+	
+	public void removeMilestone(Long id) throws InstanceNotFoundException; 
 }
