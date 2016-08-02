@@ -1,6 +1,6 @@
 package es.udc.rs.app.model.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,12 +42,10 @@ public class MilestoneTest {
 		
 		log.info("");
 		log.info ("============ Starting Milestone Test ============");
-		createAndFindMilestone();
-		updateMilestone();
-		removeMilestone();		
+		allOperationsMilestone();	
 	}
 
-	private void createAndFindMilestone() throws InputValidationException, InstanceNotFoundException, ParseException {
+	private void allOperationsMilestone() throws InputValidationException, InstanceNotFoundException, ParseException {
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 		boolean error;
 		
@@ -76,17 +74,43 @@ public class MilestoneTest {
 		// ================================================================================
 		milestone = new Milestone(phase, "milestone1", fmt.parse("2016-01-25"), null, null);
 		projectService.createMilestone(milestone);
-	}
-
-	private void updateMilestone() {
-		// TODO Auto-generated method stub
 		
-	}
-
-	private void removeMilestone() {
-		// TODO Auto-generated method stub
+		// ================================================================================
+		log.info("");
+		log.info ("===> Find Milestone");
+		// ================================================================================
+		Milestone thisMilestone = projectService.findMilestone(milestone.getId());
+		assertEquals(thisMilestone, milestone);
 		
+		// ================================================================================
+		log.info("");
+		log.info ("===> Update Milestone");
+		// ================================================================================
+		milestone.setName("milestone modificado");
+		milestone.setDatePlan(fmt.parse("2016-02-10"));
+		
+		projectService.updateMilestone(milestone);
+		
+		thisMilestone = projectService.findMilestone(milestone.getId());
+		assertEquals(thisMilestone, milestone);
+		
+		// ================================================================================
+		log.info("");
+		log.info ("===> Remove Milestone");
+		// ================================================================================
+		projectService.removeMilestone(milestone.getId());
+		
+		try {
+			error=false;
+			projectService.findMilestone(milestone.getId());
+		} catch (InstanceNotFoundException e){
+			error=true;
+		}
+		assertTrue(error);
+		
+		projectService.removeProject(project.getId());
 	}
+	
 	
 	private void incorrectCreate(Milestone milestone) throws InstanceNotFoundException {
 		boolean error;

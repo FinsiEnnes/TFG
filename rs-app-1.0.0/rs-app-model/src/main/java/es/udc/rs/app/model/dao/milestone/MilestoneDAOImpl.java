@@ -51,7 +51,7 @@ public class MilestoneDAOImpl implements MilestoneDAO {
 	public void update(Milestone milestone) {
 		
 		// Check if the object is persistent
-		if (milestone.getId() != null) {
+		if (milestone.getId() == null) {
 			throw new RuntimeException("The object is not persistent.");
 		}
 		

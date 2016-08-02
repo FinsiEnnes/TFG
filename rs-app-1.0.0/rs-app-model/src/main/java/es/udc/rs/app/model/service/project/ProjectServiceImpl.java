@@ -12,15 +12,23 @@ import org.springframework.transaction.annotation.Transactional;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.dao.historyproject.HistoryProjectDAO;
+import es.udc.rs.app.model.dao.incident.DamageDAO;
+import es.udc.rs.app.model.dao.incident.IncidentDAO;
 import es.udc.rs.app.model.dao.milestone.MilestoneDAO;
 import es.udc.rs.app.model.dao.phase.PhaseDAO;
 import es.udc.rs.app.model.dao.project.ProjectDAO;
 import es.udc.rs.app.model.dao.state.StateDAO;
+import es.udc.rs.app.model.dao.task.PriorityDAO;
+import es.udc.rs.app.model.dao.tasklink.TaskLinkTypeDAO;
+import es.udc.rs.app.model.domain.Damage;
 import es.udc.rs.app.model.domain.HistoryProject;
+import es.udc.rs.app.model.domain.Incident;
 import es.udc.rs.app.model.domain.Milestone;
 import es.udc.rs.app.model.domain.Phase;
+import es.udc.rs.app.model.domain.Priority;
 import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.State;
+import es.udc.rs.app.model.domain.TaskLinkType;
 import es.udc.rs.app.model.util.ModelConstants;
 import es.udc.rs.app.validation.PropertyValidator;
 
@@ -46,6 +54,18 @@ public class ProjectServiceImpl implements ProjectService {
 	
 	@Autowired
 	private MilestoneDAO milestoneDAO;
+	
+	@Autowired
+	private DamageDAO damageDAO;
+	
+	@Autowired
+	private IncidentDAO incidentDAO;
+	
+	@Autowired
+	private PriorityDAO priorityDAO;
+	
+	@Autowired 
+	private TaskLinkTypeDAO taskLinkTypeDAO;
 	
 	
 	// ============================================================================
@@ -560,7 +580,241 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 		
 		log.info(ModelConstants.DELETE + milestone.toString());
+	}
+	
+	
+	// ============================================================================
+	// ============================ Damage operations =============================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Damage findDamage(String id) throws InstanceNotFoundException {
 		
+		Damage damage = null;
+		
+		// Find the Damage by id
+		try{
+			damage = damageDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Checks if the Damage exits
+		if (damage == null) {
+			throw new InstanceNotFoundException(id, Damage.class.getName());
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + damage.toString());
+		return damage;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<Damage> findAllDamage() {
+		
+		List<Damage> damages = new ArrayList<Damage>();
+		
+		// Find all the Damages
+		try{
+			damages = damageDAO.findAll();
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + damages.size() + " registred Damages");
+		return damages;		
+	}
+	
+	
+	// ============================================================================
+	// =========================== Incident operations ============================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createIncident(Incident incident) {
+		
+		Long id = null;
+		
+		// Create the incident
+		try{
+			id = incidentDAO.create(incident);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.CREATE + incident.toString());
+		return id;
+		
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Incident findIncident(Long id) throws InstanceNotFoundException {
+		
+		Incident incident = null;
+		
+		// Find the incident 
+		try{
+			incident = incidentDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if the incident exists
+		if (incident == null) {
+			throw new InstanceNotFoundException(id, Incident.class.getName());
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + incident.toString());
+		return incident;
+		
+	}
+		
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updateIncident(Incident incident) throws InstanceNotFoundException {
+		
+		Long id = incident.getId();
+		
+		// Check if the Incident exists
+		if (!incidentDAO.IncidentExists(id)) {
+			throw new InstanceNotFoundException(id, Incident.class.getName());
+		}
+		
+		// If the incident exists, we update it
+		try{
+			incidentDAO.update(incident);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+				
+		log.info(ModelConstants.UPDATE + incident.toString());
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removeIncident(Long id) throws InstanceNotFoundException {
+		
+		// Get the incident
+		Incident incident = findIncident(id);
+		
+		// Remove the incident
+		try{
+			incidentDAO.remove(incident);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info(ModelConstants.DELETE + incident.toString());	
+	}
+	
+	
+	// ============================================================================
+	// =========================== Priority operations ============================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Priority findPriority(String id) throws InstanceNotFoundException {
+		
+		Priority priority = null;
+		
+		// Find the Priority
+		try{
+			priority = priorityDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if the Priority exists
+		if (priority == null) {
+			throw new InstanceNotFoundException(id, Priority.class.getName());
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + priority.toString());
+		return priority;	
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<Priority> findAllPriority() {
+		
+		List<Priority> priorities = new ArrayList<Priority>();
+		
+		// Find all the Priorities
+		try{
+			priorities = priorityDAO.findAll();
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + priorities.size() + " registred Priorities");
+		return priorities;	
+	}
+	
+	// ============================================================================
+	// ========================= TaskLinkType operations ==========================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public TaskLinkType findTaskLinkType(String id) throws InstanceNotFoundException {
+
+		TaskLinkType tlt = null;
+		
+		// Find the TaskLinkType
+		try{
+			tlt = taskLinkTypeDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if the TaskLinkType exists
+		if (tlt == null) {
+			throw new InstanceNotFoundException(id, TaskLinkType.class.getName());
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + tlt.toString());
+		return tlt;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<TaskLinkType> findAllTaskLinkType() {
+		
+		List<TaskLinkType> tlts = new ArrayList<TaskLinkType>();
+		
+		// Find all the TaskLinkTypes
+		try{
+			tlts = taskLinkTypeDAO.findAll();
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + tlts.size() + " registred TaskLinkTypes");
+		return tlts;	
 	}
 
 }
