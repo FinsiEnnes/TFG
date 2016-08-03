@@ -2,21 +2,35 @@ package es.udc.rs.app.model.test.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
+import es.udc.rs.app.model.domain.HistoryPerson;
+import es.udc.rs.app.model.domain.HistoryProject;
 import es.udc.rs.app.model.domain.LevelProfCatg;
 import es.udc.rs.app.model.domain.Person;
+import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.ProfessionalCategory;
+import es.udc.rs.app.model.domain.Project;
+import es.udc.rs.app.model.domain.Province;
+import es.udc.rs.app.model.service.customer.CustomerService;
 import es.udc.rs.app.model.service.person.PersonService;
+import es.udc.rs.app.model.service.project.ProjectService;
 
 public class TestUtils {
 
 	@Autowired
-	private PersonService personService; 
+	private PersonService personService;
+	
+	@Autowired
+	private CustomerService customerService;
+	
+	@Autowired
+	private ProjectService projectService;
 	
 	public Person p1;
 	public Person p2;
@@ -29,6 +43,15 @@ public class TestUtils {
 	public ProfessionalCategory pc4;
 	public ProfessionalCategory pc5;
 	public ProfessionalCategory pc6;
+	
+	public HistoryPerson hp1;
+	public HistoryPerson hp2;
+	
+	public Project project;
+	
+	public Phase phase1;
+	
+	public HistoryProject planHP;
 	
 	
 	public void createDataSet() throws ParseException, InputValidationException, InstanceNotFoundException {
@@ -45,6 +68,7 @@ public class TestUtils {
 		personService.createPerson(p2);
 		personService.createPerson(p3);
 		personService.createPerson(p4);	
+		
 		
 		// ====================== Professional Category =======================
 		LevelProfCatg jun = personService.findLevelProfCatg("JUN");
@@ -66,6 +90,25 @@ public class TestUtils {
 		personService.createProfessionalCategory(pc4);
 		personService.createProfessionalCategory(pc5);
 		personService.createProfessionalCategory(pc6);
+		
+		// ========================= History Person ===========================
+		hp1 = new HistoryPerson(p1, pc1, fmt.parse("2013-05-06"), fmt.parse("2016-04-06"), 5, 6, null);
+		hp2 = new HistoryPerson(p2, pc3, fmt.parse("2012-01-10"), null, 6, 7, null);
+		
+		personService.createHistoryPerson(hp1);
+		personService.createHistoryPerson(hp2);
+		
+		// ============================= Project ==============================
+		Province province = customerService.findProvince(1L);
+		project = new Project("Proyecto Zeta", new Date(), false, province, fmt.parse("2016-01-06"));
+		projectService.createProject(project);
+		
+		// ============================== Phase ===============================
+		phase1 = new Phase(project,"Fase 1",fmt.parse("2016-01-20"),fmt.parse("2016-05-10"),null);
+		
+		// ========================= History Project ==========================
+		planHP = new HistoryProject(project, projectService.findState("PLAN"), fmt.parse("2016-01-10"), null, null);
+		projectService.createHistoryProject(planHP);
 
 	}
 	
@@ -85,6 +128,16 @@ public class TestUtils {
 		for (ProfessionalCategory prof : profiles) {
 			personService.removeProfessionalCategory(prof.getId());
 		}
+		
+		// ========================= History Person ===========================
+		List<HistoryPerson> histories = personService.findAllHistoryPerson();
+		
+		for (HistoryPerson hp : histories) {
+			personService.removeHistoryPerson(hp.getId());
+		}
+		
+		// ============================= Project ==============================
+		projectService.removeProject(project.getId()); // Also delete HistoryProject and Phase
 	}
 	
 }

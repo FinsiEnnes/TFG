@@ -12,6 +12,7 @@ import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Priority;
 import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.State;
+import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TaskLinkType;
 
 public interface ProjectService {
@@ -90,6 +91,16 @@ public interface ProjectService {
 	public Priority findPriority(String id) throws InstanceNotFoundException;
 	
 	public List<Priority> findAllPriority();
+	
+	
+	// ============================= Task operations ==============================
+	public Long createTask(Task task) throws InputValidationException, InstanceNotFoundException;
+	
+	public Task findTask(Long id) throws InstanceNotFoundException;
+					
+	public void updateTask(Task task) throws InputValidationException, InstanceNotFoundException;
+	
+	public void removeTask(Long id) throws InstanceNotFoundException;
 	
 	
 	// ========================= TaskLinkType operations ==========================

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
+import es.udc.rs.app.model.dao.historyperson.HistoryPersonDAO;
 import es.udc.rs.app.model.dao.historyproject.HistoryProjectDAO;
 import es.udc.rs.app.model.dao.incident.DamageDAO;
 import es.udc.rs.app.model.dao.incident.IncidentDAO;
@@ -19,8 +20,10 @@ import es.udc.rs.app.model.dao.phase.PhaseDAO;
 import es.udc.rs.app.model.dao.project.ProjectDAO;
 import es.udc.rs.app.model.dao.state.StateDAO;
 import es.udc.rs.app.model.dao.task.PriorityDAO;
+import es.udc.rs.app.model.dao.task.TaskDAO;
 import es.udc.rs.app.model.dao.tasklink.TaskLinkTypeDAO;
 import es.udc.rs.app.model.domain.Damage;
+import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.HistoryProject;
 import es.udc.rs.app.model.domain.Incident;
 import es.udc.rs.app.model.domain.Milestone;
@@ -28,6 +31,7 @@ import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Priority;
 import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.State;
+import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TaskLinkType;
 import es.udc.rs.app.model.util.ModelConstants;
 import es.udc.rs.app.validation.PropertyValidator;
@@ -64,9 +68,15 @@ public class ProjectServiceImpl implements ProjectService {
 	@Autowired
 	private PriorityDAO priorityDAO;
 	
+	@Autowired
+	private TaskDAO taskDAO;
+	
+	@Autowired
+	private HistoryPersonDAO historyPersonDAO;
+	
 	@Autowired 
 	private TaskLinkTypeDAO taskLinkTypeDAO;
-	
+		
 	
 	// ============================================================================
 	// ============================ Validate Instance =============================
@@ -76,6 +86,10 @@ public class ProjectServiceImpl implements ProjectService {
 		if (project.getBudget() != null) {
 			PropertyValidator.validatePositiveInt("budgetProject", project.getBudget());
 		}
+	}
+	
+	private void validateTask(Task task) throws InputValidationException  {	
+		PropertyValidator.validatePositiveInt("daysPlanTask", task.getDaysPlan());
 	}
 
 	
@@ -769,6 +783,114 @@ public class ProjectServiceImpl implements ProjectService {
 		log.info(ModelConstants.FIND_ALL + priorities.size() + " registred Priorities");
 		return priorities;	
 	}
+	
+	
+	// ============================================================================
+	// ============================= Task operations ==============================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createTask(Task task) throws InputValidationException, InstanceNotFoundException {
+		
+		Long id = null;
+		Long idPhase = task.getPhase().getId();
+		Long idHPerson = task.getHistoryPerson().getId();
+		
+		// First validate the Task
+		validateTask(task);
+		
+		// Check if exist the Phase and the responsible of the Task
+		if (!phaseDAO.PhaseExists(idPhase)) {
+			throw new InstanceNotFoundException(idPhase, Phase.class.getName());
+		}
+		
+		if (!historyPersonDAO.historyPersonExists(idHPerson)) {
+			throw new InstanceNotFoundException(idHPerson, HistoryPerson.class.getName());
+		}
+		
+		// Now we create the Task in the db
+		try{
+			id = taskDAO.create(task);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.CREATE + task.toString());
+		return id;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Task findTask(Long id) throws InstanceNotFoundException {
+		
+		Task task = null;
+		
+		// Find the Task by id
+		try{
+			task = taskDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if the Task exists
+		if (task == null) {
+			throw new InstanceNotFoundException(id, Task.class.getName());
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + task.toString());
+		return task;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updateTask(Task task) throws InputValidationException, InstanceNotFoundException {
+		
+		Long id = task.getId();
+		
+		// First validate the Task
+		validateTask(task);
+		
+		// Check if the Task exists
+		if (!taskDAO.TaskExists(id)) {
+			throw new InstanceNotFoundException(id, Task.class.getName());
+		}
+		
+		// Now we update the Task in the db
+		try{
+			taskDAO.update(task);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info(ModelConstants.UPDATE + task.toString());
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removeTask(Long id) throws InstanceNotFoundException {
+		
+		// Get the Task by id
+		Task task = findTask(id);
+		
+		// Remove the Task
+		try{
+			taskDAO.remove(task);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info(ModelConstants.DELETE + task.toString());
+	}
+	
 	
 	// ============================================================================
 	// ========================= TaskLinkType operations ==========================

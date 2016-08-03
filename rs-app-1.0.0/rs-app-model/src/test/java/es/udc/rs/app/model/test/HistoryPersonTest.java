@@ -9,8 +9,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.exception.GenericJDBCException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +20,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.HistoryPerson;
+import es.udc.rs.app.model.domain.LevelProfCatg;
+import es.udc.rs.app.model.domain.Person;
+import es.udc.rs.app.model.domain.ProfessionalCategory;
 import es.udc.rs.app.model.service.person.PersonService;
-import es.udc.rs.app.model.test.util.TestUtils;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/spring-config.xml", "/test-spring-config.xml"})
@@ -35,27 +36,16 @@ public class HistoryPersonTest {
 	@Autowired
 	private PersonService personService; 
 	
-	@Autowired
-	private TestUtils testUtils;
-	
-	@Before
-	public void setUp() throws Exception { 
-		log.info("");
-		log.info ("========== Starting HistoryPerson Test ==========");
-		log.info ("Initializing data for test case: " + this.getClass().getName());
-		testUtils.createDataSet();
-		log.info ("Initilizated data with success.");
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-		log.info ("Deleting data for test case: " + this.getClass().getName());
-		testUtils.deleteDataSet(); 
-		log.info ("The datas have been deleted with success.");
-	}
+	private Person p1;
+	private Person p2;
+	private Person p3;
+	ProfessionalCategory pc1;
+	ProfessionalCategory pc2;
 	
 	@Test
 	public void fullHistoryPersonTest () throws ParseException, InputValidationException, InstanceNotFoundException {
+		log.info("");
+		log.info ("========= Starting HistoryPerson Test =========");
 		createAndFindHistoryPerson();
 		updateHistoryPerson();
 		removeHistoryPerson();
@@ -67,12 +57,26 @@ public class HistoryPersonTest {
 		boolean error;
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 		
-		// ================================ Correct create ================================
-		HistoryPerson hp1 = new HistoryPerson(testUtils.p1, testUtils.pc1, 
-				fmt.parse("2013-05-06"), fmt.parse("2016-04-06"), 5, 6, null);
+		p1 = new Person("Raul", "Glz","Costa","11111111A","costa@gmail.com", fmt.parse("2013-05-06"), "");
+		p2 = new Person("Paco","Perez","Pois","22222222B","pperez@gmail.com", fmt.parse("2011-05-10"), "");
+		p3 = new Person("Laura","Pois","Nada","33333333C","la.pois@gmail.com", fmt.parse("2012-01-08"), "");
 		
-		HistoryPerson hp2 = new HistoryPerson(testUtils.p2, testUtils.pc3, 
-				fmt.parse("2012-01-10"), null, 6, 7, null);
+		personService.createPerson(p1);
+		personService.createPerson(p2);
+		personService.createPerson(p3);
+		
+		LevelProfCatg jun = personService.findLevelProfCatg("JUN");
+		pc1 = new ProfessionalCategory("Desarrollador SW", 0, jun, 5, null);
+		pc2 = new ProfessionalCategory("Diseñador Personajes", 1, jun, 6, 7);
+
+		personService.createProfessionalCategory(pc1);
+		personService.createProfessionalCategory(pc2);
+
+		
+		// ================================ Correct create ================================
+		HistoryPerson hp1 = new HistoryPerson(p1, pc1, fmt.parse("2013-05-06"), fmt.parse("2016-04-06"), 5, 6, null);
+		
+		HistoryPerson hp2 = new HistoryPerson(p2, pc2, fmt.parse("2012-01-10"), null, 6, 7, null);
 		
 		personService.createHistoryPerson(hp1);
 		personService.createHistoryPerson(hp2);
@@ -90,16 +94,16 @@ public class HistoryPersonTest {
 		assertEquals(hps.get(numHistoriesPerson-1), hp2);
 		assertEquals(hps.get(numHistoriesPerson-2), hp1);
 		
-		hps = personService.findHistoryPersonByPerson(testUtils.p1);
+		hps = personService.findHistoryPersonByPerson(p1);
 		numHistoriesPerson = hps.size();
 		assertEquals(hps.get(numHistoriesPerson-1), hp1);
 		
-		hps = personService.findHistoryPersonByProfCatg(testUtils.pc3);
+		hps = personService.findHistoryPersonByProfCatg(pc2);
 		numHistoriesPerson = hps.size();
 		assertEquals(hps.get(numHistoriesPerson-1), hp2);
 		
 		// ============================== Incorrect creates ===============================
-		HistoryPerson incorrectHp = new HistoryPerson(testUtils.p1, testUtils.pc1, 
+		HistoryPerson incorrectHp = new HistoryPerson(p1, pc1, 
 				fmt.parse("2010-05-06"), null, 5, 6, null); //--> hiredatePerson > iniHPerson 
 		
 		try {
@@ -110,7 +114,7 @@ public class HistoryPersonTest {
 		}
 		assertTrue(error);
 		
-		incorrectHp = new HistoryPerson(testUtils.p1, testUtils.pc1, 
+		incorrectHp = new HistoryPerson(p1, pc1, 
 				fmt.parse("2014-05-06"), fmt.parse("2015-04-06"), 5, 6, null); //--> Repeated profile.
 		
 		try {
@@ -121,8 +125,7 @@ public class HistoryPersonTest {
 		}
 		assertTrue(error);
 		
-		incorrectHp = new HistoryPerson(testUtils.p3, testUtils.pc1, 
-				fmt.parse("2014-05-06"), fmt.parse("2015-04-06"), -5, 6, null);
+		incorrectHp = new HistoryPerson(p3, pc1, fmt.parse("2014-05-06"), fmt.parse("2015-04-06"), -5, 6, null);
 		
 		try {
 			error=false;
@@ -138,7 +141,7 @@ public class HistoryPersonTest {
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 
 		// =============================== Correct update ===============================
-		List<HistoryPerson> hps = personService.findHistoryPersonByProfCatg(testUtils.pc3);
+		List<HistoryPerson> hps = personService.findHistoryPersonByProfCatg(pc2);
 		int numHistoriesPerson = hps.size();
 		
 		HistoryPerson hp = hps.get(numHistoriesPerson-1);
@@ -147,7 +150,7 @@ public class HistoryPersonTest {
 		personService.updateHistoryPerson(hp);
 		
 		// ============================== Incorrect update ==============================
-		hps = personService.findHistoryPersonByPerson(testUtils.p1);
+		hps = personService.findHistoryPersonByPerson(p1);
 		numHistoriesPerson = hps.size();
 		
 		hp = hps.get(numHistoriesPerson-1);
@@ -173,6 +176,20 @@ public class HistoryPersonTest {
 		
 		hps = personService.findAllHistoryPerson();
 		assertEquals(hps.size(), 0);
+		
+		// ============================== Person ==============================
+		List<Person> persons = personService.findAllPersons();
+
+		for (Person p : persons) {
+			personService.removePerson(p.getId());
+		}
+
+		// ====================== ProfessionalCategory =======================
+		List<ProfessionalCategory> profiles = personService.findAllProfessionalCategories();
+
+		for (ProfessionalCategory prof : profiles) {
+			personService.removeProfessionalCategory(prof.getId());
+		}
 	}
 
 }
