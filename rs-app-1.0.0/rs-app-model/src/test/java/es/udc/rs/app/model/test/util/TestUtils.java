@@ -105,16 +105,20 @@ public class TestUtils {
 		
 		// ============================== Phase ===============================
 		phase1 = new Phase(project,"Fase 1",fmt.parse("2016-01-20"),fmt.parse("2016-05-10"),null);
+		projectService.createPhase(phase1);
 		
 		// ========================= History Project ==========================
-		planHP = new HistoryProject(project, projectService.findState("PLAN"), fmt.parse("2016-01-10"), null, null);
-		projectService.createHistoryProject(planHP);
+		// planHP = new HistoryProject(project, projectService.findState("PLAN"), fmt.parse("2016-01-10"), null, null);
+		// projectService.createHistoryProject(planHP);
 
 	}
 	
 	
 	public void deleteDataSet () throws InstanceNotFoundException {
 		
+		// ============================= Project ==============================
+		projectService.removeProject(project.getId()); // Also delete HistoryProject and Phase
+				
 		// ============================== Person ==============================
 		List<Person> persons = personService.findAllPersons();
 		
@@ -135,9 +139,7 @@ public class TestUtils {
 		for (HistoryPerson hp : histories) {
 			personService.removeHistoryPerson(hp.getId());
 		}
-		
-		// ============================= Project ==============================
-		projectService.removeProject(project.getId()); // Also delete HistoryProject and Phase
+	
 	}
 	
 }
