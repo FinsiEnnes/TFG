@@ -63,7 +63,8 @@ public class AssignmentProfileTest {
 	}
 	
 	@Test
-	public void fullTaskTest() throws InstanceNotFoundException, InputValidationException, ParseException {
+	public void fullAssignmentProfileTest() 
+			throws InstanceNotFoundException, InputValidationException, ParseException {
 
 		crudAssignmentProfile();
 		log.info("");
@@ -95,7 +96,7 @@ public class AssignmentProfileTest {
 		
 		// ================================================================================
 		log.info("");
-		log.info("===> Incorrect create of Assignment Profile");
+		log.info("===> Incorrect creation of AssignmentProfile");
 		// ================================================================================
 		AssignmentProfile ap = new AssignmentProfile(task, testUtils.pc1, -1, 10);
 		try {
