@@ -17,10 +17,12 @@ import es.udc.rs.app.model.dao.incident.DamageDAO;
 import es.udc.rs.app.model.dao.incident.IncidentDAO;
 import es.udc.rs.app.model.dao.milestone.MilestoneDAO;
 import es.udc.rs.app.model.dao.phase.PhaseDAO;
+import es.udc.rs.app.model.dao.predecessor.PredecessorDAO;
 import es.udc.rs.app.model.dao.project.ProjectDAO;
 import es.udc.rs.app.model.dao.state.StateDAO;
 import es.udc.rs.app.model.dao.task.PriorityDAO;
 import es.udc.rs.app.model.dao.task.TaskDAO;
+import es.udc.rs.app.model.dao.taskincident.TaskIncidentDAO;
 import es.udc.rs.app.model.dao.tasklink.TaskLinkTypeDAO;
 import es.udc.rs.app.model.domain.Damage;
 import es.udc.rs.app.model.domain.HistoryPerson;
@@ -28,10 +30,12 @@ import es.udc.rs.app.model.domain.HistoryProject;
 import es.udc.rs.app.model.domain.Incident;
 import es.udc.rs.app.model.domain.Milestone;
 import es.udc.rs.app.model.domain.Phase;
+import es.udc.rs.app.model.domain.Predecessor;
 import es.udc.rs.app.model.domain.Priority;
 import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
+import es.udc.rs.app.model.domain.TaskIncident;
 import es.udc.rs.app.model.domain.TaskLinkType;
 import es.udc.rs.app.model.util.ModelConstants;
 import es.udc.rs.app.validation.PropertyValidator;
@@ -66,6 +70,9 @@ public class ProjectServiceImpl implements ProjectService {
 	private IncidentDAO incidentDAO;
 	
 	@Autowired
+	private TaskIncidentDAO taskIncidentDAO;
+	
+	@Autowired
 	private PriorityDAO priorityDAO;
 	
 	@Autowired
@@ -76,6 +83,9 @@ public class ProjectServiceImpl implements ProjectService {
 	
 	@Autowired 
 	private TaskLinkTypeDAO taskLinkTypeDAO;
+	
+	@Autowired 
+	private PredecessorDAO predecessorDAO;
 		
 	
 	// ============================================================================
@@ -88,10 +98,15 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 	}
 	
+	// ============================================================================
 	private void validateTask(Task task) throws InputValidationException  {	
 		PropertyValidator.validatePositiveInt("daysPlanTask", task.getDaysPlan());
 	}
-
+	
+	// ============================================================================
+	private void validateTaskIncident(TaskIncident taskIncident) throws InputValidationException  {	
+		PropertyValidator.validatePositiveInt("daysPlanTask", taskIncident.getLoss());
+	}
 	
 	// ============================================================================
 	// =========================== Project operations =============================
@@ -738,6 +753,109 @@ public class ProjectServiceImpl implements ProjectService {
 	
 	
 	// ============================================================================
+	// ========================= TaskIncident operations ==========================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createTaskIncident(TaskIncident taskIncident)
+			throws InputValidationException, InstanceNotFoundException {
+		
+		Long idTask = taskIncident.getTask().getId();
+		Long idIncident = taskIncident.getIncident().getId();
+		Long id;
+		
+		// First check if the Task and the Incident exist.
+		if (!taskDAO.TaskExists(idTask)) {
+			throw new InstanceNotFoundException(idTask, Task.class.getName());
+		}
+		
+		if (!incidentDAO.IncidentExists(idIncident)) {
+			throw new InstanceNotFoundException(idIncident, Incident.class.getName());
+		}
+		
+		// Now validate the object TaskIncident
+		validateTaskIncident(taskIncident);
+		
+		// Create the object
+		try{
+			id = taskIncidentDAO.create(taskIncident);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.CREATE + taskIncident.toString());
+		return id;
+	}
+
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public TaskIncident findTaskIncident(Long id) throws InstanceNotFoundException {
+		return null;
+	}
+
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<TaskIncident> findTaskIncidentByTask(Task task) {
+		return null;
+	}
+
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updateTaskIncident(TaskIncident taskIncident)
+			throws InputValidationException, InstanceNotFoundException {
+		
+		Long id = taskIncident.getId();
+		
+		// Check if the object exists
+		if (!taskIncidentDAO.TaskIncidentExists(id)) {
+			throw new InstanceNotFoundException(id, TaskIncident.class.getName());
+		}
+		
+ 		// Validate the object TaskIncident
+		validateTaskIncident(taskIncident);
+		
+		// Update the object
+		try{
+			taskIncidentDAO.update(taskIncident);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.UPDATE + taskIncident.toString());
+	}
+
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removeTaskIncident(Long id) throws InstanceNotFoundException {
+		
+		TaskIncident taskIncident = findTaskIncident(id);
+		
+		// Remove the object
+		try{
+			taskIncidentDAO.remove(taskIncident);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.DELETE + taskIncident.toString());
+		
+	}
+	
+	// ============================================================================
 	// =========================== Priority operations ============================
 	// ============================================================================
 	@Override
@@ -937,6 +1055,130 @@ public class ProjectServiceImpl implements ProjectService {
 		// Return the result
 		log.info(ModelConstants.FIND_ALL + tlts.size() + " registred TaskLinkTypes");
 		return tlts;	
+	}
+	
+	
+	// ============================================================================
+	// ========================= Predecessor operations ===========================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createPredecessor(Predecessor predecessor) throws InstanceNotFoundException {
+		
+		// Get the ids of the Tasks
+		Long idTask = predecessor.getTask().getId();
+		Long idTaskPred = predecessor.getTaskPred().getId();
+		Long idPred;
+		
+		// Checks if these Tasks exist
+		if (!taskDAO.TaskExists(idTask)) {
+			throw new InstanceNotFoundException(idTask, Task.class.getName());	
+		}
+		
+		if (!taskDAO.TaskExists(idTaskPred)) {
+			throw new InstanceNotFoundException(idTaskPred, Task.class.getName());	
+		}
+		
+		// Now create the Predecessor object
+		try{
+			idPred = predecessorDAO.create(predecessor);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.CREATE + predecessor.toString());
+		return idPred;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Predecessor findPredecessor(Long id) throws InstanceNotFoundException {
+		
+		Predecessor predecessor = null;
+		
+		// Find the object
+		try{
+			predecessor = predecessorDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if it exists
+		if (predecessor == null) {
+			throw new InstanceNotFoundException(id, Predecessor.class.getName());	
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + predecessor.toString());
+		return predecessor;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<Predecessor> findPredecessorByTask(Task task) {
+		
+		List<Predecessor> predecessors = new ArrayList<Predecessor>();
+		
+		// Find Predecessors by Task
+		try{
+			predecessors = predecessorDAO.findByTask(task);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + predecessors.size() + " Predecessors whose main Task has idTask["
+				 + task.getId() + "]");
+		return predecessors;
+	}
+					
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updatePredecessor(Predecessor predecessor) throws InstanceNotFoundException {
+		
+		Long id = predecessor.getId();
+		
+		// Check if the Predecessor exists
+		if (!predecessorDAO.PredecessorExists(id)) {
+			throw new InstanceNotFoundException(id, Predecessor.class.getName());
+		}
+		
+		// Now update the Predecessor
+		try{
+			predecessorDAO.update(predecessor);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.UPDATE + predecessor.toString());
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removePredecessor(Long id) throws InstanceNotFoundException {
+		
+		Predecessor predecessor = findPredecessor(id);
+		
+		// Now update the Predecessor
+		try{
+			predecessorDAO.remove(predecessor);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.DELETE + predecessor.toString());	
 	}
 
 }

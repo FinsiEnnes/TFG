@@ -9,10 +9,12 @@ import es.udc.rs.app.model.domain.HistoryProject;
 import es.udc.rs.app.model.domain.Incident;
 import es.udc.rs.app.model.domain.Milestone;
 import es.udc.rs.app.model.domain.Phase;
+import es.udc.rs.app.model.domain.Predecessor;
 import es.udc.rs.app.model.domain.Priority;
 import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
+import es.udc.rs.app.model.domain.TaskIncident;
 import es.udc.rs.app.model.domain.TaskLinkType;
 
 public interface ProjectService {
@@ -87,6 +89,20 @@ public interface ProjectService {
 	public void removeIncident(Long id) throws InstanceNotFoundException;	
 	
 	
+	// ========================= TaskIncident operations ==========================
+	public Long createTaskIncident(TaskIncident taskIncident)
+		throws InputValidationException, InstanceNotFoundException;
+	
+	public TaskIncident findTaskIncident(Long id) throws InstanceNotFoundException;
+	
+	public List<TaskIncident> findTaskIncidentByTask(Task task);
+					
+	public void updateTaskIncident(TaskIncident taskIncident)
+		throws InputValidationException, InstanceNotFoundException;
+	
+	public void removeTaskIncident(Long id) throws InstanceNotFoundException;
+	
+	
 	// =========================== Priority operations ============================
 	public Priority findPriority(String id) throws InstanceNotFoundException;
 	
@@ -107,4 +123,16 @@ public interface ProjectService {
 	public TaskLinkType findTaskLinkType(String id) throws InstanceNotFoundException;
 	
 	public List<TaskLinkType> findAllTaskLinkType();
+	
+	
+	// ========================= Predecessor operations ===========================
+	public Long createPredecessor(Predecessor predecessor) throws InstanceNotFoundException;
+	
+	public Predecessor findPredecessor(Long id) throws InstanceNotFoundException;
+	
+	public List<Predecessor> findPredecessorByTask(Task task);
+					
+	public void updatePredecessor(Predecessor predecessor) throws InstanceNotFoundException;
+	
+	public void removePredecessor(Long id) throws InstanceNotFoundException;
 }
