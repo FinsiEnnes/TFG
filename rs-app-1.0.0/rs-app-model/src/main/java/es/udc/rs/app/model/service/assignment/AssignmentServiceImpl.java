@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
-import es.udc.rs.app.model.dao.assignmentMaterial.AssignmentMaterialDAO;
+import es.udc.rs.app.model.dao.assignmentmaterial.AssignmentMaterialDAO;
 import es.udc.rs.app.model.dao.assignmentprofile.AssignmentProfileDAO;
 import es.udc.rs.app.model.dao.material.MaterialDAO;
 import es.udc.rs.app.model.dao.profctg.ProfessionalCategoryDAO;
