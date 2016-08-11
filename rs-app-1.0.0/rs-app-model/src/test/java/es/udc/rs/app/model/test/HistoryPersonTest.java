@@ -114,8 +114,18 @@ public class HistoryPersonTest {
 		}
 		assertTrue(error);
 		
-		incorrectHp = new HistoryPerson(p1, pc1, 
-				fmt.parse("2014-05-06"), fmt.parse("2015-04-06"), 5, 6, null); //--> Repeated profile.
+		incorrectHp = new HistoryPerson(p2, pc1, fmt.parse("2012-05-10"), null, 6, 7, null);
+		// --> This Person currently has assigned a ProfessionalCategory
+		try {
+			error=false;
+			personService.createHistoryPerson(incorrectHp);
+		} catch (GenericJDBCException e){
+			error=true;
+		}
+		assertTrue(error);
+		
+		incorrectHp = new HistoryPerson(p1, pc2, 
+				fmt.parse("2014-05-06"), fmt.parse("2015-04-06"), 5, 6, null); //--> Parallel dates.
 		
 		try {
 			error=false;
