@@ -32,9 +32,9 @@ public class AssignmentPersonDAOImpl implements AssignmentPersonDAO{
 	}
 
 	@Override
-	public AssignmentPersonDAO find(Long id) {
+	public AssignmentPerson find(Long id) {
 		Session s = sessionFactory.getCurrentSession();
-		AssignmentPersonDAO assigPerson = (AssignmentPersonDAO) s.get(AssignmentPersonDAO.class, id);
+		AssignmentPerson assigPerson = (AssignmentPerson) s.get(AssignmentPerson.class, id);
 		
 		return assigPerson;
 	}
@@ -95,7 +95,7 @@ public class AssignmentPersonDAOImpl implements AssignmentPersonDAO{
 
 	@Override
 	public void remove(AssignmentPerson assignmentPerson) {
-		sessionFactory.getCurrentSession().update(assignmentPerson);		
+		sessionFactory.getCurrentSession().delete(assignmentPerson);		
 	}
 
 }

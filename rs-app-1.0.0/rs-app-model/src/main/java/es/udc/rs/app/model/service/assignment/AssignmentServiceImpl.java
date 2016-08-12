@@ -12,12 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.dao.assignmentmaterial.AssignmentMaterialDAO;
+import es.udc.rs.app.model.dao.assignmentperson.AssignmentPersonDAO;
 import es.udc.rs.app.model.dao.assignmentprofile.AssignmentProfileDAO;
+import es.udc.rs.app.model.dao.historyperson.HistoryPersonDAO;
 import es.udc.rs.app.model.dao.material.MaterialDAO;
 import es.udc.rs.app.model.dao.profctg.ProfessionalCategoryDAO;
 import es.udc.rs.app.model.dao.task.TaskDAO;
 import es.udc.rs.app.model.domain.AssignmentMaterial;
+import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
+import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.Material;
 import es.udc.rs.app.model.domain.ProfessionalCategory;
 import es.udc.rs.app.model.domain.Task;
@@ -38,6 +42,9 @@ public class AssignmentServiceImpl implements AssignmentService {
 	@Autowired 
 	private AssignmentMaterialDAO assigMatDAO;
 	
+	@Autowired
+	private AssignmentPersonDAO assigPersonDAO;
+	
 	// Assistant DAOs
 	@Autowired
 	private TaskDAO taskDAO;
@@ -47,6 +54,9 @@ public class AssignmentServiceImpl implements AssignmentService {
 	
 	@Autowired
 	private MaterialDAO materialDAO;
+	
+	@Autowired
+	private HistoryPersonDAO historyPersonDAO;
 		
 	
 	// ============================================================================
@@ -375,7 +385,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public void remove(Long id) throws InstanceNotFoundException {
+	public void removeAssignmentMaterial(Long id) throws InstanceNotFoundException {
 		
 		AssignmentMaterial assigMat = findAssignmentMaterial(id);
 		
@@ -391,6 +401,153 @@ public class AssignmentServiceImpl implements AssignmentService {
 		
 	}
 	
+	
+	// ============================================================================
+	// ======================== AssignmentPerson operations =======================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createAssignmentPerson(AssignmentPerson assignmentPerson) throws InstanceNotFoundException {
+		
+		// Get the differents ids
+		Long idTask = assignmentPerson.getTask().getId();
+		Long idHPerson = assignmentPerson.getHistoryPerson().getId();
+		Long id;
+		
+		// Check if the Task and the HistoryPerson exist
+		if (!taskDAO.TaskExists(idTask)) {
+			throw new InstanceNotFoundException(idTask, Task.class.getName());
+		}
+		
+		if (!historyPersonDAO.historyPersonExists(idHPerson)) {
+			throw new InstanceNotFoundException(idHPerson, HistoryPerson.class.getName());
+		}
+		
+		// Now create the AssignmentPerson 
+		try{
+			id = assigPersonDAO.create(assignmentPerson);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.CREATE + assignmentPerson.toString());
+		return id;
+		
+	}
+
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public AssignmentPerson findAssignmentPerson(Long id) throws InstanceNotFoundException {
+		
+		AssignmentPerson assigPerson = null;
+		
+		// Find the assignmentPerson
+		try{
+			assigPerson = assigPersonDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if it exists
+		if (assigPerson == null) {
+			throw new InstanceNotFoundException(id, AssignmentPerson.class.getName());
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + assigPerson.toString());
+		return assigPerson;
+	}
+
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<AssignmentPerson> findAssignmentPersonByTask(Task task) {
+		
+		List<AssignmentPerson> assigPersons = new ArrayList<AssignmentPerson>();
+		
+		// Search by Task
+		try{
+			assigPersons = assigPersonDAO.findByTask(task);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + assigPersons.size() + " AssignmentPerson in the Task "
+				 + "with the idTask[" + task.getId() + "]");
+		return assigPersons;
+	}
+
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<AssignmentPerson> findAssignmentPersonByPerson(HistoryPerson historyPerson) {
+		
+		List<AssignmentPerson> assigPersons = new ArrayList<AssignmentPerson>();
+		
+		// Search by HistoryPerson
+		try{
+			assigPersons = assigPersonDAO.findByPerson(historyPerson);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + assigPersons.size() + " AssignmentPerson for the HistoryPerson "
+				 + "with the idHPerson[" + historyPerson.getId() + "]");
+		return assigPersons;
+	}
+
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updateAssignmentPerson(AssignmentPerson assignmentPerson) throws InstanceNotFoundException {
+		
+		// Get the id
+		Long id = assignmentPerson.getId();
+		
+		// Check if the AssignmentPerson exists
+		if (!assigPersonDAO.AssignmentPersonExists(id)) {
+			throw new InstanceNotFoundException(id, AssignmentPerson.class.getName());
+		}
+		
+		// Update
+		try{
+			assigPersonDAO.update(assignmentPerson);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Log the result
+		log.info(ModelConstants.UPDATE + assignmentPerson.toString());
+	}
+
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removeAssignmentPerson(Long id) throws InstanceNotFoundException {
+		
+		AssignmentPerson assignmentPerson = findAssignmentPerson(id);
+		
+		// Remove
+		try{
+			assigPersonDAO.remove(assignmentPerson);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Log the result
+		log.info(ModelConstants.DELETE + assignmentPerson.toString());
+	}
+
 	
 	
 	

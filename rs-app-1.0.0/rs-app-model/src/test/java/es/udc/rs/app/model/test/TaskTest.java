@@ -206,7 +206,7 @@ public class TaskTest {
 		log.info("===> Change Task State: PLAN -> PRPR");
 		// ================================================================================	
 		// We need to include profiles at the task
-		task.setState(projectService.findState("PRPD"));
+		task.setState(prpd);
 		projectService.updateTask(task);
 		
 		

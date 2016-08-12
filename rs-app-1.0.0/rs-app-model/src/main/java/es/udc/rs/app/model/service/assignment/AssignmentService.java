@@ -5,7 +5,9 @@ import java.util.List;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.AssignmentMaterial;
+import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
+import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.Task;
 
 public interface AssignmentService {
@@ -39,5 +41,19 @@ public interface AssignmentService {
 	public void updateAssignmentMaterial(AssignmentMaterial assignmentMaterial)
 		throws InstanceNotFoundException, InputValidationException;
 	
-	public void remove(Long id) throws InstanceNotFoundException;
+	public void removeAssignmentMaterial(Long id) throws InstanceNotFoundException;
+	
+	
+	// ======================== AssignmentPerson operations =======================
+	public Long createAssignmentPerson(AssignmentPerson assignmentPerson) throws InstanceNotFoundException;
+	
+	public AssignmentPerson findAssignmentPerson(Long id) throws InstanceNotFoundException;
+	
+	public List<AssignmentPerson> findAssignmentPersonByTask(Task task);
+	
+	public List<AssignmentPerson> findAssignmentPersonByPerson(HistoryPerson historyPerson);
+					
+	public void updateAssignmentPerson(AssignmentPerson assignmentPerson) throws InstanceNotFoundException;
+	
+	public void removeAssignmentPerson(Long id) throws InstanceNotFoundException;
 }

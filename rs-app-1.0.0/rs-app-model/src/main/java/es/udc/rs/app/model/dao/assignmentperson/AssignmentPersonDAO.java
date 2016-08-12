@@ -10,7 +10,7 @@ public interface AssignmentPersonDAO {
 
 	public Long create(AssignmentPerson assignmentPerson);
 	
-	public AssignmentPersonDAO find(Long id);
+	public AssignmentPerson find(Long id);
 	
 	public List<AssignmentPerson> findByTask(Task task);
 	

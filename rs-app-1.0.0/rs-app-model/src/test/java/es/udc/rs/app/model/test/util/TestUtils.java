@@ -46,6 +46,7 @@ public class TestUtils {
 	
 	public HistoryPerson hp1;
 	public HistoryPerson hp2;
+	public HistoryPerson hp3;
 	
 	public Project project;
 	
@@ -94,9 +95,11 @@ public class TestUtils {
 		// ========================= History Person ===========================
 		hp1 = new HistoryPerson(p1, pc1, fmt.parse("2013-05-06"), fmt.parse("2016-04-06"), 5, 6, null);
 		hp2 = new HistoryPerson(p2, pc3, fmt.parse("2012-01-10"), null, 6, 7, null);
+		hp3 = new HistoryPerson(p3, pc6, fmt.parse("2012-01-20"), null, 10, 12, null);
 		
 		personService.createHistoryPerson(hp1);
 		personService.createHistoryPerson(hp2);
+		personService.createHistoryPerson(hp3);
 		
 		// ============================= Project ==============================
 		Province province = customerService.findProvince(1L);

@@ -56,7 +56,7 @@ public class AssignmentMaterialTest {
 	@Before
 	public void setUp() throws Exception { 
 		log.info("");
-		log.info ("===== Starting AssignmentMaterialTest Test ======");
+		log.info ("======= Starting AssignmentMaterial Test ========");
 		log.info ("Initializing data for test case: " + this.getClass().getName());
 		testUtils.createDataSet();
 		log.info ("Initilizated data with success.");
@@ -305,7 +305,7 @@ public class AssignmentMaterialTest {
 		List<AssignmentMaterial> assigMats = assignmentService.findAssignmentMaterialByTask(task);
 		
 		for (AssignmentMaterial am : assigMats) {
-			assignmentService.remove(am.getId());
+			assignmentService.removeAssignmentMaterial(am.getId());
 		}
 		
 		assigMats = assignmentService.findAssignmentMaterialByTask(task);
