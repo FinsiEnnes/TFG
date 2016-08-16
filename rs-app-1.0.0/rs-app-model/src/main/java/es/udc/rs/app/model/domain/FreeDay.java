@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 @Entity
 @Table(name = "FreeDay")
 public class FreeDay {
@@ -23,6 +25,10 @@ public class FreeDay {
 	// Not null attribute: name.
 	// Unique attribute: name, weekDay.
 	// Business key: name.
+	
+	public FreeDay() {
+		
+	}
 	
 	public FreeDay(Long id, String name) {
 		this.id = id;
@@ -67,6 +73,7 @@ public class FreeDay {
 	}
 
 	@Column(name = "iniFreeDay")
+	@Type(type = "date")
 	public Date getIni() {
 		return ini;
 	}
@@ -76,6 +83,7 @@ public class FreeDay {
 	}
 
 	@Column(name = "endFreeDay")
+	@Type(type = "date")
 	public Date getEnd() {
 		return end;
 	}

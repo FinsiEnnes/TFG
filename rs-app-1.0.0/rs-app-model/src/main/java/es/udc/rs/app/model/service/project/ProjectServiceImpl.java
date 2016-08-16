@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
+import es.udc.rs.app.model.dao.freeday.FreeDayDAO;
 import es.udc.rs.app.model.dao.historyperson.HistoryPersonDAO;
 import es.udc.rs.app.model.dao.historyproject.HistoryProjectDAO;
 import es.udc.rs.app.model.dao.incident.DamageDAO;
@@ -25,6 +26,7 @@ import es.udc.rs.app.model.dao.task.TaskDAO;
 import es.udc.rs.app.model.dao.taskincident.TaskIncidentDAO;
 import es.udc.rs.app.model.dao.tasklink.TaskLinkTypeDAO;
 import es.udc.rs.app.model.domain.Damage;
+import es.udc.rs.app.model.domain.FreeDay;
 import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.HistoryProject;
 import es.udc.rs.app.model.domain.Incident;
@@ -50,6 +52,9 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	@Autowired
 	private ProjectDAO projectDAO;
+	
+	@Autowired
+	private FreeDayDAO freeDayDAO;
 	
 	@Autowired
 	private StateDAO stateDAO;
@@ -106,6 +111,14 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	private void validateTaskIncident(TaskIncident taskIncident) throws InputValidationException  {	
 		PropertyValidator.validatePositiveInt("daysPlanTask", taskIncident.getLoss());
+	}
+	
+	// ============================================================================
+	private void validateFreeDay(FreeDay freeDay) throws InputValidationException {
+		
+		if (freeDay.getWeekDay() != null) {
+			PropertyValidator.validateIntWithinRange("weekDay", freeDay.getWeekDay(), 0, 6);
+		}
 	}
 	
 	// ============================================================================
@@ -214,6 +227,124 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 
 		log.info(ModelConstants.DELETE + project.toString());	
+	}
+	
+	// ============================================================================
+	// ============================ FreeDay operations ============================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createFreeDay(FreeDay freeDay) throws InputValidationException {
+		
+		Long id;
+		
+		// First, we validate the object
+		validateFreeDay(freeDay);
+		
+		// If the data is correct, we create the freeDay
+		try{
+			id = freeDayDAO.create(freeDay);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.CREATE + freeDay.toString());
+		return id;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public FreeDay findFreeDay(Long id)  throws InstanceNotFoundException {
+		
+		FreeDay freeDay = null;
+		
+		// Find the freeDay by id
+		try{
+			freeDay = freeDayDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if the freeDay exists
+		if (freeDay == null) {
+			throw new InstanceNotFoundException(id, FreeDay.class.getName());
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + freeDay.toString());
+		return freeDay;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<FreeDay> findAllFreeDay() {
+		
+		List<FreeDay> freeDays = new ArrayList<FreeDay>();
+		
+		// Get all the FreeDays
+		try{
+			freeDays = freeDayDAO.findAll();
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + freeDays.size() + " registred FreeDays.");
+		return freeDays;
+	}
+				
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updateFreeDay(FreeDay freeDay) throws InputValidationException, InstanceNotFoundException {
+		
+		// Get the id
+		Long id = freeDay.getId();
+		
+		// Check if the FreeDay exists 
+		if (!freeDayDAO.FreeDayExists(id)) {
+			throw new InstanceNotFoundException(id, FreeDay.class.getName());
+		}
+		
+		// Now validate the updated FreeDay
+		validateFreeDay(freeDay);
+		
+		// Now we can update the object
+		try{
+			freeDayDAO.update(freeDay);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.UPDATE + freeDay.toString());
+		
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removeFreeDay(Long id) throws InstanceNotFoundException {
+		
+		FreeDay freeDay = findFreeDay(id);
+		
+		try{
+			freeDayDAO.remove(freeDay);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Log the result
+		log.info(ModelConstants.DELETE + freeDay.toString());
+		
 	}
 	
 	

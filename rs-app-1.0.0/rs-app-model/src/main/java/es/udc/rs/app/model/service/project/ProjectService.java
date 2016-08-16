@@ -5,6 +5,7 @@ import java.util.List;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Damage;
+import es.udc.rs.app.model.domain.FreeDay;
 import es.udc.rs.app.model.domain.HistoryProject;
 import es.udc.rs.app.model.domain.Incident;
 import es.udc.rs.app.model.domain.Milestone;
@@ -29,6 +30,18 @@ public interface ProjectService {
 	public void updateProject(Project project) throws InputValidationException, InstanceNotFoundException;
 	
 	public void removeProject(Long id) throws InstanceNotFoundException;
+	
+	
+	// ============================ FreeDay operations ============================
+	public Long createFreeDay(FreeDay freeDay) throws InputValidationException;
+	
+	public FreeDay findFreeDay(Long id) throws InstanceNotFoundException;
+	
+	public List<FreeDay> findAllFreeDay();
+				
+	public void updateFreeDay(FreeDay freeDay) throws InputValidationException, InstanceNotFoundException;
+	
+	public void removeFreeDay(Long id) throws InstanceNotFoundException;	
 	
 	
 	// ============================= State operations =============================
