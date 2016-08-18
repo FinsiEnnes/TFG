@@ -13,6 +13,7 @@ import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Predecessor;
 import es.udc.rs.app.model.domain.Priority;
 import es.udc.rs.app.model.domain.Project;
+import es.udc.rs.app.model.domain.ProjectFreeDay;
 import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TaskIncident;
@@ -42,6 +43,20 @@ public interface ProjectService {
 	public void updateFreeDay(FreeDay freeDay) throws InputValidationException, InstanceNotFoundException;
 	
 	public void removeFreeDay(Long id) throws InstanceNotFoundException;	
+	
+	
+	// ======================== ProjectFreeDay operations =========================
+	public Long createProjectFreeDay(ProjectFreeDay projectFreeDay) throws InstanceNotFoundException;
+	
+	public ProjectFreeDay findProjectFreeDay(Long id) throws InstanceNotFoundException;
+	
+	public List<ProjectFreeDay> findAllProjectFreeDay();
+	
+	public List<FreeDay> findProjectFreeDayByProject(Project project);
+	
+	public void updateProjectFreeDay(ProjectFreeDay projectFreeDay) throws InstanceNotFoundException;
+	
+	public void removeProjectFreeDay(Long id) throws InstanceNotFoundException;
 	
 	
 	// ============================= State operations =============================

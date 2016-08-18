@@ -20,6 +20,7 @@ import es.udc.rs.app.model.dao.milestone.MilestoneDAO;
 import es.udc.rs.app.model.dao.phase.PhaseDAO;
 import es.udc.rs.app.model.dao.predecessor.PredecessorDAO;
 import es.udc.rs.app.model.dao.project.ProjectDAO;
+import es.udc.rs.app.model.dao.projectfreeday.ProjectFreeDayDAO;
 import es.udc.rs.app.model.dao.state.StateDAO;
 import es.udc.rs.app.model.dao.task.PriorityDAO;
 import es.udc.rs.app.model.dao.task.TaskDAO;
@@ -35,6 +36,7 @@ import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Predecessor;
 import es.udc.rs.app.model.domain.Priority;
 import es.udc.rs.app.model.domain.Project;
+import es.udc.rs.app.model.domain.ProjectFreeDay;
 import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TaskIncident;
@@ -52,6 +54,9 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	@Autowired
 	private ProjectDAO projectDAO;
+	
+	@Autowired
+	private ProjectFreeDayDAO projectFreeDayDAO;
 	
 	@Autowired
 	private FreeDayDAO freeDayDAO;
@@ -229,6 +234,7 @@ public class ProjectServiceImpl implements ProjectService {
 		log.info(ModelConstants.DELETE + project.toString());	
 	}
 	
+	
 	// ============================================================================
 	// ============================ FreeDay operations ============================
 	// ============================================================================
@@ -347,6 +353,146 @@ public class ProjectServiceImpl implements ProjectService {
 		
 	}
 	
+	
+	
+	// ============================================================================
+	// ============================ FreeDay operations ============================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createProjectFreeDay(ProjectFreeDay projectFreeDay) throws InstanceNotFoundException {
+
+		Long id;
+		Long idProject = projectFreeDay.getProject().getId();
+		Long idFreeDay = projectFreeDay.getFreeDay().getId();
+		
+		// First we check if the Project and the FreeDay exist.
+		if (!projectDAO.ProjectExists(idProject)) {
+			throw new InstanceNotFoundException(idProject, Project.class.getName());
+		}
+		
+		if (!freeDayDAO.FreeDayExists(idFreeDay)) {
+			throw new InstanceNotFoundException(idProject, FreeDay.class.getName());
+		}
+		
+		// We create the ProjectFreeDay
+		try{
+			id = projectFreeDayDAO.create(projectFreeDay);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.CREATE + projectFreeDay.toString());
+		return id;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public ProjectFreeDay findProjectFreeDay(Long id) throws InstanceNotFoundException {
+		
+		ProjectFreeDay projectFreeDay = null;
+		
+		// Find ProjectFreeDay by id
+		try{
+			projectFreeDay = projectFreeDayDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if the state exists
+		if (projectFreeDay == null) {
+			throw new InstanceNotFoundException(id, ProjectFreeDay.class.getName());
+		}
+		
+		// Return the result		
+		log.info(ModelConstants.FIND_ID + projectFreeDay.toString());
+		return projectFreeDay;
+		
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<ProjectFreeDay> findAllProjectFreeDay() {
+		
+		List<ProjectFreeDay> projectFreeDays = new ArrayList<ProjectFreeDay>();
+		
+		// Find all projectFreeDays
+		try{
+			projectFreeDays = projectFreeDayDAO.findAll();
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the results
+		log.info(ModelConstants.FIND_ALL + projectFreeDays.size() + " registred ProjectFreeDays");
+		return projectFreeDays;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<FreeDay> findProjectFreeDayByProject(Project project) {
+		
+		List<FreeDay> freeDays = new ArrayList<FreeDay>();
+		
+		// Find projectFreeDays by the idProject
+		try{
+			freeDays = projectFreeDayDAO.findByProject(project);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the results
+		log.info(ModelConstants.FIND_ALL + freeDays.size() + " registred FreeDays for the "
+				 + " Project with idProject[" + project.getId() + "]");
+		return freeDays;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updateProjectFreeDay(ProjectFreeDay projectFreeDay) throws InstanceNotFoundException {
+		
+		Long id = projectFreeDay.getId();
+		
+		if (!projectFreeDayDAO.ProjectFreeDayExists(id)) {
+			throw new InstanceNotFoundException(id, ProjectFreeDay.class.getName());
+		}
+		
+		try{
+			projectFreeDayDAO.update(projectFreeDay);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info(ModelConstants.UPDATE + projectFreeDay.toString());
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removeProjectFreeDay(Long id) throws InstanceNotFoundException {
+		
+		ProjectFreeDay projectFreeDay = findProjectFreeDay(id);
+		
+		try{
+			projectFreeDayDAO.remove(projectFreeDay);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info(ModelConstants.DELETE + projectFreeDay.toString());
+		
+	}
 	
 	// ============================================================================
 	// ============================= State operations =============================
