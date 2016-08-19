@@ -9,6 +9,7 @@ import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
 import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.Task;
+import es.udc.rs.app.model.domain.Workload;
 
 public interface AssignmentService {
 
@@ -56,4 +57,18 @@ public interface AssignmentService {
 	public void updateAssignmentPerson(AssignmentPerson assignmentPerson) throws InstanceNotFoundException;
 	
 	public void removeAssignmentPerson(Long id) throws InstanceNotFoundException;
+	
+	
+	// ============================ Workload operations ===========================
+	public Long createWorkload(Workload workload) throws InstanceNotFoundException, InputValidationException;
+	
+	public Workload findWorkload(Long id) throws InstanceNotFoundException;
+	
+	public List<Workload> findWorkloadByTask(Task task);
+	
+	public List<Workload> findWorkloadByHistoryPerson(HistoryPerson historyPerson);
+					
+	public void updateWorkload(Workload workload) throws InstanceNotFoundException, InputValidationException;
+	
+	public void removeWorkload(Long id) throws InstanceNotFoundException;
 }

@@ -18,6 +18,7 @@ import es.udc.rs.app.model.dao.historyperson.HistoryPersonDAO;
 import es.udc.rs.app.model.dao.material.MaterialDAO;
 import es.udc.rs.app.model.dao.profctg.ProfessionalCategoryDAO;
 import es.udc.rs.app.model.dao.task.TaskDAO;
+import es.udc.rs.app.model.dao.workload.WorkloadDAO;
 import es.udc.rs.app.model.domain.AssignmentMaterial;
 import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
@@ -25,6 +26,7 @@ import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.Material;
 import es.udc.rs.app.model.domain.ProfessionalCategory;
 import es.udc.rs.app.model.domain.Task;
+import es.udc.rs.app.model.domain.Workload;
 import es.udc.rs.app.model.util.ModelConstants;
 import es.udc.rs.app.validation.PropertyValidator;
 
@@ -45,6 +47,9 @@ public class AssignmentServiceImpl implements AssignmentService {
 	@Autowired
 	private AssignmentPersonDAO assigPersonDAO;
 	
+	@Autowired 
+	private WorkloadDAO workloadDAO;
+	
 	// Assistant DAOs
 	@Autowired
 	private TaskDAO taskDAO;
@@ -62,11 +67,13 @@ public class AssignmentServiceImpl implements AssignmentService {
 	// ============================================================================
 	// ============================ Validate Instance =============================
 	// ============================================================================
-	private void validateAssignmentProfile(AssignmentProfile assignmentProfile) throws InputValidationException {	
+	private void validateAssignmentProfile(AssignmentProfile assignmentProfile) 
+			throws InputValidationException {	
 		PropertyValidator.validatePositiveInt("unitsAssigProf", assignmentProfile.getUnits());
 		PropertyValidator.validatePositiveInt("hoursPerPersonAssigProf", assignmentProfile.getHoursPerPerson());		
 	}
 	
+	// ============================================================================
 	private void validateAssignmentMaterial(AssignmentMaterial assigMat) throws InputValidationException {
 		
 		if (assigMat.getUnitsPlan() != null) {
@@ -78,6 +85,11 @@ public class AssignmentServiceImpl implements AssignmentService {
 		}		
 	}
 	
+	// ============================================================================
+	private void validateWorkload(Workload workload) throws InputValidationException {	
+		PropertyValidator.validatePositiveInt("hoursWorkload", workload.getHours());
+		PropertyValidator.validatePositiveInt("extraHoursWorkload", workload.getExtraHours());		
+	}
 	
 	// ============================================================================
 	// ======================= AssignmentProfile operations =======================
@@ -548,23 +560,159 @@ public class AssignmentServiceImpl implements AssignmentService {
 		log.info(ModelConstants.DELETE + assignmentPerson.toString());
 	}
 
+	// ============================================================================
+	// ============================ Workload operations ===========================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createWorkload(Workload workload) throws InstanceNotFoundException, InputValidationException {
+		
+		Long idTask = workload.getTask().getId();
+		Long idHPerson = workload.getHistoryPerson().getId();
+		Long id;
+		
+		// First check if the Task and the HistoryPerson exists
+		if (!taskDAO.TaskExists(idTask)) {
+			throw new InstanceNotFoundException(idTask, Task.class.getName());
+		}
+		
+		if (!historyPersonDAO.historyPersonExists(idHPerson)) {
+			throw new InstanceNotFoundException(idHPerson, HistoryPerson.class.getName());
+		}
+		
+		// Now validate the data
+		validateWorkload(workload);
+		
+		// If all is correct, create the Workload
+		try{
+			id = workloadDAO.create(workload);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.CREATE + workload.toString());
+		return id;
+	}
 	
 	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Workload findWorkload(Long id) throws InstanceNotFoundException {
+		
+		Workload workload = null;
+		
+		// Find the workload
+		try{
+			workload = workloadDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if it exists
+		if (workload == null) {
+			throw new InstanceNotFoundException(id, Workload.class.getName());
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + workload.toString());
+		return workload;
+	}
 	
 	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<Workload> findWorkloadByTask(Task task) {
+		
+		List<Workload> workloads = new ArrayList<Workload>();
+		
+		// Find the Workloads by Task
+		try{
+			workloads = workloadDAO.findByTask(task);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + workloads.size() + " registred Workloads for the "
+				 + "Task with idTask[" + task.getId() + "]");
+		return workloads;
+	}
 	
 	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<Workload> findWorkloadByHistoryPerson(HistoryPerson historyPerson) {
+		
+		List<Workload> workloads = new ArrayList<Workload>();
+		
+		// Find the Workloads by Task
+		try{
+			workloads = workloadDAO.findByHistoryPerson(historyPerson);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + workloads.size() + " registred Workloads for the "
+				 + "HistoryPerson with idHistoryPerson[" + historyPerson.getId() + "]");
+		return workloads;
+	}
+					
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updateWorkload(Workload workload) throws InstanceNotFoundException, InputValidationException {
+		
+		Long id = workload.getId();
+		
+		// Check if this workload exists 
+		if (!workloadDAO.WorkloadExists(id)) {
+			throw new InstanceNotFoundException(id, Workload.class.getName());
+		}
+		
+		// Validate the updated data
+		validateWorkload(workload);
+		
+		// Update the object
+		try{
+			workloadDAO.update(workload);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.UPDATE + workload.toString());
+	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removeWorkload(Long id) throws InstanceNotFoundException {
+		
+		Workload workload = findWorkload(id);
+		
+		// Remove the object
+		try{
+			workloadDAO.remove(workload);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.DELETE + workload.toString());	
+	}
+
 	
 }

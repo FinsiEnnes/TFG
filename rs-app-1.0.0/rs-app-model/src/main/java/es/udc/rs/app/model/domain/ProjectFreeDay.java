@@ -102,4 +102,13 @@ public class ProjectFreeDay {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "ProjectFreeDay [id=" + id + ", idProject=" + project.getId() + ", nameProject=" 
+				+ project.getName() + ", idFreeDay=" + freeDay.getId()
+				+ ", nameFreeDay=" + freeDay.getName() + "]";
+	}
+	
+	
+
 }

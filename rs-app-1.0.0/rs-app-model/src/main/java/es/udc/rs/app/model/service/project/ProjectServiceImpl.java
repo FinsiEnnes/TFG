@@ -356,7 +356,7 @@ public class ProjectServiceImpl implements ProjectService {
 	
 	
 	// ============================================================================
-	// ============================ FreeDay operations ============================
+	// ======================== ProjectFreeDay operations =========================
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
