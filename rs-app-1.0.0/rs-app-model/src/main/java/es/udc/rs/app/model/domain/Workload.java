@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "ProfessionalCategory", 
+@Table(name = "Workload", 
 	   uniqueConstraints = { @UniqueConstraint(columnNames = { "dayDateWorkload", "idTask", "idHPerson"}) })
 public class Workload {
 	
