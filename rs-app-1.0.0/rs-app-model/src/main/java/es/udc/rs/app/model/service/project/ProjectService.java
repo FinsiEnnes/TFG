@@ -14,6 +14,7 @@ import es.udc.rs.app.model.domain.Predecessor;
 import es.udc.rs.app.model.domain.Priority;
 import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.ProjectFreeDay;
+import es.udc.rs.app.model.domain.ProjectMgmt;
 import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TaskIncident;
@@ -58,6 +59,20 @@ public interface ProjectService {
 	
 	public void removeProjectFreeDay(Long id) throws InstanceNotFoundException;
 	
+	
+	// ========================= ProjectMgmt operations ===========================
+	public Long createProjectMgmt(ProjectMgmt projectMgmt) throws InstanceNotFoundException;
+	
+	public ProjectMgmt findProjectMgmt(Long id) throws InstanceNotFoundException;
+	
+	public List<ProjectMgmt> findAllProjectMgmt();
+	
+	public List<ProjectMgmt> findProjectMgmtByProject(Project project);
+				
+	public void updateProjectMgmt(ProjectMgmt projectMgmt) throws InstanceNotFoundException;
+	
+	public void removeProjectMgmt(Long id) throws InstanceNotFoundException;
+
 	
 	// ============================= State operations =============================
 	public State findState(String id) throws InstanceNotFoundException;
@@ -123,7 +138,9 @@ public interface ProjectService {
 	
 	public TaskIncident findTaskIncident(Long id) throws InstanceNotFoundException;
 	
-	public List<TaskIncident> findTaskIncidentByTask(Task task);
+	public List<TaskIncident> findTaskIncidentByTask(Task task) throws InstanceNotFoundException;
+	
+	public List<TaskIncident> findTaskIncidentByProject(Project project) throws InstanceNotFoundException;
 					
 	public void updateTaskIncident(TaskIncident taskIncident)
 		throws InputValidationException, InstanceNotFoundException;

@@ -21,6 +21,7 @@ import es.udc.rs.app.model.dao.phase.PhaseDAO;
 import es.udc.rs.app.model.dao.predecessor.PredecessorDAO;
 import es.udc.rs.app.model.dao.project.ProjectDAO;
 import es.udc.rs.app.model.dao.projectfreeday.ProjectFreeDayDAO;
+import es.udc.rs.app.model.dao.projectmgmt.ProjectMgmtDAO;
 import es.udc.rs.app.model.dao.state.StateDAO;
 import es.udc.rs.app.model.dao.task.PriorityDAO;
 import es.udc.rs.app.model.dao.task.TaskDAO;
@@ -37,10 +38,12 @@ import es.udc.rs.app.model.domain.Predecessor;
 import es.udc.rs.app.model.domain.Priority;
 import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.ProjectFreeDay;
+import es.udc.rs.app.model.domain.ProjectMgmt;
 import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TaskIncident;
 import es.udc.rs.app.model.domain.TaskLinkType;
+import es.udc.rs.app.model.util.FindInstanceService;
 import es.udc.rs.app.model.util.ModelConstants;
 import es.udc.rs.app.validation.PropertyValidator;
 
@@ -60,6 +63,9 @@ public class ProjectServiceImpl implements ProjectService {
 	
 	@Autowired
 	private FreeDayDAO freeDayDAO;
+	
+	@Autowired
+	private ProjectMgmtDAO projectMgmtDAO;
 	
 	@Autowired
 	private StateDAO stateDAO;
@@ -96,6 +102,10 @@ public class ProjectServiceImpl implements ProjectService {
 	
 	@Autowired 
 	private PredecessorDAO predecessorDAO;
+	
+	// Injection of the service FindInstanceService
+	@Autowired
+	private FindInstanceService findInstanceService; 
 		
 	
 	// ============================================================================
@@ -202,9 +212,8 @@ public class ProjectServiceImpl implements ProjectService {
 		// Validate the project data
 		validateProject(project);
 
-		if (!projectDAO.ProjectExists(project.getId())) {
-			throw new InstanceNotFoundException(project.getId(), Project.class.getName());
-		}
+		// Check if the project exists
+		findInstanceService.findProject(project);
 		
 		// If the data is correct, we update the project
 		try{
@@ -492,6 +501,145 @@ public class ProjectServiceImpl implements ProjectService {
 		
 		log.info(ModelConstants.DELETE + projectFreeDay.toString());
 		
+	}
+	
+	
+	// ============================================================================
+	// ========================= ProjectMgmt operations ===========================
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Long createProjectMgmt(ProjectMgmt projectMgmt) throws InstanceNotFoundException {
+		
+		Long idProject = projectMgmt.getProject().getId();
+		Long idHPerson = projectMgmt.getHistoryPerson().getId();
+		Long id;
+		
+		// First we check if the project and the HistoryPerson exist
+		if (!projectDAO.ProjectExists(idProject)) {
+			throw new InstanceNotFoundException(idProject, Project.class.getName());
+		}
+		
+		if (!historyPersonDAO.historyPersonExists(idHPerson)) {
+			throw new InstanceNotFoundException(idHPerson, HistoryProject.class.getName());
+		}
+		
+		// Now create the new object 
+		try{
+			id = projectMgmtDAO.create(projectMgmt);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.CREATE + projectMgmt.toString());
+		return id;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public ProjectMgmt findProjectMgmt(Long id) throws InstanceNotFoundException {
+		
+		ProjectMgmt projectMgmt = null;
+		
+		// Find the projectMgmt
+		try{
+			projectMgmt = projectMgmtDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if the projectMgmt exists
+		if (projectMgmt == null) {
+			throw new InstanceNotFoundException(id, ProjectMgmt.class.getName());
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + projectMgmt.toString());
+		return projectMgmt;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<ProjectMgmt> findAllProjectMgmt() {
+		
+		List<ProjectMgmt> projectMgmts = new ArrayList<ProjectMgmt>();
+		
+		// Find all the ProjectMgmts
+		try{
+			projectMgmts = projectMgmtDAO.findAll();
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + projectMgmts.size() + " registred ProjectMgmt");
+		return projectMgmts;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<ProjectMgmt> findProjectMgmtByProject(Project project) {
+		
+		List<ProjectMgmt> projectMgmts = new ArrayList<ProjectMgmt>();
+		
+		// Find the ProjectMgmts by Project
+		try{
+			projectMgmts = projectMgmtDAO.findByProject(project);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + projectMgmts.size() + " registred ProjectMgmt "
+				+ "for the Project with idProject[" + project.getId() + "]");
+		return projectMgmts;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void updateProjectMgmt(ProjectMgmt projectMgmt) throws InstanceNotFoundException {
+		
+		Long id = projectMgmt.getId();
+		
+		// Check if this ProjectMgmt exists
+		if (!projectMgmtDAO.ProjectMgmtExists(id)) {
+			throw new InstanceNotFoundException(id, ProjectMgmt.class.getName());
+		}
+		
+		try{
+			projectMgmtDAO.update(projectMgmt);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info(ModelConstants.UPDATE + projectMgmt.toString());
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void removeProjectMgmt(Long id) throws InstanceNotFoundException {
+		
+		ProjectMgmt projectMgmt = findProjectMgmt(id);
+		
+		try{
+			projectMgmtDAO.remove(projectMgmt);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info(ModelConstants.DELETE + projectMgmt.toString());
 	}
 	
 	// ============================================================================
@@ -1036,19 +1184,12 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(value="myTransactionManager")
 	public Long createTaskIncident(TaskIncident taskIncident)
 			throws InputValidationException, InstanceNotFoundException {
-		
-		Long idTask = taskIncident.getTask().getId();
-		Long idIncident = taskIncident.getIncident().getId();
+
 		Long id;
 		
 		// First check if the Task and the Incident exist.
-		if (!taskDAO.TaskExists(idTask)) {
-			throw new InstanceNotFoundException(idTask, Task.class.getName());
-		}
-		
-		if (!incidentDAO.IncidentExists(idIncident)) {
-			throw new InstanceNotFoundException(idIncident, Incident.class.getName());
-		}
+		findInstanceService.findTask(taskIncident.getTask());
+		findInstanceService.findIncident(taskIncident.getIncident());
 		
 		// Now validate the object TaskIncident
 		validateTaskIncident(taskIncident);
@@ -1078,10 +1219,35 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<TaskIncident> findTaskIncidentByTask(Task task) {
+	public List<TaskIncident> findTaskIncidentByTask(Task task) throws InstanceNotFoundException {
+		
+		List<TaskIncident> taskIncidents = new ArrayList<TaskIncident>();
+		
+		// Check if the Task exists
+		findInstanceService.findTask(task);
+		
+		// Find the TaskIncident by Task
+		try{
+			taskIncidents = taskIncidentDAO.findByTask(task);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + taskIncidents.size() + " registred TaskIncidents for the"
+				+ " Task with idTask[" + task.getId() + "]");
+		return taskIncidents;	
+	}
+	
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<TaskIncident> findTaskIncidentByProject(Project project) throws InstanceNotFoundException {
+		
 		return null;
 	}
-
 	
 	// ============================================================================
 	@Override

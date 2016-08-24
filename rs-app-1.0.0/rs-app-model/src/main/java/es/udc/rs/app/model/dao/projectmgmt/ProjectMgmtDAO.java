@@ -2,7 +2,6 @@ package es.udc.rs.app.model.dao.projectmgmt;
 
 import java.util.List;
 
-import es.udc.rs.app.model.domain.FreeDay;
 import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.ProjectMgmt;
 

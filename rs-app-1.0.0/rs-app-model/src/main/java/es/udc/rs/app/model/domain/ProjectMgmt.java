@@ -31,6 +31,10 @@ public class ProjectMgmt {
 	// Unique attribute: (project, historyPerson).
 	// Business key: project, historyPerson.
 	
+	public ProjectMgmt() {
+		
+	}
+	
 	public ProjectMgmt(Long id, Project project, HistoryPerson historyPerson, Date ini, Date end) {
 		this.id = id;
 		this.project = project;

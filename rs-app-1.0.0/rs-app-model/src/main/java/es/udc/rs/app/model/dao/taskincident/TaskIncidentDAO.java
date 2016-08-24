@@ -2,6 +2,7 @@ package es.udc.rs.app.model.dao.taskincident;
 
 import java.util.List;
 
+import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.TaskIncident;
 import es.udc.rs.app.model.domain.Task;
 
@@ -12,6 +13,8 @@ public interface TaskIncidentDAO {
 	public TaskIncident find(Long id);
 	
 	public List<TaskIncident> findByTask(Task task);
+	
+	public List<TaskIncident> findByProject(Project project);
 				
 	public boolean TaskIncidentExists(Long id);
 	

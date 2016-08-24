@@ -11,9 +11,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import es.udc.rs.app.model.domain.FreeDay;
 import es.udc.rs.app.model.domain.Project;
-import es.udc.rs.app.model.domain.ProjectFreeDay;
 import es.udc.rs.app.model.domain.ProjectMgmt;
 
 @Repository

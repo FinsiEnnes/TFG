@@ -1,5 +1,6 @@
 package es.udc.rs.app.model.dao.taskincident;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -10,6 +11,8 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import es.udc.rs.app.model.domain.Phase;
+import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TaskIncident;
 
@@ -51,6 +54,45 @@ public class TaskIncidentDAOImpl implements TaskIncidentDAO {
 		// Get the result
 		@SuppressWarnings("unchecked")
 		List<TaskIncident> taskIncidents = (List<TaskIncident>) query.list();
+		
+		return taskIncidents;
+	}
+	
+	@Override 
+	public List<TaskIncident> findByProject(Project project) {
+		
+		List<TaskIncident> taskIncidents = new ArrayList<TaskIncident>();
+		List<TaskIncident> incidentsOfThisTask = new ArrayList<TaskIncident>();
+		
+		// First, we get the Phases of the Project
+		String queryString = "FROM Phase P WHERE P.project = :project ORDER BY P.id";
+		
+		// Execute the query
+		Query query = sessionFactory.getCurrentSession().createQuery(queryString);
+		query.setParameter("project", project);
+		
+		@SuppressWarnings("unchecked")
+		List<Phase> phases = (List<Phase>) query.list();
+		
+		// For each Phase, we find it Tasks
+		for (Phase p : phases) {
+			queryString = "FROM Task T WHERE T.phase = :phase ORDER BY T.id";
+			
+			query = sessionFactory.getCurrentSession().createQuery(queryString);
+			query.setParameter("phase", p);
+			
+			@SuppressWarnings("unchecked")
+			List<Task> tasks = (List<Task>) query.list();
+			
+			// For each Task, we check if exists incidents
+			for (Task t : tasks) {
+				incidentsOfThisTask = findByTask(t);
+				
+				if (!incidentsOfThisTask.isEmpty()) {
+					taskIncidents.addAll(incidentsOfThisTask);
+				}
+			}
+		}
 		
 		return taskIncidents;
 	}
