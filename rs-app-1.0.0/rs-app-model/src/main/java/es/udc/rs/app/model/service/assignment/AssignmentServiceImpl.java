@@ -24,9 +24,9 @@ import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
 import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.Material;
-import es.udc.rs.app.model.domain.ProfessionalCategory;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.Workload;
+import es.udc.rs.app.model.util.FindInstanceService;
 import es.udc.rs.app.model.util.ModelConstants;
 import es.udc.rs.app.validation.PropertyValidator;
 
@@ -62,6 +62,10 @@ public class AssignmentServiceImpl implements AssignmentService {
 	
 	@Autowired
 	private HistoryPersonDAO historyPersonDAO;
+	
+	// Assistant service
+	@Autowired
+	private FindInstanceService findInstanceService;
 		
 	
 	// ============================================================================
@@ -100,20 +104,13 @@ public class AssignmentServiceImpl implements AssignmentService {
 			throws InstanceNotFoundException, InputValidationException {
 		
 		Long id;
-		Long idTask = assignmentProfile.getTask().getId();
-		Long idProfCatg = assignmentProfile.getProfCatg().getId();
 		
 		// First we validate the AssignmentProfile
 		validateAssignmentProfile(assignmentProfile);
 		
 		// Check if the referenced Task and ProfCatg exists
-		if (!taskDAO.TaskExists(idTask)) {
-			throw new InstanceNotFoundException(idTask, Task.class.getName());
-		}
-		
-		if (!profCatgDAO.ProfessionalCategoryExists(idProfCatg)) {
-			throw new InstanceNotFoundException(idProfCatg, ProfessionalCategory.class.getName());
-		}
+		findInstanceService.findTask(assignmentProfile.getTask());
+		findInstanceService.findProfessionalCategory(assignmentProfile.getProfCatg());
 		
 		// If the data is correct, we create the project
 		try{
@@ -156,9 +153,12 @@ public class AssignmentServiceImpl implements AssignmentService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<AssignmentProfile> findAssignmentProfileByTask(Task task) {
+	public List<AssignmentProfile> findAssignmentProfileByTask(Task task) throws InstanceNotFoundException {
 		
 		List<AssignmentProfile> assigProfs = new ArrayList<AssignmentProfile>();
+		
+		// Check if the Task exists
+		findInstanceService.findTask(task);
 		
 		// Find assignmentProfiles by task
 		try{
@@ -170,7 +170,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 		// Return the result
 		log.info(ModelConstants.FIND_ALL + assigProfs.size() + " registred AssignmentProfile"
-				 + " associated at the task with idTask[" + task.getId() + "]");
+				 + " associated at the Task with idTask[" + task.getId() + "]");
 		return assigProfs;
 	}
 
@@ -179,13 +179,9 @@ public class AssignmentServiceImpl implements AssignmentService {
 	@Transactional(value="myTransactionManager")
 	public void updateAssignmentProfile(AssignmentProfile assignmentProfile)
 			throws InstanceNotFoundException, InputValidationException {
-		
-		Long id = assignmentProfile.getId();
-		
+				
 		// First check if the AssignmentProfile exists
-		if (!assigProfDAO.AssignmentProfileExists(id)) {
-			throw new InstanceNotFoundException(id, AssignmentProfile.class.getName());
-		}
+		findInstanceService.findAssignmentProfile(assignmentProfile);
 		
 		// If it exist, we must check the attributes
 		validateAssignmentProfile(assignmentProfile);

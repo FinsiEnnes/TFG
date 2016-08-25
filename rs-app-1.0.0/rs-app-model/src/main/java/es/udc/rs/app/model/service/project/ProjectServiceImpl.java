@@ -125,7 +125,7 @@ public class ProjectServiceImpl implements ProjectService {
 	
 	// ============================================================================
 	private void validateTaskIncident(TaskIncident taskIncident) throws InputValidationException  {	
-		PropertyValidator.validatePositiveInt("daysPlanTask", taskIncident.getLoss());
+		PropertyValidator.validatePositiveInt("lossIncident", taskIncident.getLoss());
 	}
 	
 	// ============================================================================
@@ -1212,7 +1212,23 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional(value="myTransactionManager")
 	public TaskIncident findTaskIncident(Long id) throws InstanceNotFoundException {
-		return null;
+		
+		TaskIncident taskIncident = null;
+		
+		// Find the object
+		try{
+			taskIncident = taskIncidentDAO.find(id);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Check if this taskIncident exists
+		findInstanceService.findTaskIncident(taskIncident);
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ID + taskIncident.toString());
+		return taskIncident;
 	}
 
 	
@@ -1246,7 +1262,23 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(value="myTransactionManager")
 	public List<TaskIncident> findTaskIncidentByProject(Project project) throws InstanceNotFoundException {
 		
-		return null;
+		List<TaskIncident> taskIncidents = new ArrayList<TaskIncident>();
+		
+		// Check if the Project exists
+		findInstanceService.findProject(project);
+		
+		// Find the TaskIncident by Project
+		try{
+			taskIncidents = taskIncidentDAO.findByProject(project);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + taskIncidents.size() + " registred TaskIncidents for the"
+				+ " Project with idProject[" + project.getId() + "]");
+		return taskIncidents;
 	}
 	
 	// ============================================================================
@@ -1255,12 +1287,8 @@ public class ProjectServiceImpl implements ProjectService {
 	public void updateTaskIncident(TaskIncident taskIncident)
 			throws InputValidationException, InstanceNotFoundException {
 		
-		Long id = taskIncident.getId();
-		
 		// Check if the object exists
-		if (!taskIncidentDAO.TaskIncidentExists(id)) {
-			throw new InstanceNotFoundException(id, TaskIncident.class.getName());
-		}
+		findInstanceService.findTaskIncident(taskIncident);
 		
  		// Validate the object TaskIncident
 		validateTaskIncident(taskIncident);

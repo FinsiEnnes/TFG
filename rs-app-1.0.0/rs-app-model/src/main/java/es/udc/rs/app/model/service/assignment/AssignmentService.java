@@ -17,9 +17,9 @@ public interface AssignmentService {
 	public Long createAssignmentProfile(AssignmentProfile assignmentProfile)
 		throws InstanceNotFoundException, InputValidationException;
 	
-	public AssignmentProfile findAssignmentProfile(Long id)  throws InstanceNotFoundException;
+	public AssignmentProfile findAssignmentProfile(Long id) throws InstanceNotFoundException;
 	
-	public List<AssignmentProfile> findAssignmentProfileByTask(Task task);
+	public List<AssignmentProfile> findAssignmentProfileByTask(Task task) throws InstanceNotFoundException;
 	
 	public void updateAssignmentProfile(AssignmentProfile assignmentProfile)
 		 throws InstanceNotFoundException, InputValidationException;
