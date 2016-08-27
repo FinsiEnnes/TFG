@@ -23,7 +23,6 @@ import es.udc.rs.app.model.domain.AssignmentMaterial;
 import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
 import es.udc.rs.app.model.domain.HistoryPerson;
-import es.udc.rs.app.model.domain.Material;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.Workload;
 import es.udc.rs.app.model.util.FindInstanceService;
@@ -226,22 +225,14 @@ public class AssignmentServiceImpl implements AssignmentService {
 	public Long createAssignmentMaterial(AssignmentMaterial assignmentMaterial) 
 			throws InstanceNotFoundException, InputValidationException {
 		
-		// Get the ids
-		Long idTask = assignmentMaterial.getTask().getId();
-		Long idMaterial = assignmentMaterial.getMaterial().getId();
 		Long id;
-		
-		// First check if the Task and the Material exists
-		if (!taskDAO.TaskExists(idTask)) {
-			throw new InstanceNotFoundException(idTask, Task.class.getName());
-		}
-		
-		if (!materialDAO.MaterialExists(idMaterial)) {
-			throw new InstanceNotFoundException(idMaterial, Material.class.getName());
-		}
 		
 		// Validate the data assignmentMaterial
 		validateAssignmentMaterial(assignmentMaterial);
+		
+		// Check if the Task and the Material exists
+		findInstanceService.findTask(assignmentMaterial.getTask());
+		findInstanceService.findMaterial(assignmentMaterial.getMaterial());
 		
 		// If it is correct, now create the assignmentMaterial
 		try{
@@ -285,9 +276,12 @@ public class AssignmentServiceImpl implements AssignmentService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<AssignmentMaterial> findAssignmentMaterialByTask(Task task) {
+	public List<AssignmentMaterial> findAssignmentMaterialByTask(Task task) throws InstanceNotFoundException {
 		
 		List<AssignmentMaterial> assigMaterials = new ArrayList<AssignmentMaterial>();
+		
+		// Check if the Task exists
+		findInstanceService.findTask(task);
 		
 		// Find by task
 		try{
@@ -307,9 +301,13 @@ public class AssignmentServiceImpl implements AssignmentService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<AssignmentMaterial> findAssignmentMaterialByTaskPlan(Task task) {
+	public List<AssignmentMaterial> findAssignmentMaterialByTaskPlan(Task task) 
+			throws InstanceNotFoundException {
 		
 		List<AssignmentMaterial> assigMaterials = new ArrayList<AssignmentMaterial>();
+		
+		// Check if the Task exists
+		findInstanceService.findTask(task);
 		
 		// Find by task
 		try{
@@ -330,9 +328,13 @@ public class AssignmentServiceImpl implements AssignmentService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<AssignmentMaterial> findAssignmentMaterialByTaskReal(Task task) {
+	public List<AssignmentMaterial> findAssignmentMaterialByTaskReal(Task task) 
+			throws InstanceNotFoundException {
 		
 		List<AssignmentMaterial> assigMaterials = new ArrayList<AssignmentMaterial>();
+		
+		// Check if the Task exists
+		findInstanceService.findTask(task);
 		
 		// Find by task
 		try{
@@ -356,27 +358,12 @@ public class AssignmentServiceImpl implements AssignmentService {
 	public void updateAssignmentMaterial(AssignmentMaterial assignmentMaterial) 
 		throws InstanceNotFoundException, InputValidationException {
 		
-		// Get the ids
-		Long idTask = assignmentMaterial.getTask().getId();
-		Long idMaterial = assignmentMaterial.getMaterial().getId();
-		Long id = assignmentMaterial.getId();
-		
-		// First check if the Task and the Material exists
-		if (!taskDAO.TaskExists(idTask)) {
-			throw new InstanceNotFoundException(idTask, Task.class.getName());
-		}
-		
-		if (!materialDAO.MaterialExists(idMaterial)) {
-			throw new InstanceNotFoundException(idMaterial, Material.class.getName());
-		}
+		// First check if the updated Material and the AssignmentMaterial exist
+		findInstanceService.findMaterial(assignmentMaterial.getMaterial());
+		findInstanceService.findAssignmentMaterial(assignmentMaterial);
 		
 		// Validate the data assignmentMaterial
 		validateAssignmentMaterial(assignmentMaterial);
-		
-		// Check if the AssignmentMaterial exists
-		if (!assigMatDAO.AssignmentMaterialExists(id)) {
-			throw new InstanceNotFoundException(id, AssignmentMaterial.class.getName());
-		}
 		
 		// Update
 		try{
@@ -417,19 +404,11 @@ public class AssignmentServiceImpl implements AssignmentService {
 	@Transactional(value="myTransactionManager")
 	public Long createAssignmentPerson(AssignmentPerson assignmentPerson) throws InstanceNotFoundException {
 		
-		// Get the differents ids
-		Long idTask = assignmentPerson.getTask().getId();
-		Long idHPerson = assignmentPerson.getHistoryPerson().getId();
 		Long id;
 		
 		// Check if the Task and the HistoryPerson exist
-		if (!taskDAO.TaskExists(idTask)) {
-			throw new InstanceNotFoundException(idTask, Task.class.getName());
-		}
-		
-		if (!historyPersonDAO.historyPersonExists(idHPerson)) {
-			throw new InstanceNotFoundException(idHPerson, HistoryPerson.class.getName());
-		}
+		findInstanceService.findTask(assignmentPerson.getTask());
+		findInstanceService.findHistoryPerson(assignmentPerson.getHistoryPerson());
 		
 		// Now create the AssignmentPerson 
 		try{
@@ -445,6 +424,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		
 	}
 
+	
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
@@ -470,12 +450,16 @@ public class AssignmentServiceImpl implements AssignmentService {
 		return assigPerson;
 	}
 
+	
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<AssignmentPerson> findAssignmentPersonByTask(Task task) {
+	public List<AssignmentPerson> findAssignmentPersonByTask(Task task) throws InstanceNotFoundException {
 		
 		List<AssignmentPerson> assigPersons = new ArrayList<AssignmentPerson>();
+		
+		// Check if the Task exists 
+		findInstanceService.findTask(task);
 		
 		// Search by Task
 		try{
@@ -491,12 +475,17 @@ public class AssignmentServiceImpl implements AssignmentService {
 		return assigPersons;
 	}
 
+	
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<AssignmentPerson> findAssignmentPersonByPerson(HistoryPerson historyPerson) {
+	public List<AssignmentPerson> findAssignmentPersonByPerson(HistoryPerson historyPerson) 
+			throws InstanceNotFoundException {
 		
 		List<AssignmentPerson> assigPersons = new ArrayList<AssignmentPerson>();
+		
+		// Check if the HistoryPerson exists
+		findInstanceService.findHistoryPerson(historyPerson);
 		
 		// Search by HistoryPerson
 		try{
@@ -517,14 +506,9 @@ public class AssignmentServiceImpl implements AssignmentService {
 	@Transactional(value="myTransactionManager")
 	public void updateAssignmentPerson(AssignmentPerson assignmentPerson) throws InstanceNotFoundException {
 		
-		// Get the id
-		Long id = assignmentPerson.getId();
-		
 		// Check if the AssignmentPerson exists
-		if (!assigPersonDAO.AssignmentPersonExists(id)) {
-			throw new InstanceNotFoundException(id, AssignmentPerson.class.getName());
-		}
-		
+		findInstanceService.findAssignmentPerson(assignmentPerson);
+
 		// Update
 		try{
 			assigPersonDAO.update(assignmentPerson);
@@ -563,18 +547,11 @@ public class AssignmentServiceImpl implements AssignmentService {
 	@Transactional(value="myTransactionManager")
 	public Long createWorkload(Workload workload) throws InstanceNotFoundException, InputValidationException {
 		
-		Long idTask = workload.getTask().getId();
-		Long idHPerson = workload.getHistoryPerson().getId();
 		Long id;
 		
-		// First check if the Task and the HistoryPerson exists
-		if (!taskDAO.TaskExists(idTask)) {
-			throw new InstanceNotFoundException(idTask, Task.class.getName());
-		}
-		
-		if (!historyPersonDAO.historyPersonExists(idHPerson)) {
-			throw new InstanceNotFoundException(idHPerson, HistoryPerson.class.getName());
-		}
+		// Check if the Task and the HistoryPerson exist
+		findInstanceService.findTask(workload.getTask());
+		findInstanceService.findHistoryPerson(workload.getHistoryPerson());
 		
 		// Now validate the data
 		validateWorkload(workload);
@@ -622,9 +599,12 @@ public class AssignmentServiceImpl implements AssignmentService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<Workload> findWorkloadByTask(Task task) {
+	public List<Workload> findWorkloadByTask(Task task) throws InstanceNotFoundException {
 		
 		List<Workload> workloads = new ArrayList<Workload>();
+		
+		// Check if the Task exists
+		findInstanceService.findTask(task);
 		
 		// Find the Workloads by Task
 		try{
@@ -644,9 +624,13 @@ public class AssignmentServiceImpl implements AssignmentService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<Workload> findWorkloadByHistoryPerson(HistoryPerson historyPerson) {
+	public List<Workload> findWorkloadByHistoryPerson(HistoryPerson historyPerson) 
+			throws InstanceNotFoundException {
 		
 		List<Workload> workloads = new ArrayList<Workload>();
+		
+		// Check if the historyPerson exists
+		findInstanceService.findHistoryPerson(historyPerson);
 		
 		// Find the Workloads by Task
 		try{
@@ -667,13 +651,9 @@ public class AssignmentServiceImpl implements AssignmentService {
 	@Override
 	@Transactional(value="myTransactionManager")
 	public void updateWorkload(Workload workload) throws InstanceNotFoundException, InputValidationException {
-		
-		Long id = workload.getId();
-		
+				
 		// Check if this workload exists 
-		if (!workloadDAO.WorkloadExists(id)) {
-			throw new InstanceNotFoundException(id, Workload.class.getName());
-		}
+		findInstanceService.findWorkload(workload);
 		
 		// Validate the updated data
 		validateWorkload(workload);

@@ -9,4 +9,6 @@ public interface BusinessCategoryDAO {
 	public BusinessCategory find(String id);
 	
 	public List<BusinessCategory> findAll();	
+	
+	public boolean businessCategoryExists(String id);
 }

@@ -35,7 +35,7 @@ public class MilestoneDAOImpl implements MilestoneDAO {
 	}
 
 	@Override
-	public boolean MilestoneExists(Long id) {
+	public boolean milestoneExists(Long id) {
 		// Create the criteria in function of the id.
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Milestone.class);
 		criteria.add(Restrictions.eq("id", id));

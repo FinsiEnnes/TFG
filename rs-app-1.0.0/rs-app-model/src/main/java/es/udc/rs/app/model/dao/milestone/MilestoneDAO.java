@@ -8,7 +8,7 @@ public interface MilestoneDAO {
 	
 	public Milestone find(Long id);
 				
-	public boolean MilestoneExists(Long id);
+	public boolean milestoneExists(Long id);
 	
 	public void update(Milestone milestone);
 	

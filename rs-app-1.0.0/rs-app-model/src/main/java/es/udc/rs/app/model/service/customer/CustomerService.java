@@ -23,7 +23,7 @@ public interface CustomerService {
 		
 	public List<Province> findAllProvinces();
 	
-	public List<Province> findProvinceByCountry(Country country);
+	public List<Province> findProvinceByCountry(Country country) throws InstanceNotFoundException;
 	
 	
 	// ========================= BusinessType operations ==========================
@@ -45,9 +45,9 @@ public interface CustomerService {
 	
 	
 	// =========================== Customer operations ============================
-	public Long createCustomer(Customer customer);
+	public Long createCustomer(Customer customer) throws InstanceNotFoundException;
 	
-	public Customer findCustomer(Long id)  throws InstanceNotFoundException;
+	public Customer findCustomer(Long id) throws InstanceNotFoundException;
 	
 	public List<Customer> findAllCustomers();
 		

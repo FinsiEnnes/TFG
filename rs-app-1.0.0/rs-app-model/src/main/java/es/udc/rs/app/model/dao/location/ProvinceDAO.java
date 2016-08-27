@@ -12,4 +12,6 @@ public interface ProvinceDAO {
 	public List<Province> findAll();
 	
 	public List<Province> findByCountry(Country country);
+	
+	public boolean ProvinceExists(Long id);
 }

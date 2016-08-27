@@ -9,4 +9,6 @@ public interface CountryDAO {
 	public Country find(String id);
 	
 	public List<Country> findAll();
+	
+	public boolean countryExists(String id);
 }

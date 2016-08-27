@@ -1002,7 +1002,7 @@ public class ProjectServiceImpl implements ProjectService {
 		Long id = milestone.getId();
 		
 		// First we check if the milestone exists
-		if (!milestoneDAO.MilestoneExists(id)) {
+		if (!milestoneDAO.milestoneExists(id)) {
 			throw new InstanceNotFoundException(id, Milestone.class.getName());
 		}
 		

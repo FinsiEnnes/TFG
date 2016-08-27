@@ -9,4 +9,6 @@ public interface BusinessSizeDAO {
 	public BusinessSize find(String id);
 	
 	public List<BusinessSize> findAll();
+	
+	public boolean businessSizeExists(String id);
 }

@@ -2,7 +2,10 @@ package es.udc.rs.app.model.dao.business;
 
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -29,6 +32,19 @@ public class BusinessTypeDAOImpl implements BusinessTypeDAO {
 													 				.createQuery(query).list();
 		
 		return bts;
+	}
+
+	@Override
+	public boolean businessTypeExists(String id) {
+		// Create the criteria in function of the id.
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(BusinessType.class);
+		criteria.add(Restrictions.eq("id", id));
+		criteria.setProjection(Projections.rowCount());
+		
+		// Get the number of rows.
+	    long count = (Long) criteria.uniqueResult();
+	    
+	    return (count==1L);	
 	}
 	
 

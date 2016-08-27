@@ -22,6 +22,8 @@ import es.udc.rs.app.model.domain.BusinessType;
 import es.udc.rs.app.model.domain.Country;
 import es.udc.rs.app.model.domain.Customer;
 import es.udc.rs.app.model.domain.Province;
+import es.udc.rs.app.model.util.FindInstanceService;
+import es.udc.rs.app.model.util.ModelConstants;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -49,6 +51,10 @@ public class CustomerServiceImpl implements CustomerService {
 	@Autowired
 	private CustomerDAO customerDAO;
 	
+	// Assistant service
+	@Autowired
+	private FindInstanceService findInstanceService;
+	
 	
 	// ============================================================================
 	// ============================ Country operations ============================
@@ -72,7 +78,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw new InstanceNotFoundException(id, Country.class.getName());
 		}
 		
-		log.info("Successfull search by id: "+country.toString());
+		log.info(ModelConstants.FIND_ID + country.toString());
 		return country;
 	}
 	
@@ -91,7 +97,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw e;
 		}
 		
-		log.info("There are a total of "+countries.size()+ " registred countries.");
+		log.info(ModelConstants.FIND_ALL + countries.size() + " registred countries");
 		return countries;
 	} 
 
@@ -117,7 +123,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw new InstanceNotFoundException(id, Province.class.getName());
 		}
 		
-		log.info("Successfull search by id: "+province.toString());
+		log.info(ModelConstants.FIND_ID + province.toString());
 		return province;
 	}
 
@@ -128,7 +134,7 @@ public class CustomerServiceImpl implements CustomerService {
 		
 		List<Province> provinces = new ArrayList<Province>();
 		
-		// Find all the Provinces by id.
+		// Find all the Provinces.
 		try {
 			provinces = provinceDAO.findAll();
 		} 
@@ -136,17 +142,20 @@ public class CustomerServiceImpl implements CustomerService {
 			throw e;
 		}
 		
-		log.info("There are a total of "+provinces.size()+ " registred provinces.");
+		log.info(ModelConstants.FIND_ALL + provinces.size()+ " registred provinces.");
 		return provinces;
 	}
 	
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<Province> findProvinceByCountry(Country country) {
+	public List<Province> findProvinceByCountry(Country country) throws InstanceNotFoundException {
 		List<Province> provinces = new ArrayList<Province>();
 		
-		// Find all the Provinces by id.
+		// Check if the Country exists
+		findInstanceService.findCountry(country);
+		
+		// Find all the Provinces by Country.
 		try {
 			provinces = provinceDAO.findByCountry(country);
 		} 
@@ -154,7 +163,8 @@ public class CustomerServiceImpl implements CustomerService {
 			throw e;
 		}
 		
-		log.info("There are a total of "+provinces.size()+ " registred provinces in."+country.getName());
+		log.info(ModelConstants.FIND_ALL + provinces.size()+ " registred provinces in the Country"
+				+ " with nameCountry[" + country.getName() + "]");
 		return provinces;
 	}
 	
@@ -181,7 +191,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw new InstanceNotFoundException(id, BusinessType.class.getName());
 		}
 
-		log.info("Successfull search by id: "+bt.toString());
+		log.info(ModelConstants.FIND_ID + bt.toString());
 		return bt;
 
 	}
@@ -201,7 +211,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw e;
 		}
 		
-		log.info("There are a total of "+bts.size()+ " registred business types");
+		log.info(ModelConstants.FIND_ALL + " registred business types");
 		return bts;
 	}
 	
@@ -228,7 +238,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw new InstanceNotFoundException(id, BusinessCategory.class.getName());
 		}
 
-		log.info("Successfull search by id: "+businessCatg.toString());
+		log.info(ModelConstants.FIND_ID + businessCatg.toString());
 		return businessCatg;
 	}
 	
@@ -247,7 +257,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw e;
 		}
 		
-		log.info("There are a total of "+businessCatgs.size()+ " registred business categories");
+		log.info(ModelConstants.FIND_ALL + " registred business categories");
 		return businessCatgs;
 	}
 	
@@ -273,7 +283,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw new InstanceNotFoundException(id, BusinessSize.class.getName());
 		}
 
-		log.info("Successfull search by id: "+businessSize.toString());
+		log.info(ModelConstants.FIND_ID + businessSize.toString());
 		return businessSize;
 	}
 	
@@ -292,7 +302,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw e;
 		}
 		
-		log.info("There are a total of "+businessSizes.size()+ " registred business sizes");
+		log.info(ModelConstants.FIND_ALL + " registred business sizes");
 		return businessSizes;
 	}
 	
@@ -302,8 +312,14 @@ public class CustomerServiceImpl implements CustomerService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public Long createCustomer(Customer customer) {
+	public Long createCustomer(Customer customer) throws InstanceNotFoundException {
 		Long id = null;
+		
+		// Check if exist the Province and the business attributes
+		findInstanceService.findProvince(customer.getProvince());
+		findInstanceService.findBusinessCategory(customer.getCategory());
+		findInstanceService.findBusinessSize(customer.getSize());
+		findInstanceService.findBusinessType(customer.getType());
 		
 		try{
 			id = customerDAO.create(customer);
@@ -312,7 +328,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw e;
 		}
 		
-		log.info("Successfull insertion: "+customer.toString());
+		log.info(ModelConstants.CREATE + customer.toString());
 		return id;
 	}
 	
@@ -333,7 +349,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw new InstanceNotFoundException(id, Customer.class.getName()); 
 		}
 		
-		log.info("Successfull search by id: "+customer.toString());
+		log.info(ModelConstants.FIND_ID + customer.toString());
 		return customer;
 	}
 	
@@ -350,7 +366,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw e;
 		}
 		
-		log.info("There are a total of "+customers.size()+ " registred customers.");
+		log.info(ModelConstants.FIND_ALL + " registred customers.");
 		return customers;
 	}
 	
@@ -367,7 +383,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw e;
 		}
 		
-		log.info("There are a total of "+customers.size()+ " registred customers with name like "+name+".");
+		log.info(ModelConstants.FIND_ALL + customers.size()+ " registred customers with name like "+name+".");
 		return customers;
 	}
 		
@@ -376,11 +392,8 @@ public class CustomerServiceImpl implements CustomerService {
 	@Transactional(value="myTransactionManager")
 	public void updateCustomer(Customer customer) throws InstanceNotFoundException {
 		
-		Long idCustomer = customer.getId();
-		
-		if (!customerDAO.CustomerExists(idCustomer)) {
-			throw new InstanceNotFoundException(idCustomer, Customer.class.getName());
-		}
+		// Check if the customer exists
+		findInstanceService.findCustomer(customer);
 		
 		try{
 			customerDAO.update(customer);
@@ -389,7 +402,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw e;
 		}
 		
-		log.info("Successfull updated: "+customer.toString());
+		log.info(ModelConstants.UPDATE + customer.toString());
 	}
 	
 	// ============================================================================
@@ -406,7 +419,7 @@ public class CustomerServiceImpl implements CustomerService {
 			throw e;
 		}
 		
-		log.info("Successfull deleted: "+customer.toString());
+		log.info(ModelConstants.DELETE + customer.toString());
 	}
 
 }

@@ -33,11 +33,11 @@ public interface AssignmentService {
 	
 	public AssignmentMaterial findAssignmentMaterial(Long id) throws InstanceNotFoundException;
 	
-	public List<AssignmentMaterial> findAssignmentMaterialByTask(Task task);
+	public List<AssignmentMaterial> findAssignmentMaterialByTask(Task task) throws InstanceNotFoundException;
 	
-	public List<AssignmentMaterial> findAssignmentMaterialByTaskPlan(Task task);
+	public List<AssignmentMaterial> findAssignmentMaterialByTaskPlan(Task task) throws InstanceNotFoundException;
 	
-	public List<AssignmentMaterial> findAssignmentMaterialByTaskReal(Task task);
+	public List<AssignmentMaterial> findAssignmentMaterialByTaskReal(Task task) throws InstanceNotFoundException;
 					
 	public void updateAssignmentMaterial(AssignmentMaterial assignmentMaterial)
 		throws InstanceNotFoundException, InputValidationException;
@@ -50,9 +50,10 @@ public interface AssignmentService {
 	
 	public AssignmentPerson findAssignmentPerson(Long id) throws InstanceNotFoundException;
 	
-	public List<AssignmentPerson> findAssignmentPersonByTask(Task task);
+	public List<AssignmentPerson> findAssignmentPersonByTask(Task task) throws InstanceNotFoundException;
 	
-	public List<AssignmentPerson> findAssignmentPersonByPerson(HistoryPerson historyPerson);
+	public List<AssignmentPerson> findAssignmentPersonByPerson(HistoryPerson historyPerson)
+			throws InstanceNotFoundException;
 					
 	public void updateAssignmentPerson(AssignmentPerson assignmentPerson) throws InstanceNotFoundException;
 	
@@ -64,9 +65,9 @@ public interface AssignmentService {
 	
 	public Workload findWorkload(Long id) throws InstanceNotFoundException;
 	
-	public List<Workload> findWorkloadByTask(Task task);
+	public List<Workload> findWorkloadByTask(Task task) throws InstanceNotFoundException;
 	
-	public List<Workload> findWorkloadByHistoryPerson(HistoryPerson historyPerson);
+	public List<Workload> findWorkloadByHistoryPerson(HistoryPerson historyPerson) throws InstanceNotFoundException;
 					
 	public void updateWorkload(Workload workload) throws InstanceNotFoundException, InputValidationException;
 	
