@@ -23,7 +23,7 @@ import es.udc.rs.app.model.domain.TaskLinkType;
 public interface ProjectService {
 
 	// ============================ Project operations ============================
-	public Long createProject(Project project) throws InputValidationException;
+	public Long createProject(Project project) throws InstanceNotFoundException, InputValidationException;
 	
 	public Project findProject(Long id) throws InstanceNotFoundException;
 	

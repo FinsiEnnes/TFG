@@ -141,9 +141,12 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public Long createProject(Project project) throws InputValidationException {
+	public Long createProject(Project project) throws InputValidationException, InstanceNotFoundException {
 		
 		Long id;
+		
+		// Check if the Province exists
+		findInstanceService.findProvince(project.getProvince());
 		
 		// Validate the project data
 		validateProject(project);
@@ -319,13 +322,8 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(value="myTransactionManager")
 	public void updateFreeDay(FreeDay freeDay) throws InputValidationException, InstanceNotFoundException {
 		
-		// Get the id
-		Long id = freeDay.getId();
-		
 		// Check if the FreeDay exists 
-		if (!freeDayDAO.FreeDayExists(id)) {
-			throw new InstanceNotFoundException(id, FreeDay.class.getName());
-		}
+		findInstanceService.findFreeDay(freeDay);
 		
 		// Now validate the updated FreeDay
 		validateFreeDay(freeDay);

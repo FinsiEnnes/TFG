@@ -72,14 +72,15 @@ public interface PersonService {
 	
 	
 	// ====================== ProfessionalCategory operations =====================
-	public Long createProfessionalCategory(ProfessionalCategory profCtg)  throws InputValidationException;
+	public Long createProfessionalCategory(ProfessionalCategory profCtg)
+			throws InstanceNotFoundException, InputValidationException;
 	
 	public ProfessionalCategory findProfessionalCategory(Long id) throws InstanceNotFoundException;
 	
 	public List<ProfessionalCategory> findAllProfessionalCategories();
 	
 	public List<ProfessionalCategory> findProfessionalCategoryByNameAndLevel(String name, LevelProfCatg level)
-			throws InputValidationException;
+			throws InstanceNotFoundException, InputValidationException;
 		
 	public void updateProfessionalCategory(ProfessionalCategory profCtg)  
 			throws InstanceNotFoundException, InputValidationException;
@@ -88,15 +89,16 @@ public interface PersonService {
 	
 	
 	// ========================= HistoryPerson operations =========================
-	public Long createHistoryPerson(HistoryPerson historyPerson) throws InputValidationException;
+	public Long createHistoryPerson(HistoryPerson historyPerson) 
+			throws InstanceNotFoundException, InputValidationException;
 	
 	public HistoryPerson findHistoryPerson(Long id) throws InstanceNotFoundException;
 	
 	public List<HistoryPerson> findAllHistoryPerson();
 	
-	public List<HistoryPerson> findHistoryPersonByPerson(Person person);
+	public List<HistoryPerson> findHistoryPersonByPerson(Person person) throws InstanceNotFoundException;
 	
-	public List<HistoryPerson> findHistoryPersonByProfCatg(ProfessionalCategory profcatg);
+	public List<HistoryPerson> findHistoryPersonByProfCatg(ProfessionalCategory profcatg) throws InstanceNotFoundException;
 	
 	public void updateHistoryPerson(HistoryPerson historyPerson) throws InstanceNotFoundException;
 	

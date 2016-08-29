@@ -13,6 +13,7 @@ import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.dao.material.MaterialDAO;
 import es.udc.rs.app.model.domain.Material;
+import es.udc.rs.app.model.util.FindInstanceService;
 import es.udc.rs.app.model.util.ModelConstants;
 import es.udc.rs.app.validation.PropertyValidator;
 
@@ -26,6 +27,9 @@ public class MaterialServiceImpl implements MaterialService {
 	// ============================================================================
 	@Autowired
 	private MaterialDAO materialDAO;
+	
+	@Autowired
+	private FindInstanceService findInstanceService;
 	
 	
 	private void validateMaterial(Material material) throws InputValidationException { 
@@ -125,13 +129,9 @@ public class MaterialServiceImpl implements MaterialService {
 	@Override
 	@Transactional(value="myTransactionManager")
 	public void updateMaterial(Material material) throws InstanceNotFoundException {
-
-		Long id = material.getId();
 		
 		// Check if the material exits
-		if (!materialDAO.MaterialExists(id)) {
-			throw new InstanceNotFoundException(id, Material.class.getName());
-		}
+		findInstanceService.findMaterial(material);
 		
 		// Now update
 		try{

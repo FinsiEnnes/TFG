@@ -25,6 +25,8 @@ import es.udc.rs.app.model.domain.LevelProfCatg;
 import es.udc.rs.app.model.domain.Person;
 import es.udc.rs.app.model.domain.ProfessionalCategory;
 import es.udc.rs.app.model.domain.TimeOff;
+import es.udc.rs.app.model.util.FindInstanceService;
+import es.udc.rs.app.model.util.ModelConstants;
 import es.udc.rs.app.validation.PropertyValidator;
 
 @Service
@@ -55,6 +57,10 @@ public class PersonServiceImpl implements PersonService{
 	
 	@Autowired
 	private HistoryPersonDAO historyPersonDAO;
+	
+	// Attendance service
+	@Autowired
+	private FindInstanceService findInstanceService;
 	
 	
 	// ============================================================================
@@ -113,7 +119,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 		
-		log.info("Successfull insertion: "+person.toString());
+		log.info(ModelConstants.CREATE + person.toString());
 		return idPerson;
 	}
 
@@ -137,7 +143,7 @@ public class PersonServiceImpl implements PersonService{
 			throw new InstanceNotFoundException(id, Person.class.getName());
 		}
 		
-		log.info("Successfull search by id: "+person.toString());
+		log.info(ModelConstants.FIND_ID + person.toString());
 		return person;
 	}
 	
@@ -156,7 +162,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 
-		log.info("There are a total of "+persons.size()+ " registred persons.");
+		log.info(ModelConstants.FIND_ALL + persons.size() + " registred persons");
 		return persons;
 	}
 	
@@ -183,7 +189,7 @@ public class PersonServiceImpl implements PersonService{
 			throw new InstanceNotFoundException("nif="+nif, Person.class.getName());
 		}
 		
-		log.info("Successfull search by nif: "+person.toString());
+		log.info(ModelConstants.FIND_NIF + person.toString());
 		return person;
 	}
 	
@@ -220,10 +226,8 @@ public class PersonServiceImpl implements PersonService{
 	public void updatePerson(Person person) throws InstanceNotFoundException, InputValidationException {
 		
 		// First we must check if this person is registered.
-		if (!personDAO.personExists(person.getId())) {
-			throw new InstanceNotFoundException(person.getId(), Person.class.getName());
-		}
-		
+		findInstanceService.findPerson(person);
+
 		// Validate the data Person.
 		validatePerson(person);
 		
@@ -235,7 +239,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 		
-		log.info("Successfull updated: "+person.toString());
+		log.info(ModelConstants.UPDATE + person.toString());
 	}
 
 	// ============================================================================
@@ -254,7 +258,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}	
 		
-		log.info("Successfull deleted: "+person.toString());
+		log.info(ModelConstants.DELETE + person.toString());
 	}
 	
 	
@@ -265,13 +269,10 @@ public class PersonServiceImpl implements PersonService{
 	@Transactional(value="myTransactionManager")
 	public Long createTimeOff(TimeOff timeoff) throws InstanceNotFoundException {
 		
-		Long idPerson = timeoff.getPerson().getId();
 		Long idTimeOff = null;
 		
 		// First, we must check if the Person exits.
-		if (!personDAO.personExists(idPerson)) {
-			throw new InstanceNotFoundException(idPerson, Person.class.getName());
-		}
+		findInstanceService.findPerson(timeoff.getPerson());
 	
 		// In this case we don't need to validate the data, so we create the TimeOff.
 		try{
@@ -281,7 +282,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 		
-		log.info("Successfull insertion: "+timeoff.toString());
+		log.info(ModelConstants.CREATE + timeoff.toString());
 		return idTimeOff;
 	}
 	
@@ -306,7 +307,7 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("Successfull search by id: "+timeoff.toString());
+		log.info(ModelConstants.FIND_ID + timeoff.toString());
 		return timeoff;
 		
 	}
@@ -327,7 +328,7 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("There are a total of "+timeoffs.size()+ " registred times off.");
+		log.info(ModelConstants.FIND_ALL + timeoffs.size()+ " registred times off.");
 		return timeoffs;
 	}
 	
@@ -337,12 +338,9 @@ public class PersonServiceImpl implements PersonService{
 	public List<TimeOff> findTimeOffByPerson(Person person) throws InstanceNotFoundException{
 		
 		List<TimeOff> timeoffs = new ArrayList<TimeOff>();
-		Long idPerson = person.getId();
 		
 		// First, we must check if the Person exits.
-		if (!personDAO.personExists(idPerson)) {
-			throw new InstanceNotFoundException(idPerson, Person.class.getName());
-		}
+		findInstanceService.findPerson(person);
 
 		// Find TimeOffs by the id person.
 		try{
@@ -353,7 +351,8 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("There are a total of "+timeoffs.size()+ " times off for this "+person.toString());
+		log.info(ModelConstants.FIND_ALL + timeoffs.size()+ " times off for the Person "
+				+ "with idPerson[" + person.getId() + "]");
 		return timeoffs;
 	}
 	
@@ -361,19 +360,10 @@ public class PersonServiceImpl implements PersonService{
 	@Override
 	@Transactional(value="myTransactionManager")
 	public void updateTimeOff(TimeOff timeoff) throws InstanceNotFoundException {
-		
-		Long id = timeoff.getId();
-		Long idPerson = timeoff.getPerson().getId();
 			
-		// Checks if the instance exists.
-		if (!timeoffDAO.timeoffExists(id)) {
-			throw new InstanceNotFoundException(id, Person.class.getName());
-		}
-		
-		// Checks if the Person exits.
-		if (!personDAO.personExists(idPerson)) {
-			throw new InstanceNotFoundException(idPerson, Person.class.getName());
-		}
+		// Checks if the instance and the Person exist.
+		findInstanceService.findTimeoff(timeoff);
+		findInstanceService.findPerson(timeoff.getPerson());
 		
 		try{
 			timeoffDAO.update(timeoff);
@@ -382,7 +372,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 		
-		log.info("Successfull updated: "+timeoff.toString());
+		log.info(ModelConstants.UPDATE + timeoff.toString());
 	}
 	
 	// ============================================================================
@@ -401,7 +391,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}	
 
-		log.info("Successfull deleted: "+timeoff.toString());	
+		log.info(ModelConstants.DELETE + timeoff.toString());	
 	}
 
 	
@@ -428,7 +418,7 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("Successfull search by id: "+aptitudeType.toString());
+		log.info(ModelConstants.FIND_ID + aptitudeType.toString());
 		return aptitudeType;
 	}
 	
@@ -447,7 +437,7 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("There are a total of "+aptitudeTypes.size()+ " aptitude types.");
+		log.info(ModelConstants.FIND_ALL + aptitudeTypes.size()+ " aptitude types.");
 		return aptitudeTypes;
 		
 	}
@@ -460,26 +450,23 @@ public class PersonServiceImpl implements PersonService{
 	@Transactional(value="myTransactionManager")
 	public Long createAptitude(Aptitude aptitude) throws InstanceNotFoundException, InputValidationException {
 		
-		Long idPerson = aptitude.getPerson().getId();
 		Long idAptitude = null;
 		
 		// First, we check the Aptitude data
 		validateAptitude(aptitude);
 		
 		// We must check if the Person exits.
-		if (!personDAO.personExists(idPerson)) {
-			throw new InstanceNotFoundException(idPerson, Person.class.getName());
-		}
+		findInstanceService.findPerson(aptitude.getPerson());
 	
 		// We create the Aptitude.
 		try{
-			idAptitude = aptitudeDAO.create(aptitude);			
-			log.info("Successfull insertion: "+aptitude.toString());
+			idAptitude = aptitudeDAO.create(aptitude);				
 		}
 		catch (DataAccessException e){
 			throw e;
 		}
 		
+		log.info(ModelConstants.CREATE + aptitude.toString());
 		return idAptitude;
 	}
 	
@@ -504,7 +491,7 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("Successfull search by id: "+aptitude.toString());
+		log.info(ModelConstants.FIND_ID + aptitude.toString());
 		return aptitude;
 		
 	}
@@ -525,7 +512,7 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("There are a total of "+aptitudes.size()+ " registred aptitudes.");
+		log.info(ModelConstants.FIND_ALL + aptitudes.size()+ " registred aptitudes");
 		return aptitudes;
 	}
 	
@@ -535,12 +522,9 @@ public class PersonServiceImpl implements PersonService{
 	public List<Aptitude> findAptitudeByPerson(Person person) throws InstanceNotFoundException{
 		
 		List<Aptitude> aptitudes = new ArrayList<Aptitude>();
-		Long idPerson = person.getId();
 		
 		// First, we must check if the Person exits.
-		if (!personDAO.personExists(idPerson)) {
-			throw new InstanceNotFoundException(idPerson, Person.class.getName());
-		}
+		findInstanceService.findPerson(person);
 
 		// Find aptitudes by the id person.
 		try{
@@ -551,7 +535,8 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("There are a total of "+aptitudes.size()+ " aptitudes for this "+person.toString());
+		log.info(ModelConstants.FIND_ALL + aptitudes.size()+ " aptitudes for the Person "
+				+ "with idPerson[" + person.getId() + "]");
 		return aptitudes;
 	}
 	
@@ -560,18 +545,9 @@ public class PersonServiceImpl implements PersonService{
 	@Transactional(value="myTransactionManager")
 	public void updateAptitude(Aptitude aptitude) throws InstanceNotFoundException, InputValidationException {
 		
-		Long id = aptitude.getId();
-		Long idPerson = aptitude.getPerson().getId();
-		
-		// Check if the instance exists.
-		if (!aptitudeDAO.aptitudeExists(id)) {
-			throw new InstanceNotFoundException(id, Aptitude.class.getName());
-		}
-		
-		// Also we check if the Person exits.
-		if (!personDAO.personExists(idPerson)) {
-			throw new InstanceNotFoundException(idPerson, Person.class.getName());
-		}
+		// Check if the Aptitude and the Person exist.
+		findInstanceService.findAptitude(aptitude);
+		findInstanceService.findPerson(aptitude.getPerson());
 		
 		// Now, we check the Aptitude data
 		validateAptitude(aptitude);
@@ -583,8 +559,9 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		} 
 
-		log.info("Successfull updated: "+aptitude.toString());
+		log.info(ModelConstants.UPDATE + aptitude.toString());
 	}
+	
 	
 	// ============================================================================
 	@Override
@@ -602,7 +579,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}	
 		
-		log.info("Successfull deleted: "+aptitude.toString());
+		log.info(ModelConstants.DELETE + aptitude.toString());
 	}
 	
 	// ============================================================================
@@ -628,7 +605,7 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("Successfull search by id: "+lpc.toString());
+		log.info(ModelConstants.FIND_ID + lpc.toString());
 		return lpc;
 	}
 	
@@ -646,7 +623,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 
-		log.info("There are a total of "+lpcs.size()+ " aptitude types.");
+		log.info(ModelConstants.FIND_ALL + lpcs.size() + " aptitude types.");
 		return lpcs;
 	}
 	
@@ -656,9 +633,13 @@ public class PersonServiceImpl implements PersonService{
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public Long createProfessionalCategory(ProfessionalCategory profCtg)  throws InputValidationException {
+	public Long createProfessionalCategory(ProfessionalCategory profCtg)  
+			throws InputValidationException, InstanceNotFoundException {
 		
 		Long id = null;
+		
+		// Check if the LevelProfCatg exists
+		findInstanceService.findLevelProfCatg(profCtg.getLevel());
 		
 		// We validate the data.
 		validateProfessionalCategory(profCtg);
@@ -672,14 +653,14 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("Successfull insertion: "+profCtg.toString());
+		log.info(ModelConstants.CREATE + profCtg.toString());
 		return id;
 	}
 
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public ProfessionalCategory findProfessionalCategory(Long id)  throws InstanceNotFoundException {
+	public ProfessionalCategory findProfessionalCategory(Long id) throws InstanceNotFoundException {
 		
 		ProfessionalCategory pc = null;
 		
@@ -695,7 +676,7 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("Successfull search by id: "+pc.toString());
+		log.info(ModelConstants.FIND_ID + pc.toString());
 		return pc;
 	}
 
@@ -713,7 +694,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 		
-		log.info("There are a total of "+pcs.size()+ " registred professional categories.");
+		log.info(ModelConstants.FIND_ALL + pcs.size()+ " registred professional categories.");
 		return pcs;
 	}
 	
@@ -721,13 +702,18 @@ public class PersonServiceImpl implements PersonService{
 	@Override
 	@Transactional(value="myTransactionManager")
 	public List<ProfessionalCategory> findProfessionalCategoryByNameAndLevel(String name, LevelProfCatg level)
-		throws InputValidationException {
+		throws InputValidationException, InstanceNotFoundException {
 		
+		List<ProfessionalCategory> pcs = new ArrayList<ProfessionalCategory>();
+		
+		// Check the name and level
 		if (name == null && level == null) {
 			throw new InputValidationException("At least one of the params (name or level) must be not null.");
 		}
 		
-		List<ProfessionalCategory> pcs = new ArrayList<ProfessionalCategory>();
+		if (level!=null) {
+			findInstanceService.findLevelProfCatg(level);
+		}
 		
 		try{
 			pcs = profCatgDAO.findByNameAndLevel(name, level);	
@@ -746,7 +732,7 @@ public class PersonServiceImpl implements PersonService{
 			msg = "name["+name+"] and level["+level.getName()+"]";
 		}
 		
-		log.info("There are a total of "+pcs.size()+ " professional categories with "+msg+".");
+		log.info(ModelConstants.FIND_ALL + pcs.size()+ " professional categories with "+msg+".");
 		return pcs;
 	}
 		
@@ -757,9 +743,7 @@ public class PersonServiceImpl implements PersonService{
 			throws InstanceNotFoundException, InputValidationException {
 		
 		// First we check if this professional category exists.
-		if (!profCatgDAO.ProfessionalCategoryExists(profCtg.getId())) {
-			throw new InstanceNotFoundException(profCtg.getId(), ProfessionalCategory.class.getName());
-		}
+		findInstanceService.findProfessionalCategory(profCtg);
 		
 		validateProfessionalCategory(profCtg);
 		
@@ -771,7 +755,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 		
-		log.info("Successfull updated: "+profCtg.toString());	
+		log.info(ModelConstants.UPDATE + profCtg.toString());	
 	}
 	
 	// ============================================================================
@@ -789,7 +773,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 		
-		log.info("Successfull deleted: "+pc.toString());		
+		log.info(ModelConstants.DELETE + pc.toString());		
 	}
 	
 	
@@ -798,10 +782,14 @@ public class PersonServiceImpl implements PersonService{
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public Long createHistoryPerson(HistoryPerson historyPerson) throws InputValidationException {
+	public Long createHistoryPerson(HistoryPerson historyPerson) 
+			throws InputValidationException, InstanceNotFoundException {
 		
 		Long id;
 		validateHistoryPerson(historyPerson);
+		
+		// Check if the Person exists
+		findInstanceService.findPerson(historyPerson.getPerson());
 		
 		// Now, we create the HistoryPerson.
 		try{
@@ -812,7 +800,7 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("Successfull insertion: "+historyPerson.toString());
+		log.info(ModelConstants.CREATE + historyPerson.toString());
 		return id;
 	}
 	
@@ -837,7 +825,7 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Return the result.
-		log.info("Successfull search by id: "+historyPerson.toString());
+		log.info(ModelConstants.FIND_ID + historyPerson.toString());
 		return historyPerson;
 	}
 	
@@ -856,16 +844,19 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 		
-		log.info("There are a total of "+hps.size()+ " registred person histories.");
+		log.info(ModelConstants.FIND_ALL + hps.size()+ " registred person histories.");
 		return hps;		
 	}
 	
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager") 
-	public List<HistoryPerson> findHistoryPersonByPerson(Person person) {
+	public List<HistoryPerson> findHistoryPersonByPerson(Person person) throws InstanceNotFoundException {
 		
 		List<HistoryPerson> hps = new ArrayList<HistoryPerson>();
+		
+		// Check if the Person exists
+		findInstanceService.findPerson(person);
 		
 		try{
 			hps = historyPersonDAO.findByPerson(person);
@@ -874,16 +865,21 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 		
-		log.info("This Person[id:"+person.getId()+"] has a total of "+hps.size()+ " person histories.");
+		log.info(ModelConstants.FIND_ALL + hps.size()+ " person histories for the Person"
+				+ " with idPerson[" + person.getId() + "]"); 
 		return hps;		
 	}
 	
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager") 
-	public List<HistoryPerson> findHistoryPersonByProfCatg(ProfessionalCategory profcatg) {
+	public List<HistoryPerson> findHistoryPersonByProfCatg(ProfessionalCategory profcatg) 
+			throws InstanceNotFoundException {
 		
 		List<HistoryPerson> hps = new ArrayList<HistoryPerson>();
+		
+		// Check if the ProfessionalCategory exists
+		findInstanceService.findProfessionalCategory(profcatg);
 		
 		try{
 			hps = historyPersonDAO.findByProfCatg(profcatg);
@@ -892,7 +888,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 		
-		log.info("There are a total of "+hps.size()+ 
+		log.info(ModelConstants.FIND_ALL + hps.size()+ 
 				 " person histories with this ProfessionalCategory[id:"+profcatg.getId()+"].");
 		return hps;	
 	}
@@ -903,9 +899,7 @@ public class PersonServiceImpl implements PersonService{
 	public void updateHistoryPerson(HistoryPerson historyPerson) throws InstanceNotFoundException {
 			
 		// Checks if the historyPerson exists.
-		if (!historyPersonDAO.historyPersonExists(historyPerson.getId())) {
-			throw new InstanceNotFoundException(historyPerson.getId(), HistoryPerson.class.getName());
-		}
+		findInstanceService.findHistoryPerson(historyPerson);
 		
 		// Now, we update the HistoryPerson.
 		try{
@@ -916,7 +910,7 @@ public class PersonServiceImpl implements PersonService{
 		}
 		
 		// Log the result.
-		log.info("Successfull update: "+historyPerson.toString());
+		log.info(ModelConstants.UPDATE + historyPerson.toString());
 	}
 	
 	// ============================================================================
@@ -934,16 +928,7 @@ public class PersonServiceImpl implements PersonService{
 			throw e;
 		}
 		
-		log.info("Successfull delete: "+historyPerson.toString());
+		log.info(ModelConstants.DELETE + historyPerson.toString());
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

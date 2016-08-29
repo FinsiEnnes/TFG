@@ -9,5 +9,7 @@ public interface LevelProfCatgDAO {
 	public LevelProfCatg find(String id);
 	
 	public List<LevelProfCatg> findAll();
+	
+	public boolean levelProfCatgExists(String id);
 
 }

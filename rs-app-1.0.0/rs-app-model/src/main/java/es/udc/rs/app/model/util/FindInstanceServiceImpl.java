@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
+import es.udc.rs.app.model.dao.aptitude.AptitudeDAO;
 import es.udc.rs.app.model.dao.assignmentmaterial.AssignmentMaterialDAO;
 import es.udc.rs.app.model.dao.assignmentperson.AssignmentPersonDAO;
 import es.udc.rs.app.model.dao.assignmentprofile.AssignmentProfileDAO;
@@ -12,16 +13,21 @@ import es.udc.rs.app.model.dao.business.BusinessCategoryDAO;
 import es.udc.rs.app.model.dao.business.BusinessSizeDAO;
 import es.udc.rs.app.model.dao.business.BusinessTypeDAO;
 import es.udc.rs.app.model.dao.customer.CustomerDAO;
+import es.udc.rs.app.model.dao.freeday.FreeDayDAO;
 import es.udc.rs.app.model.dao.historyperson.HistoryPersonDAO;
 import es.udc.rs.app.model.dao.incident.IncidentDAO;
 import es.udc.rs.app.model.dao.location.CountryDAO;
 import es.udc.rs.app.model.dao.location.ProvinceDAO;
 import es.udc.rs.app.model.dao.material.MaterialDAO;
+import es.udc.rs.app.model.dao.person.PersonDAO;
+import es.udc.rs.app.model.dao.profctg.LevelProfCatgDAO;
 import es.udc.rs.app.model.dao.profctg.ProfessionalCategoryDAO;
 import es.udc.rs.app.model.dao.project.ProjectDAO;
 import es.udc.rs.app.model.dao.task.TaskDAO;
 import es.udc.rs.app.model.dao.taskincident.TaskIncidentDAO;
+import es.udc.rs.app.model.dao.timeoff.TimeOffDAO;
 import es.udc.rs.app.model.dao.workload.WorkloadDAO;
+import es.udc.rs.app.model.domain.Aptitude;
 import es.udc.rs.app.model.domain.AssignmentMaterial;
 import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
@@ -30,14 +36,18 @@ import es.udc.rs.app.model.domain.BusinessSize;
 import es.udc.rs.app.model.domain.BusinessType;
 import es.udc.rs.app.model.domain.Country;
 import es.udc.rs.app.model.domain.Customer;
+import es.udc.rs.app.model.domain.FreeDay;
 import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.Incident;
+import es.udc.rs.app.model.domain.LevelProfCatg;
 import es.udc.rs.app.model.domain.Material;
+import es.udc.rs.app.model.domain.Person;
 import es.udc.rs.app.model.domain.ProfessionalCategory;
 import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.Province;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TaskIncident;
+import es.udc.rs.app.model.domain.TimeOff;
 import es.udc.rs.app.model.domain.Workload;
 
 @Service
@@ -67,6 +77,9 @@ public class FindInstanceServiceImpl implements FindInstanceService {
 	@Autowired
 	private ProjectDAO projectDAO;
 	
+	@Autowired
+	private FreeDayDAO freeDayDAO;
+	
 	@Autowired 
 	private TaskDAO taskDAO;
 	
@@ -82,8 +95,20 @@ public class FindInstanceServiceImpl implements FindInstanceService {
 	@Autowired
 	private HistoryPersonDAO hPersonDAO;
 	
+	@Autowired
+	private PersonDAO personDAO;
+	
+	@Autowired
+	private TimeOffDAO timeOffDAO;
+	
+	@Autowired
+	private AptitudeDAO aptitudeDAO;
+	
 	@Autowired 
 	private ProfessionalCategoryDAO profCatgDAO;
+	
+	@Autowired
+	private LevelProfCatgDAO levelProfCatgDAO;
 	
 	@Autowired
 	private AssignmentProfileDAO assigProfDAO;
@@ -178,6 +203,18 @@ public class FindInstanceServiceImpl implements FindInstanceService {
 		}
 	}
 	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void findFreeDay(FreeDay freeDay) throws InstanceNotFoundException {
+		
+		Long idFreeDay = freeDay.getId();
+		
+		if (!freeDayDAO.FreeDayExists(idFreeDay)) {
+			throw new InstanceNotFoundException(idFreeDay, FreeDay.class.getName());
+		}
+	}
+	
 	
 	// ============================================================================
 	@Override
@@ -247,12 +284,63 @@ public class FindInstanceServiceImpl implements FindInstanceService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
+	public void findPerson(Person person) throws InstanceNotFoundException {
+		
+		Long idPerson = person.getId();
+		
+		if (!personDAO.personExists(idPerson)) {
+			throw new InstanceNotFoundException(idPerson, Person.class.getName());
+		}
+	}
+	
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void findTimeoff(TimeOff timeoff) throws InstanceNotFoundException {
+		
+		Long idTimeoff = timeoff.getId();
+		
+		if (!timeOffDAO.timeoffExists(idTimeoff)) {
+			throw new InstanceNotFoundException(idTimeoff, TimeOff.class.getName());
+		}
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void findAptitude(Aptitude aptitude) throws InstanceNotFoundException {
+		
+		Long idAptitude = aptitude.getId();
+		
+		if (!aptitudeDAO.aptitudeExists(idAptitude)) {
+			throw new InstanceNotFoundException(idAptitude, Aptitude.class.getName());
+		}
+	}
+	
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
 	public void findProfessionalCategory(ProfessionalCategory pf) throws InstanceNotFoundException {
 		
 		Long idProfCatg = pf.getId();
 		
 		if (!profCatgDAO.ProfessionalCategoryExists(idProfCatg)) {
 			throw new InstanceNotFoundException(idProfCatg, ProfessionalCategory.class.getName());
+		}
+	}
+	
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public void findLevelProfCatg(LevelProfCatg levelProfCatg) throws InstanceNotFoundException {
+		
+		String idLevelProfCatg = levelProfCatg.getId();
+		
+		if (!levelProfCatgDAO.levelProfCatgExists(idLevelProfCatg)) {
+			throw new InstanceNotFoundException(idLevelProfCatg, LevelProfCatg.class.getName());
 		}
 	}
 	
