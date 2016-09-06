@@ -9,4 +9,6 @@ public interface DamageDAO {
 	public Damage find(String id);
 	
 	public List<Damage> findAll();
+	
+	public boolean damageExists(String id);
 }

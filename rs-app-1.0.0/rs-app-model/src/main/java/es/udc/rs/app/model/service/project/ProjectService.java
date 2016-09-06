@@ -53,7 +53,7 @@ public interface ProjectService {
 	
 	public List<ProjectFreeDay> findAllProjectFreeDay();
 	
-	public List<FreeDay> findProjectFreeDayByProject(Project project);
+	public List<FreeDay> findProjectFreeDayByProject(Project project) throws InstanceNotFoundException;
 	
 	public void updateProjectFreeDay(ProjectFreeDay projectFreeDay) throws InstanceNotFoundException;
 	
@@ -67,7 +67,7 @@ public interface ProjectService {
 	
 	public List<ProjectMgmt> findAllProjectMgmt();
 	
-	public List<ProjectMgmt> findProjectMgmtByProject(Project project);
+	public List<ProjectMgmt> findProjectMgmtByProject(Project project) throws InstanceNotFoundException;
 				
 	public void updateProjectMgmt(ProjectMgmt projectMgmt) throws InstanceNotFoundException;
 	
@@ -99,7 +99,7 @@ public interface ProjectService {
 	
 	public Phase findPhase(Long id) throws InstanceNotFoundException;
 		
-	public List<Phase> findPhaseByProject(Project project);
+	public List<Phase> findPhaseByProject(Project project) throws InstanceNotFoundException;
 			
 	public void updatePhase(Phase phase) throws InstanceNotFoundException;
 	
@@ -123,7 +123,7 @@ public interface ProjectService {
 	
 	
 	// =========================== Incident operations ============================
-	public Long createIncident(Incident incident);
+	public Long createIncident(Incident incident) throws InstanceNotFoundException;
 	
 	public Incident findIncident(Long id) throws InstanceNotFoundException;
 					
@@ -175,7 +175,7 @@ public interface ProjectService {
 	
 	public Predecessor findPredecessor(Long id) throws InstanceNotFoundException;
 	
-	public List<Predecessor> findPredecessorByTask(Task task);
+	public List<Predecessor> findPredecessorByTask(Task task) throws InstanceNotFoundException;
 					
 	public void updatePredecessor(Predecessor predecessor) throws InstanceNotFoundException;
 	

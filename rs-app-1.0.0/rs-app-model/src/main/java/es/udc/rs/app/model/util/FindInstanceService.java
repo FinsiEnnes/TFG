@@ -10,15 +10,24 @@ import es.udc.rs.app.model.domain.BusinessSize;
 import es.udc.rs.app.model.domain.BusinessType;
 import es.udc.rs.app.model.domain.Country;
 import es.udc.rs.app.model.domain.Customer;
+import es.udc.rs.app.model.domain.Damage;
 import es.udc.rs.app.model.domain.FreeDay;
 import es.udc.rs.app.model.domain.HistoryPerson;
+import es.udc.rs.app.model.domain.HistoryProject;
 import es.udc.rs.app.model.domain.Incident;
 import es.udc.rs.app.model.domain.LevelProfCatg;
 import es.udc.rs.app.model.domain.Material;
+import es.udc.rs.app.model.domain.Milestone;
 import es.udc.rs.app.model.domain.Person;
+import es.udc.rs.app.model.domain.Phase;
+import es.udc.rs.app.model.domain.Predecessor;
+import es.udc.rs.app.model.domain.Priority;
 import es.udc.rs.app.model.domain.ProfessionalCategory;
 import es.udc.rs.app.model.domain.Project;
+import es.udc.rs.app.model.domain.ProjectFreeDay;
+import es.udc.rs.app.model.domain.ProjectMgmt;
 import es.udc.rs.app.model.domain.Province;
+import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TaskIncident;
 import es.udc.rs.app.model.domain.TimeOff;
@@ -40,9 +49,27 @@ public interface FindInstanceService {
 	
 	public void findProject(Project project) throws InstanceNotFoundException;
 	
+	public void findHistoryProject(HistoryProject historyProject) throws InstanceNotFoundException;
+	
+	public void findProjectFreeDay(ProjectFreeDay projectFreeDay) throws InstanceNotFoundException;
+	
 	public void findFreeDay(FreeDay freeDay) throws InstanceNotFoundException;
 	
+	public void findProjectMgmt(ProjectMgmt projectMgmt) throws InstanceNotFoundException;
+	
+	public void findPhase(Phase phase) throws InstanceNotFoundException;
+	
+	public void findMilestone(Milestone milestone) throws InstanceNotFoundException;
+	
+	public void findPriority(Priority priority) throws InstanceNotFoundException;
+	
+	public void findState(State state) throws InstanceNotFoundException;
+	
 	public void findTask(Task task) throws InstanceNotFoundException;
+	
+	public void findPredecessor(Predecessor predecessor) throws InstanceNotFoundException;
+	
+	public void findDamage(Damage damage) throws InstanceNotFoundException;
 	
 	public void findIncident(Incident incident) throws InstanceNotFoundException;
 	

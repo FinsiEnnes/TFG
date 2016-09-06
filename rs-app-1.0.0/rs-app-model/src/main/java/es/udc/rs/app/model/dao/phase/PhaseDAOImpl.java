@@ -56,7 +56,7 @@ public class PhaseDAOImpl implements PhaseDAO {
 	}
 
 	@Override
-	public boolean PhaseExists(Long id) {		
+	public boolean phaseExists(Long id) {		
 		// Create the criteria in function of the id.
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Phase.class);
 		criteria.add(Restrictions.eq("id", id));

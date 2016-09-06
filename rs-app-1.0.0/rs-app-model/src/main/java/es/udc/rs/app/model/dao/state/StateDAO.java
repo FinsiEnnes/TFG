@@ -9,5 +9,7 @@ public interface StateDAO {
 	public State find(String id);
 	
 	public List<State> findAll();
+	
+	public boolean stateExists(String id);
 
 }

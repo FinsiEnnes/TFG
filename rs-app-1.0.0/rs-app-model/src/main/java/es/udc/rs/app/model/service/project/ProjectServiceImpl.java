@@ -29,7 +29,6 @@ import es.udc.rs.app.model.dao.taskincident.TaskIncidentDAO;
 import es.udc.rs.app.model.dao.tasklink.TaskLinkTypeDAO;
 import es.udc.rs.app.model.domain.Damage;
 import es.udc.rs.app.model.domain.FreeDay;
-import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.HistoryProject;
 import es.udc.rs.app.model.domain.Incident;
 import es.udc.rs.app.model.domain.Milestone;
@@ -103,7 +102,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Autowired 
 	private PredecessorDAO predecessorDAO;
 	
-	// Injection of the service FindInstanceService
+	// Injection of the auxiliary service
 	@Autowired
 	private FindInstanceService findInstanceService; 
 		
@@ -370,17 +369,10 @@ public class ProjectServiceImpl implements ProjectService {
 	public Long createProjectFreeDay(ProjectFreeDay projectFreeDay) throws InstanceNotFoundException {
 
 		Long id;
-		Long idProject = projectFreeDay.getProject().getId();
-		Long idFreeDay = projectFreeDay.getFreeDay().getId();
 		
 		// First we check if the Project and the FreeDay exist.
-		if (!projectDAO.ProjectExists(idProject)) {
-			throw new InstanceNotFoundException(idProject, Project.class.getName());
-		}
-		
-		if (!freeDayDAO.FreeDayExists(idFreeDay)) {
-			throw new InstanceNotFoundException(idProject, FreeDay.class.getName());
-		}
+		findInstanceService.findProject(projectFreeDay.getProject());
+		findInstanceService.findFreeDay(projectFreeDay.getFreeDay());
 		
 		// We create the ProjectFreeDay
 		try{
@@ -444,9 +436,12 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<FreeDay> findProjectFreeDayByProject(Project project) {
+	public List<FreeDay> findProjectFreeDayByProject(Project project) throws InstanceNotFoundException {
 		
 		List<FreeDay> freeDays = new ArrayList<FreeDay>();
+		
+		// First find the Project
+		findInstanceService.findProject(project);
 		
 		// Find projectFreeDays by the idProject
 		try{
@@ -467,11 +462,8 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(value="myTransactionManager")
 	public void updateProjectFreeDay(ProjectFreeDay projectFreeDay) throws InstanceNotFoundException {
 		
-		Long id = projectFreeDay.getId();
-		
-		if (!projectFreeDayDAO.ProjectFreeDayExists(id)) {
-			throw new InstanceNotFoundException(id, ProjectFreeDay.class.getName());
-		}
+		// Find the ProjectFreeDay
+		findInstanceService.findProjectFreeDay(projectFreeDay);
 		
 		try{
 			projectFreeDayDAO.update(projectFreeDay);
@@ -509,18 +501,11 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(value="myTransactionManager")
 	public Long createProjectMgmt(ProjectMgmt projectMgmt) throws InstanceNotFoundException {
 		
-		Long idProject = projectMgmt.getProject().getId();
-		Long idHPerson = projectMgmt.getHistoryPerson().getId();
 		Long id;
 		
 		// First we check if the project and the HistoryPerson exist
-		if (!projectDAO.ProjectExists(idProject)) {
-			throw new InstanceNotFoundException(idProject, Project.class.getName());
-		}
-		
-		if (!historyPersonDAO.historyPersonExists(idHPerson)) {
-			throw new InstanceNotFoundException(idHPerson, HistoryProject.class.getName());
-		}
+		findInstanceService.findProject(projectMgmt.getProject());
+		findInstanceService.findHistoryPerson(projectMgmt.getHistoryPerson());
 		
 		// Now create the new object 
 		try{
@@ -583,9 +568,12 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<ProjectMgmt> findProjectMgmtByProject(Project project) {
+	public List<ProjectMgmt> findProjectMgmtByProject(Project project) throws InstanceNotFoundException {
 		
 		List<ProjectMgmt> projectMgmts = new ArrayList<ProjectMgmt>();
+		
+		// Check if the Project exists
+		findInstanceService.findProject(project);
 		
 		// Find the ProjectMgmts by Project
 		try{
@@ -605,13 +593,9 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional(value="myTransactionManager")
 	public void updateProjectMgmt(ProjectMgmt projectMgmt) throws InstanceNotFoundException {
-		
-		Long id = projectMgmt.getId();
-		
+				
 		// Check if this ProjectMgmt exists
-		if (!projectMgmtDAO.ProjectMgmtExists(id)) {
-			throw new InstanceNotFoundException(id, ProjectMgmt.class.getName());
-		}
+		findInstanceService.findProjectMgmt(projectMgmt);
 		
 		try{
 			projectMgmtDAO.update(projectMgmt);
@@ -639,6 +623,7 @@ public class ProjectServiceImpl implements ProjectService {
 		
 		log.info(ModelConstants.DELETE + projectMgmt.toString());
 	}
+	
 	
 	// ============================================================================
 	// ============================= State operations =============================
@@ -694,13 +679,10 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(value="myTransactionManager")
 	public Long createHistoryProject(HistoryProject historyProject) throws InstanceNotFoundException {
 		
-		Long idProject = historyProject.getProject().getId();
 		Long idHistoryProject = null;
 		
 		// Check if the selected project exists
-		if (!projectDAO.ProjectExists(idProject)) {
-			throw new InstanceNotFoundException(idProject, Project.class.getName());
-		}
+		findInstanceService.findProject(historyProject.getProject());
 		
 		// We create the history project
 		try{
@@ -745,12 +727,9 @@ public class ProjectServiceImpl implements ProjectService {
 	public List<HistoryProject> findHistoryProjectByProject(Project project) throws InstanceNotFoundException {
 		
 		List<HistoryProject> historiesProject = new ArrayList<HistoryProject>();
-		Long idProject = project.getId();
 		
 		// Check if the selected project exists
-		if (!projectDAO.ProjectExists(idProject)) {
-			throw new InstanceNotFoundException(idProject, Project.class.getName());
-		}
+		findInstanceService.findProject(project);
 		
 		try{
 			historiesProject = historyProjectDAO.findByProject(project);
@@ -779,7 +758,12 @@ public class ProjectServiceImpl implements ProjectService {
 			throw e;
 		}
 		
-		log.info("Current HistoryProject for idProject[" + project.getId() + "]:" + historyProject.toString());
+		if (historyProject != null) {
+			log.info("Current HistoryProject for idProject[" + project.getId() + "]:" + historyProject.toString());
+		} else {
+			log.info("The project with idProject[" + project.getId() + "] has not a HistoryProject yet");
+		}
+
 		return historyProject;
 	}
 	
@@ -788,9 +772,8 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(value="myTransactionManager")
 	public void updateHistoryProject(HistoryProject historyProject) throws InstanceNotFoundException {
 		
-		if (!historyProjectDAO.HistoryProjectExists(historyProject.getId())) {
-			throw new InstanceNotFoundException(historyProject.getId(), HistoryProject.class.getName());
-		}
+		// Check if this HistoryProject exists
+		findInstanceService.findHistoryProject(historyProject);
 		
 		try{
 			historyProjectDAO.update(historyProject);
@@ -827,13 +810,10 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(value="myTransactionManager")
 	public Long createPhase(Phase phase) throws InstanceNotFoundException {
 		
-		Long idProject = phase.getProject().getId();
 		Long idPhase = null;
 		
 		// Check if the selected project exists
-		if (!projectDAO.ProjectExists(idProject)) {
-			throw new InstanceNotFoundException(idProject, Project.class.getName());
-		}
+		findInstanceService.findProject(phase.getProject());
 		
 		// Now we create the new project phase
 		try{
@@ -876,10 +856,13 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<Phase> findPhaseByProject(Project project) {
+	public List<Phase> findPhaseByProject(Project project) throws InstanceNotFoundException {
 		
 		// Initialize the phase list
 		List<Phase> phases = new ArrayList<Phase>();
+		
+		// Check if the selected project exists
+		findInstanceService.findProject(project);
 		
 		// Get the phases of the project
 		try{
@@ -899,13 +882,9 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional(value="myTransactionManager")
 	public void updatePhase(Phase phase) throws InstanceNotFoundException {
-		
-		Long id = phase.getId();
-		
+				
 		// Check if the phase exists
-		if (!phaseDAO.PhaseExists(id)) {
-			throw new InstanceNotFoundException(id, Phase.class.getName());
-		}
+		findInstanceService.findPhase(phase);
 		
 		// Update
 		try{
@@ -946,13 +925,10 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(value="myTransactionManager")
 	public Long createMilestone(Milestone milestone) throws InstanceNotFoundException {
 		
-		Long idPhase = milestone.getPhase().getId();
 		Long idMilestone = null;
 		
 		// Check if the selected phase exists
-		if (!phaseDAO.PhaseExists(idPhase)) {
-			throw new InstanceNotFoundException(idPhase, Phase.class.getName());
-		}
+		findInstanceService.findPhase(milestone.getPhase());
 		
 		// Now we create the new milestone
 		try{
@@ -996,13 +972,9 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional(value="myTransactionManager")
 	public void updateMilestone(Milestone milestone) throws InstanceNotFoundException {
-		
-		Long id = milestone.getId();
-		
+				
 		// First we check if the milestone exists
-		if (!milestoneDAO.milestoneExists(id)) {
-			throw new InstanceNotFoundException(id, Milestone.class.getName());
-		}
+		findInstanceService.findMilestone(milestone);
 		
 		// Update the milestone
 		try{
@@ -1088,9 +1060,12 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public Long createIncident(Incident incident) {
+	public Long createIncident(Incident incident) throws InstanceNotFoundException {
 		
 		Long id = null;
+		
+		// First check if the selected Damage exists
+		findInstanceService.findDamage(incident.getDamage());
 		
 		// Create the incident
 		try{
@@ -1136,14 +1111,10 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional(value="myTransactionManager")
 	public void updateIncident(Incident incident) throws InstanceNotFoundException {
-		
-		Long id = incident.getId();
-		
+				
 		// Check if the Incident exists
-		if (!incidentDAO.IncidentExists(id)) {
-			throw new InstanceNotFoundException(id, Incident.class.getName());
-		}
-		
+		findInstanceService.findIncident(incident);
+
 		// If the incident exists, we update it
 		try{
 			incidentDAO.update(incident);
@@ -1380,20 +1351,15 @@ public class ProjectServiceImpl implements ProjectService {
 	public Long createTask(Task task) throws InputValidationException, InstanceNotFoundException {
 		
 		Long id = null;
-		Long idPhase = task.getPhase().getId();
-		Long idHPerson = task.getHistoryPerson().getId();
-		
+
 		// First validate the Task
 		validateTask(task);
 		
-		// Check if exist the Phase and the responsible of the Task
-		if (!phaseDAO.PhaseExists(idPhase)) {
-			throw new InstanceNotFoundException(idPhase, Phase.class.getName());
-		}
-		
-		if (!historyPersonDAO.historyPersonExists(idHPerson)) {
-			throw new InstanceNotFoundException(idHPerson, HistoryPerson.class.getName());
-		}
+		// Check if exist the Phase, the State, the Priority and the responsible of the Task
+		findInstanceService.findPhase(task.getPhase());
+		findInstanceService.findState(task.getState());
+		findInstanceService.findPriority(task.getPriority());
+		findInstanceService.findHistoryPerson(task.getHistoryPerson());
 		
 		// Now we create the Task in the db
 		try{
@@ -1437,16 +1403,12 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional(value="myTransactionManager")
 	public void updateTask(Task task) throws InputValidationException, InstanceNotFoundException {
-		
-		Long id = task.getId();
-		
+				
 		// First validate the Task
 		validateTask(task);
 		
 		// Check if the Task exists
-		if (!taskDAO.TaskExists(id)) {
-			throw new InstanceNotFoundException(id, Task.class.getName());
-		}
+		findInstanceService.findTask(task);
 		
 		// Now we update the Task in the db
 		try{
@@ -1534,19 +1496,11 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(value="myTransactionManager")
 	public Long createPredecessor(Predecessor predecessor) throws InstanceNotFoundException {
 		
-		// Get the ids of the Tasks
-		Long idTask = predecessor.getTask().getId();
-		Long idTaskPred = predecessor.getTaskPred().getId();
 		Long idPred;
 		
 		// Checks if these Tasks exist
-		if (!taskDAO.TaskExists(idTask)) {
-			throw new InstanceNotFoundException(idTask, Task.class.getName());	
-		}
-		
-		if (!taskDAO.TaskExists(idTaskPred)) {
-			throw new InstanceNotFoundException(idTaskPred, Task.class.getName());	
-		}
+		findInstanceService.findTask(predecessor.getTask());
+		findInstanceService.findTask(predecessor.getTaskPred());
 		
 		// Now create the Predecessor object
 		try{
@@ -1589,9 +1543,12 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<Predecessor> findPredecessorByTask(Task task) {
+	public List<Predecessor> findPredecessorByTask(Task task) throws InstanceNotFoundException {
 		
 		List<Predecessor> predecessors = new ArrayList<Predecessor>();
+		
+		// Check if this Task exists
+		findInstanceService.findTask(task);
 		
 		// Find Predecessors by Task
 		try{
@@ -1611,13 +1568,9 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional(value="myTransactionManager")
 	public void updatePredecessor(Predecessor predecessor) throws InstanceNotFoundException {
-		
-		Long id = predecessor.getId();
-		
+				
 		// Check if the Predecessor exists
-		if (!predecessorDAO.PredecessorExists(id)) {
-			throw new InstanceNotFoundException(id, Predecessor.class.getName());
-		}
+		findInstanceService.findPredecessor(predecessor);
 		
 		// Now update the Predecessor
 		try{

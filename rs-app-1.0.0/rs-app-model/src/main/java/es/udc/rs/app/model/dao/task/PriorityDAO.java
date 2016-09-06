@@ -9,4 +9,6 @@ public interface PriorityDAO {
 	public Priority find(String id);
 	
 	public List<Priority> findAll();
+	
+	public boolean priorityExists(String id);
 }

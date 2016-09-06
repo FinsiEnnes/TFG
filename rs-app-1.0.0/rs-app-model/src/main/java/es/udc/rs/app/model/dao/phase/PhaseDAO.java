@@ -13,7 +13,7 @@ public interface PhaseDAO {
 		
 	public List<Phase> findByProject(Project project);
 		
-	public boolean PhaseExists(Long id);
+	public boolean phaseExists(Long id);
 	
 	public void update(Phase phase);
 	
