@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.AssignmentMaterial;
+import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
 import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.HistoryProject;
@@ -31,6 +32,7 @@ import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.Province;
 import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
+import es.udc.rs.app.model.domain.Workload;
 import es.udc.rs.app.model.service.assignment.AssignmentService;
 import es.udc.rs.app.model.service.customer.CustomerService;
 import es.udc.rs.app.model.service.material.MaterialService;
@@ -64,7 +66,7 @@ public class FullTest {
 
 		log.info("");
 		log.info ("============== Starting Full Test ==============");
-		//thisTest();	
+		thisTest();	
 	}
 
 	private void thisTest() throws InstanceNotFoundException, InputValidationException, ParseException {
@@ -73,6 +75,7 @@ public class FullTest {
 		// Variables
 		// ================================================================================
 
+		Project thisProject;
 		Task thisTask;
 		Integer num;
 		
@@ -109,6 +112,7 @@ public class FullTest {
 		State plan = projectService.findState("PLAN");
 		State prpd = projectService.findState("PRPD");
 		State ejec = projectService.findState("EJEC");
+		State term = projectService.findState("TERM");
 		
 		Priority m = projectService.findPriority("M");
 		
@@ -129,14 +133,43 @@ public class FullTest {
 		log.info("");
 		log.info("===> Creation of the Project Manager");
 		// ================================================================================	
-		Person person1 = new Person("P1", "p","1","11111111A","p1@gmail.com", fmt.parse("2013-05-06"), "");
-		personService.createPerson(person1);
+		Person boss = new Person("boss", "b","s","99999999A","boss@gmail.com", fmt.parse("2013-05-06"), "");
+		personService.createPerson(boss);
 
 		ProfessionalCategory manager = new ProfessionalCategory("Manager", 10, senior, 12, null);
 		personService.createProfessionalCategory(manager);
 
-		HistoryPerson hpManager = new HistoryPerson(person1, manager, fmt.parse("2013-05-06"), null, 12, 14, null);
+		HistoryPerson hpManager = new HistoryPerson(boss, manager, fmt.parse("2013-05-06"), null, 12, 14, null);
 		personService.createHistoryPerson(hpManager);
+		
+		
+		// ================================================================================
+		log.info("");
+		log.info("===> Creation of the Employees");
+		// ================================================================================	
+		Person person1 = new Person("P1", "p","1","11111111A","p1@gmail.com", fmt.parse("2013-05-06"), "");
+		Person person2 = new Person("P2", "p","2","22222222B","p2@gmail.com", fmt.parse("2013-05-06"), "");
+		Person person3 = new Person("P3", "p","3","33333333C","p3@gmail.com", fmt.parse("2013-05-06"), "");
+
+		personService.createPerson(person1);
+		personService.createPerson(person2);
+		personService.createPerson(person3);
+		
+		ProfessionalCategory profCatg1 = new ProfessionalCategory("Perfil1", 1, senior, 6, null);
+		ProfessionalCategory profCatg2 = new ProfessionalCategory("Perfil2", 1, senior, 8, null);
+		ProfessionalCategory profCatg3 = new ProfessionalCategory("Perfil3", 1, senior, 11, null);
+		
+		personService.createProfessionalCategory(profCatg1);
+		personService.createProfessionalCategory(profCatg2);
+		personService.createProfessionalCategory(profCatg3);
+		
+		HistoryPerson hpPerson1 = new HistoryPerson(person1, profCatg1, fmt.parse("2013-05-06"), null, 6, 8, null);
+		HistoryPerson hpPerson2 = new HistoryPerson(person2, profCatg2, fmt.parse("2013-05-06"), null, 8, 10, null);
+		HistoryPerson hpPerson3 = new HistoryPerson(person3, profCatg3, fmt.parse("2013-05-06"), null, 11, 13, null);
+		
+		personService.createHistoryPerson(hpPerson1);
+		personService.createHistoryPerson(hpPerson2);
+		personService.createHistoryPerson(hpPerson3);
 		
 		
 		// ================================================================================
@@ -182,19 +215,6 @@ public class FullTest {
 		projectService.createTask(task3);
 		projectService.createTask(task4);
 		projectService.createTask(task5);
-		
-		
-		// ================================================================================
-		log.info("");
-		log.info("===> Creation of Professional Categories");
-		// ================================================================================	
-		ProfessionalCategory profCatg1 = new ProfessionalCategory("Perfil1", 1, senior, 6, null);
-		ProfessionalCategory profCatg2 = new ProfessionalCategory("Perfil2", 1, senior, 8, null);
-		ProfessionalCategory profCatg3 = new ProfessionalCategory("Perfil3", 1, senior, 11, null);
-		
-		personService.createProfessionalCategory(profCatg1);
-		personService.createProfessionalCategory(profCatg2);
-		personService.createProfessionalCategory(profCatg3);
 		
 		
 		// ================================================================================
@@ -282,7 +302,6 @@ public class FullTest {
 		num = 56;
 		assertEquals(num, thisTask.getCostPlan());
 		
-		
 		thisTask = projectService.findTask(task3.getId());
 		num = 160;
 		assertEquals(num, thisTask.getCostPlan());
@@ -302,6 +321,77 @@ public class FullTest {
 		// ================================================================================
 		HistoryProject ejecHP = new HistoryProject(project, ejec, iniEjecHistoryProject, endEjecHistoryProject, null);
 		projectService.createHistoryProject(ejecHP);
+		
+		// Check the planned data of the Project
+		thisProject = projectService.findProject(project.getId());
+		
+		num = 11;
+		assertEquals(num, thisProject.getDaysPlan());
+		
+		num = 117;
+		assertEquals(num, thisProject.getHoursPlan());
+		
+		num = 1111;
+		assertEquals(num, thisProject.getCostPlan());
+		
+		assertEquals(fmt.parse("2016-09-12"), thisProject.getEndPlan());
+		
+		
+		// ================================================================================
+		log.info("");
+		log.info("===> Real datas for Tarea1");
+		// ================================================================================
+		task1.setIniReal(fmt.parse("2016-09-01"));
+		task1.setState(ejec);
+		
+		projectService.updateTask(task1);
+		
+		AssignmentPerson assigPerson1 = new AssignmentPerson(task1, hpPerson1, false);
+		AssignmentPerson assigPerson2 = new AssignmentPerson(task1, hpPerson2, false);
+		AssignmentPerson assigPerson3 = new AssignmentPerson(task1, hpPerson3, false);
+		
+		assignmentService.createAssignmentPerson(assigPerson1);
+		assignmentService.createAssignmentPerson(assigPerson2);
+		assignmentService.createAssignmentPerson(assigPerson3);
+		
+		Workload wl1 = new Workload(task1, hpPerson1, fmt.parse("2016-09-01"), 8, 0);
+		Workload wl2 = new Workload(task1, hpPerson1, fmt.parse("2016-09-02"), 4, 0);
+		Workload wl3 = new Workload(task1, hpPerson1, fmt.parse("2016-09-03"), 6, 0);
+		Workload wl4 = new Workload(task1, hpPerson1, fmt.parse("2016-09-04"), 3, 0);
+		Workload wl5 = new Workload(task1, hpPerson1, fmt.parse("2016-09-05"), 2, 0);
+		
+		Workload wl6 = new Workload(task1, hpPerson2, fmt.parse("2016-09-01"), 2, 0);
+		Workload wl7 = new Workload(task1, hpPerson2, fmt.parse("2016-09-02"), 8, 0);
+		Workload wl8 = new Workload(task1, hpPerson2, fmt.parse("2016-09-03"), 6, 0);
+		Workload wl9 = new Workload(task1, hpPerson2, fmt.parse("2016-09-04"), 4, 0);
+		Workload wl10 = new Workload(task1, hpPerson2, fmt.parse("2016-09-05"), 2, 0);
+		
+		Workload wl11 = new Workload(task1, hpPerson3, fmt.parse("2016-09-01"), 5, 0);
+		Workload wl12 = new Workload(task1, hpPerson3, fmt.parse("2016-09-02"), 7, 0);
+		
+		assignmentService.createWorkload(wl1);
+		assignmentService.createWorkload(wl2);
+		assignmentService.createWorkload(wl3);
+		assignmentService.createWorkload(wl4);
+		assignmentService.createWorkload(wl5);
+		assignmentService.createWorkload(wl6);
+		assignmentService.createWorkload(wl7);
+		assignmentService.createWorkload(wl8);
+		assignmentService.createWorkload(wl9);
+		assignmentService.createWorkload(wl10);
+		assignmentService.createWorkload(wl11);
+		assignmentService.createWorkload(wl12);
+
+		assigPerson1.setConclude(true);
+		assigPerson2.setConclude(true);
+		assigPerson3.setConclude(true);
+		
+		assignmentService.updateAssignmentPerson(assigPerson1);
+		assignmentService.updateAssignmentPerson(assigPerson2);
+		assignmentService.updateAssignmentPerson(assigPerson3);
+		
+		task1.setState(term);
+		projectService.updateTask(task1);
 		
 		
 	}
