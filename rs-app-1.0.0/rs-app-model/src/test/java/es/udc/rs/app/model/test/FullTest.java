@@ -20,8 +20,10 @@ import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.AssignmentMaterial;
 import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
+import es.udc.rs.app.model.domain.Damage;
 import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.HistoryProject;
+import es.udc.rs.app.model.domain.Incident;
 import es.udc.rs.app.model.domain.LevelProfCatg;
 import es.udc.rs.app.model.domain.Material;
 import es.udc.rs.app.model.domain.Person;
@@ -32,6 +34,7 @@ import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.Province;
 import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
+import es.udc.rs.app.model.domain.TaskIncident;
 import es.udc.rs.app.model.domain.Workload;
 import es.udc.rs.app.model.service.assignment.AssignmentService;
 import es.udc.rs.app.model.service.customer.CustomerService;
@@ -77,6 +80,7 @@ public class FullTest {
 
 		Project thisProject;
 		Task thisTask;
+		AssignmentPerson thisAssigPerson;
 		Integer num;
 		
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
@@ -85,7 +89,7 @@ public class FullTest {
 		Date iniPlanHistoryProject = fmt.parse("2016-08-15");
 		Date endPlanHistoryProject = fmt.parse("2016-08-28");
 		Date iniEjecHistoryProject = fmt.parse("2016-09-01");
-		Date endEjecHistoryProject = fmt.parse("2016-10-05");
+		Date endEjecHistoryProject = fmt.parse("2016-09-15");
 		
 		Date iniPhase1 = fmt.parse("2016-09-01");
 		Date endPhase1 = fmt.parse("2016-09-05");
@@ -393,7 +397,269 @@ public class FullTest {
 		task1.setState(term);
 		projectService.updateTask(task1);
 		
+		// Check if the updates are correct
+		thisAssigPerson = assignmentService.findAssignmentPerson(assigPerson1.getId());
+		num = 23;
+		assertEquals(num, thisAssigPerson.getTotalHours());
+		num = 138;
+		assertEquals(num, thisAssigPerson.getTotalCost());
 		
+		thisAssigPerson = assignmentService.findAssignmentPerson(assigPerson2.getId());
+		num = 22;
+		assertEquals(num, thisAssigPerson.getTotalHours());
+		num = 176;
+		assertEquals(num, thisAssigPerson.getTotalCost());
+		
+		thisAssigPerson = assignmentService.findAssignmentPerson(assigPerson3.getId());
+		num = 12;
+		assertEquals(num, thisAssigPerson.getTotalHours());
+		num = 132;
+		assertEquals(num, thisAssigPerson.getTotalCost());
+		
+		thisTask = projectService.findTask(task1.getId());
+		num = 57;
+		assertEquals(num, thisTask.getHoursReal());
+		num = 446;
+		assertEquals(num, thisTask.getCostReal());
+		num = 5;
+		assertEquals(num, thisTask.getDaysReal());
+		assertEquals(fmt.parse("2016-09-05"), thisTask.getEndReal());
+		
+		
+		// ================================================================================
+		log.info("");
+		log.info("===> Real datas for Tarea2");
+		// ================================================================================
+		task2.setIniReal(fmt.parse("2016-09-06"));
+		task2.setState(ejec);
+		
+		projectService.updateTask(task2);
+		
+		AssignmentPerson assigPerson4 = new AssignmentPerson(task2, hpPerson2, false);
+		assignmentService.createAssignmentPerson(assigPerson4);
+
+		
+		Workload wl13 = new Workload(task2, hpPerson2, fmt.parse("2016-09-06"), 8, 1);
+		assignmentService.createWorkload(wl13);
+
+		assigPerson4.setConclude(true);
+		assignmentService.updateAssignmentPerson(assigPerson4);
+		
+		task2.setState(term);
+		projectService.updateTask(task2);
+		
+		// Check the updates
+		thisAssigPerson = assignmentService.findAssignmentPerson(assigPerson4.getId());
+		num = 8;
+		assertEquals(num, thisAssigPerson.getTotalHours());
+		num = 74;
+		assertEquals(num, thisAssigPerson.getTotalCost());
+		
+		thisTask = projectService.findTask(task2.getId());
+		num = 9;
+		assertEquals(num, thisTask.getHoursReal());
+		num = 74;
+		assertEquals(num, thisTask.getCostReal());
+		num = 1;
+		assertEquals(num, thisTask.getDaysReal());
+		assertEquals(fmt.parse("2016-09-06"), thisTask.getEndReal());
+		
+		
+		// ================================================================================
+		log.info("");
+		log.info("===> Real datas for Tarea3");
+		// ================================================================================
+		task3.setIniReal(fmt.parse("2016-09-07"));
+		task3.setState(ejec);
+		
+		projectService.updateTask(task3);
+		
+		AssignmentPerson assigPerson5 = new AssignmentPerson(task3, hpPerson1, false);
+		AssignmentPerson assigPerson6 = new AssignmentPerson(task3, hpPerson2, false);
+		
+		assignmentService.createAssignmentPerson(assigPerson5);
+		assignmentService.createAssignmentPerson(assigPerson6);
+		
+		Workload wl14 = new Workload(task3, hpPerson1, fmt.parse("2016-09-07"), 8, 4);
+		Workload wl15 = new Workload(task3, hpPerson2, fmt.parse("2016-09-07"), 8, 0);
+		
+		assignmentService.createWorkload(wl14);
+		assignmentService.createWorkload(wl15);
+
+		assigPerson5.setConclude(true);
+		assigPerson6.setConclude(true);
+		
+		assignmentService.updateAssignmentPerson(assigPerson5);
+		assignmentService.updateAssignmentPerson(assigPerson6);
+		
+		task3.setState(term);
+		projectService.updateTask(task3);
+		
+		// Check if the updates are correct
+		thisAssigPerson = assignmentService.findAssignmentPerson(assigPerson5.getId());
+		num = 8;
+		assertEquals(num, thisAssigPerson.getTotalHours());
+		num = 80;
+		assertEquals(num, thisAssigPerson.getTotalCost());
+		
+		thisAssigPerson = assignmentService.findAssignmentPerson(assigPerson6.getId());
+		num = 8;
+		assertEquals(num, thisAssigPerson.getTotalHours());
+		num = 64;
+		assertEquals(num, thisAssigPerson.getTotalCost());
+		
+		thisTask = projectService.findTask(task3.getId());
+		num = 20;
+		assertEquals(num, thisTask.getHoursReal());
+		num = 144;
+		assertEquals(num, thisTask.getCostReal());
+		num = 1;
+		assertEquals(num, thisTask.getDaysReal());
+		assertEquals(fmt.parse("2016-09-07"), thisTask.getEndReal());
+		
+		
+		// ================================================================================
+		log.info("");
+		log.info("===> Real datas for Tarea4");
+		// ================================================================================
+		task4.setIniReal(fmt.parse("2016-09-08"));
+		task4.setState(ejec);
+		
+		projectService.updateTask(task4);
+		
+		AssignmentPerson assigPerson7 = new AssignmentPerson(task4, hpPerson1, false);
+		AssignmentPerson assigPerson8 = new AssignmentPerson(task4, hpPerson2, false);
+		
+		assignmentService.createAssignmentPerson(assigPerson7);
+		assignmentService.createAssignmentPerson(assigPerson8);
+		
+		Workload wl16 = new Workload(task4, hpPerson1, fmt.parse("2016-09-08"), 6, 0);
+		Workload wl17 = new Workload(task4, hpPerson2, fmt.parse("2016-09-08"), 7, 0);
+		Workload wl18 = new Workload(task4, hpPerson1, fmt.parse("2016-09-09"), 5, 0);
+		Workload wl19 = new Workload(task4, hpPerson2, fmt.parse("2016-09-09"), 8, 0);
+		Workload wl20 = new Workload(task4, hpPerson1, fmt.parse("2016-09-10"), 8, 0);
+		Workload wl21 = new Workload(task4, hpPerson2, fmt.parse("2016-09-10"), 4, 0);
+		
+		assignmentService.createWorkload(wl16);
+		assignmentService.createWorkload(wl17);
+		assignmentService.createWorkload(wl18);
+		assignmentService.createWorkload(wl19);
+		assignmentService.createWorkload(wl20);
+		assignmentService.createWorkload(wl21);
+
+		assigPerson7.setConclude(true);
+		assigPerson8.setConclude(true);
+		
+		assignmentService.updateAssignmentPerson(assigPerson7);
+		assignmentService.updateAssignmentPerson(assigPerson8);
+		
+		task4.setState(term);
+		projectService.updateTask(task4);
+		
+		// Check if the updates are correct
+		thisAssigPerson = assignmentService.findAssignmentPerson(assigPerson7.getId());
+		num = 19;
+		assertEquals(num, thisAssigPerson.getTotalHours());
+		num = 114;
+		assertEquals(num, thisAssigPerson.getTotalCost());
+		
+		thisAssigPerson = assignmentService.findAssignmentPerson(assigPerson8.getId());
+		num = 19;
+		assertEquals(num, thisAssigPerson.getTotalHours());
+		num = 152;
+		assertEquals(num, thisAssigPerson.getTotalCost());
+		
+		thisTask = projectService.findTask(task4.getId());
+		num = 38;
+		assertEquals(num, thisTask.getHoursReal());
+		num = 266;
+		assertEquals(num, thisTask.getCostReal());
+		num = 3;
+		assertEquals(num, thisTask.getDaysReal());
+		assertEquals(fmt.parse("2016-09-10"), thisTask.getEndReal());
+		
+		
+		// ================================================================================
+		log.info("");
+		log.info("===> Real datas for Tarea5");
+		// ================================================================================
+		task5.setIniReal(fmt.parse("2016-09-11"));
+		task5.setState(ejec);
+		
+		projectService.updateTask(task5);
+		
+		AssignmentPerson assigPerson9 = new AssignmentPerson(task5, hpPerson2, false);
+		AssignmentPerson assigPerson10 = new AssignmentPerson(task5, hpPerson3, false);
+		
+		assignmentService.createAssignmentPerson(assigPerson9);
+		assignmentService.createAssignmentPerson(assigPerson10);
+		
+		Workload wl22 = new Workload(task5, hpPerson2, fmt.parse("2016-09-11"), 8, 0);
+		Workload wl23 = new Workload(task5, hpPerson3, fmt.parse("2016-09-11"), 8, 0);
+		Workload wl24 = new Workload(task5, hpPerson2, fmt.parse("2016-09-12"), 8, 0);
+		Workload wl25 = new Workload(task5, hpPerson3, fmt.parse("2016-09-12"), 8, 0);
+		
+		assignmentService.createWorkload(wl22);
+		assignmentService.createWorkload(wl23);
+		assignmentService.createWorkload(wl24);
+		assignmentService.createWorkload(wl25);
+
+		assigPerson9.setConclude(true);
+		assigPerson10.setConclude(true);
+		
+		assignmentService.updateAssignmentPerson(assigPerson9);
+		assignmentService.updateAssignmentPerson(assigPerson10);
+		
+		task5.setState(term);
+		projectService.updateTask(task5);
+		
+		// Check if the updates are correct
+		thisAssigPerson = assignmentService.findAssignmentPerson(assigPerson9.getId());
+		num = 16;
+		assertEquals(num, thisAssigPerson.getTotalHours());
+		num = 128;
+		assertEquals(num, thisAssigPerson.getTotalCost());
+		
+		thisAssigPerson = assignmentService.findAssignmentPerson(assigPerson10.getId());
+		num = 16;
+		assertEquals(num, thisAssigPerson.getTotalHours());
+		num = 176;
+		assertEquals(num, thisAssigPerson.getTotalCost());
+		
+		thisTask = projectService.findTask(task5.getId());
+		num = 32;
+		assertEquals(num, thisTask.getHoursReal());
+		num = 304;
+		assertEquals(num, thisTask.getCostReal());
+		num = 2;
+		assertEquals(num, thisTask.getDaysReal());
+		assertEquals(fmt.parse("2016-09-12"), thisTask.getEndReal());
+		
+		
+		// ================================================================================
+		log.info("");
+		log.info("===> Create an incident");
+		// ================================================================================
+		Damage damage = projectService.findDamage("MGRV");
+		Incident incident = new Incident(damage, "Incident reason", "Incident result");
+		projectService.createIncident(incident);
+		
+		TaskIncident taskIncident = new TaskIncident(task1, incident, 800);		
+		projectService.createTaskIncident(taskIncident);
+		
+		
+		// ================================================================================
+		log.info("");
+		log.info("===> Change Project State: EJEC -> TERM");
+		// ================================================================================
+		Date dateEnd1 = fmt.parse("2016-09-16");
+		Date dateEnd2 = fmt.parse("2016-09-17");
+		
+		HistoryProject termHP = new HistoryProject(project, term, dateEnd1, dateEnd2, null);
+		projectService.createHistoryProject(termHP);
+		
+		// Check the planned data of the Project
+		thisProject = projectService.findProject(project.getId());
 	}
 
 }
