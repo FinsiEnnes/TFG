@@ -69,7 +69,7 @@ public class FullTest {
 
 		log.info("");
 		log.info ("============== Starting Full Test ==============");
-		thisTest();	
+		//thisTest();	
 	}
 
 	private void thisTest() throws InstanceNotFoundException, InputValidationException, ParseException {

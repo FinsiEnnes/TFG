@@ -143,14 +143,7 @@ public class HistoryProjectTest {
 		// ================================================================================
 		planHP.setEnd(new Date());
 		incorrectUpdate(planHP);
-		
-		
-		// ================================================================================
-		log.info("");
-		log.info ("===> Other correct create");
-		// ================================================================================
-		HistoryProject termHP = new HistoryProject(project,term,fmt.parse("2016-10-25"),null,null);
-		projectService.createHistoryProject(termHP);
+
 		
 		// ================================================================================
 		log.info("");
@@ -162,25 +155,22 @@ public class HistoryProjectTest {
 		hp = projectService.findHistoryProject(ejecHP.getId());
 		assertEquals(ejecHP, hp);
 
-		hp = projectService.findHistoryProject(termHP.getId());
-		assertEquals(termHP, hp);
-		
 		// ================================================================================
 		log.info("");
 		log.info ("===> Find by project");
 		// ================================================================================
 		List<HistoryProject> histories = projectService.findHistoryProjectByProject(project);
-		assertEquals(3, histories.size());
+		assertEquals(2, histories.size());
 		assertEquals(planHP, histories.get(0));
 		assertEquals(ejecHP, histories.get(1));
-		assertEquals(termHP, histories.get(2));
+
 		
 		// ================================================================================
 		log.info("");
 		log.info ("===> Find current history project");
 		// ================================================================================
 		hp = projectService.findCurrentHistoryProject(project);
-		assertEquals(termHP, hp);
+		assertEquals(ejecHP, hp);
 	}
 	
 	private void removeHistoryProject() throws InstanceNotFoundException {
