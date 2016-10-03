@@ -171,7 +171,7 @@ public class PersonServiceImpl implements PersonService{
 	@Transactional(value="myTransactionManager")
 	public Person findPersonByNif(String nif) throws InputValidationException, InstanceNotFoundException {
 		
-		Person person = new Person();
+		Person person = null;
 		
 		// Check if the nif of the person was defined and is correct.
 		PropertyValidator.validateNif("nifPerson", nif);
