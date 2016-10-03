@@ -12,52 +12,97 @@
 	<packaging>jar</packaging>
 	<name>RS-App Client Subsystem</name>
 
+	<properties>
+		<boot.version>1.2.5.RELEASE</boot.version>
+		<boot.plugin.version>1.4.0.RELEASE</boot.plugin.version>
+		<tomcat.embed.version>8.0.23</tomcat.embed.version>
+		<jstl.version>1.2</jstl.version>
+		<bootstrap.version>3.3.6</bootstrap.version>
+		<jquery.version>1.9.1</jquery.version>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>es.udc.ws</groupId>
 			<artifactId>ws-util</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>es.udc.rs.app</groupId>
 			<artifactId>rs-app-util</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
-		</dependency>            
+		</dependency>
+				
+		<!-- Due we need the model Service  -->
+		<dependency>
+            <groupId>es.udc.rs.app</groupId>
+            <artifactId>rs-app-model</artifactId>
+        </dependency>   
+		
+		<!-- Spring Boot dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<version>${boot.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-web</artifactId>
+		    <version>${boot.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- Dependencies necessaries to work with JSP and JAR at the same time  -->
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+			<version>${tomcat.embed.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>${jstl.version}</version>
+		</dependency>   
+		
+		<!-- Bootstrap dependencies -->
+		<dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>${bootstrap.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery</artifactId>
+            <version>${jquery.version}</version>
+        </dependency>      
 	</dependencies>
 
 	<build>
 		<plugins>
-			
-			<!-- Uncomment this plugin to generate the client JAXB classes
-			     from the server schemas
-			-->
-			<!-- 
+			<!-- Spring MVC plugin  -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>${jaxb2MavenPlugin}</version>
-				<executions>
-					<execution>
-						<id>xjc_app</id>
-						<goals>
-							<goal>xjc</goal>
-						</goals>
-						<configuration>
-							<schemaDirectory>../rs-app-service/target/generated-resources/schemagen/</schemaDirectory>
-							<schemaFiles>schema1.xsd</schemaFiles>
-							<bindingDirectory>src/main/resources/</bindingDirectory>
-							<bindingFiles>appBindings.xjb</bindingFiles>
-							<outputDirectory>src/main/java</outputDirectory>
-							<clearOutputDir>false</clearOutputDir>
-							<packageName>es.udc.rs.app.client.service.rest.dto</packageName>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			 -->
-
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${boot.plugin.version}</version>
+            </plugin>
 		</plugins>
 	</build>
 
