@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +38,29 @@ public class PersonDAOImpl implements PersonDAO {
 
 	@Override
 	public List<Person> findAll() {
-
-		// Create the query.
-		String query = "FROM Person P ORDER BY P.surname1 ASC";
+		
+		// Create the criteria in function of the attributes.
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Person.class);
+		criteria.addOrder(Order.asc("surname1"));
 		
 		// Get the persons
 		@SuppressWarnings("unchecked")
-		List<Person> persons = (List<Person>) sessionFactory.getCurrentSession().createQuery(query).list();
+		List<Person> persons = (List<Person>) criteria.list();
+		
+		return persons;
+	}
+	
+	
+	@Override
+	public List<Person> findAll(int first, int count) {
+		
+		// Create the criteria in function of the attributes.
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Person.class);
+		criteria.setFirstResult(first).setMaxResults(count).addOrder(Order.asc("surname1"));
+		
+		// Get the persons
+		@SuppressWarnings("unchecked")
+		List<Person> persons = (List<Person>) criteria.list();
 		
 		return persons;
 	}
@@ -83,6 +100,23 @@ public class PersonDAOImpl implements PersonDAO {
 		return persons;
 	}
 
+	
+	@Override
+	public int getTotalPersons() {
+		
+		// Create the criteria in function of the attributes.
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Person.class);
+		criteria.setProjection(Projections.rowCount());
+		
+		// Get the total
+		Long longTotal = (Long) criteria.uniqueResult();
+		int total = Math.toIntExact(longTotal);		
+		
+		return total;
+
+	}
+
+	
 	@Override
 	public boolean personExists(Long id) {
 		

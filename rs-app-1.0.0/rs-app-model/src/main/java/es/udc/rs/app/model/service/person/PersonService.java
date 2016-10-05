@@ -2,6 +2,7 @@ package es.udc.rs.app.model.service.person;
 
 import java.util.List;
 
+import es.udc.rs.app.exceptions.FirstPageElementException;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Aptitude;
@@ -21,10 +22,14 @@ public interface PersonService {
 	
 	public List<Person> findAllPersons();
 	
+	public List<Person> findAllPersons(int pageNumber, int pageSize) throws FirstPageElementException;
+	
 	public Person findPersonByNif(String nif) throws InstanceNotFoundException, InputValidationException;
 	
 	public List<Person> findPersonsByName(String name, String surname1, String surname2) 
 			throws InputValidationException;
+	
+	public int getTotalPersons();
 	
 	public void updatePerson(Person person) throws InstanceNotFoundException, InputValidationException;
 	

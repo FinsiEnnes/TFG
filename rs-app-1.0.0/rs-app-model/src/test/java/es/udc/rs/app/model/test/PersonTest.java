@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import es.udc.rs.app.exceptions.FirstPageElementException;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Person;
@@ -54,7 +55,7 @@ public class PersonTest {
 	}
 	
 	@Test
-	public void fullPersonTest() throws InputValidationException, InstanceNotFoundException, ParseException {
+	public void fullPersonTest() throws InputValidationException, InstanceNotFoundException, ParseException, FirstPageElementException {
 		
 		createAndFindPerson();
 		updatePerson();
@@ -62,7 +63,7 @@ public class PersonTest {
 	}
 	
 	private void createAndFindPerson() 
-			throws InputValidationException, InstanceNotFoundException, ParseException {
+			throws InputValidationException, InstanceNotFoundException, ParseException, FirstPageElementException {
 		
 		Person p1;
 		Person p2;
@@ -116,7 +117,7 @@ public class PersonTest {
 		assertTrue(error);
 		
 		// =============================== Find all persons ===============================
-		persons = personService.findAllPersons();
+		persons = personService.findAllPersons(1,5);
 		assertEquals(persons.size(), 5);
 		assertEquals(persons.get(0), testUtils.p1);
 		assertEquals(persons.get(1), testUtils.p2);
@@ -124,6 +125,26 @@ public class PersonTest {
 		assertEquals(persons.get(3), testUtils.p4);
 		assertEquals(persons.get(4), p1);
 		log.info ("Correct: Persons got correctly with findAllPersons.");
+		
+		// =============================== Testing the pagination ===============================
+		persons = personService.findAllPersons(1,2);
+		assertEquals(persons.size(), 2);
+		assertEquals(persons.get(0), testUtils.p1);
+		assertEquals(persons.get(1), testUtils.p2);
+		
+		persons = personService.findAllPersons(2,3);
+		assertEquals(persons.size(), 2);
+		assertEquals(persons.get(0), testUtils.p4);
+		assertEquals(persons.get(1), p1);
+		
+		persons = personService.findAllPersons(1,1);
+		assertEquals(persons.size(), 1);
+		assertEquals(persons.get(0), testUtils.p1);
+		
+		persons = personService.findAllPersons(3,1);
+		assertEquals(persons.size(), 1);
+		assertEquals(persons.get(0), testUtils.p3);
+		
 	}
 	
 	private void updatePerson() throws InputValidationException, InstanceNotFoundException, ParseException {

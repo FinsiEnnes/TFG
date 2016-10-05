@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.udc.rs.app.exceptions.FirstPageElementException;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.dao.aptitude.AptitudeDAO;
@@ -28,6 +29,7 @@ import es.udc.rs.app.model.domain.TimeOff;
 import es.udc.rs.app.model.util.FindInstanceService;
 import es.udc.rs.app.model.util.ModelConstants;
 import es.udc.rs.app.validation.PropertyValidator;
+import es.udc.rs.app.others.AssistantMethods;
 
 @Service
 public class PersonServiceImpl implements PersonService{
@@ -169,6 +171,30 @@ public class PersonServiceImpl implements PersonService{
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
+	public List<Person> findAllPersons(int pageNumber, int pageSize) throws FirstPageElementException {
+
+		List<Person> persons = new ArrayList<Person>();
+		
+		// First we need to get the index
+		int totalElements = getTotalPersons();
+		int firstElement = AssistantMethods.getFirstPageElement(pageNumber, pageSize, totalElements);
+		int count = Math.min(pageSize, totalElements - firstElement);
+		
+		// We get all the Persons in the database.
+		try {
+			persons = personDAO.findAll(firstElement, count);
+		} 
+		catch (DataAccessException e){
+			throw e;
+		}
+
+		log.info(ModelConstants.PAGE + pageNumber + ModelConstants.PAGE_ITEMS + count);
+		return persons;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
 	public Person findPersonByNif(String nif) throws InputValidationException, InstanceNotFoundException {
 		
 		Person person = null;
@@ -220,6 +246,27 @@ public class PersonServiceImpl implements PersonService{
 		return persons;
 	}
 
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public int getTotalPersons() {
+		
+		int total = 0;
+		
+		// Get the total
+		try {
+			total = personDAO.getTotalPersons();
+		} 
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + total + " registred persons");
+		return total;
+	}
+	
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")

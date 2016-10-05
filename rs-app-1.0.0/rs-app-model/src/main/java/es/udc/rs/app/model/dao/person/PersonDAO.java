@@ -12,9 +12,13 @@ public interface PersonDAO {
 	
 	public List<Person> findAll();
 	
+	public List<Person> findAll(int first, int count);
+	
 	public Person findByNif(String nif);
 	
 	public List<Person> findByName(String name, String surname1, String surname2);
+	
+	public int getTotalPersons();
 	
 	public boolean personExists(Long id);
 	

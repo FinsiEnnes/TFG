@@ -9,6 +9,8 @@ public final class ModelConstants {
 	public static final String FIND_ALL = "There are a total of ";
 	public static final String UPDATE = "Successful updated: ";
 	public static final String DELETE = "Successful deleted: "; 
+	public static final String PAGE = "For the page number "; 
+	public static final String PAGE_ITEMS = " the total of items is: "; 
 
     private ModelConstants() {
     }
