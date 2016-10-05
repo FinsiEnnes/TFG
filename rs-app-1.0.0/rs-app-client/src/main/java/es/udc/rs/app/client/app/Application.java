@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 
 @Configuration
-@ComponentScan({ "es/udc/rs/app/client/app" })
+@ComponentScan({ "es/udc/rs/app/client/app", "es/udc/rs/app/client/controllers" })
 @EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 @ImportResource("file:/home/finsi/myProject/rs-app-1.0.0/rs-app-model/src/main/resources/spring-config.xml")
 public class Application {
