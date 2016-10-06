@@ -28,8 +28,18 @@ public class PersonController {
     	List<Person> persons = new ArrayList<Person>();
     	persons = personService.findAllPersons(pageNumber, ClientConstants.PAGE_SIZE);
     	
+    	// Get the number of total pages
+    	int totalItems = personService.getTotalPersons();
+    	int totalPages = (int) Math.ceil(totalItems/ClientConstants.PAGE_SIZE);
+    	
+    	if ((totalItems % ClientConstants.PAGE_SIZE) > 0) {
+    		totalPages++;
+    	}
+    	
     	// Now create the model
     	model.addAttribute("persons", persons);
+    	model.addAttribute("pageNumber", pageNumber);
+    	model.addAttribute("totalPage", totalPages);
     	
     	// Return the name of the view
         return "personTable";
