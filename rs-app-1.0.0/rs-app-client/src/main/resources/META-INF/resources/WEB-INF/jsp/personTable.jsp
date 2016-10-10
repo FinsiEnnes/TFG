@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <html>
 <head>
-<link href="webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+<link href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
 	rel="stylesheet">
 </head>
 <body>
@@ -35,7 +35,7 @@
 				</div>
 			</div>
 			<div class="col-md-offset-5 col-md-2">
-				<button type="button" class="btn btn-success"> 
+				<button type="button" class="btn btn-success pull-right"> 
 					<span class="glyphicon glyphicon-plus"></span>  Crear nueva persona
 				</button>
 			</div>
@@ -50,7 +50,8 @@
 					<th>Nif</th>
 					<th>Email</th>
 					<th>Alta</th>
-					<th>Acción</th>
+					<th></th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -62,11 +63,15 @@
 						<td class="col-md-1">${person.nif}</td>
 						<td class="col-md-3">${person.email}</td>
 						<td class="col-md-2">${person.hiredate}</td>
-						<td class="col-md-2">
-							<button type="button" class="btn btn-info btn-xs">
-								<span class="glyphicon glyphicon-info-sign"></span> Info
-							</button>
-							<button type="button" class="btn btn-danger btn-xs pull-right">
+						<td class="col-md-1">
+							<form action="/persons/${person.id}" method="get">
+								<button type="submit" class="btn btn-info btn-xs center-block">
+									<span class="glyphicon glyphicon-info-sign"></span> Info
+								</button>
+							</form>
+						</td>
+						<td class="col-md-1">
+							<button type="button" class="btn btn-danger btn-xs center-block">
 								<span class="glyphicon glyphicon-remove"></span> Borrado
 							</button>
 						</td>
@@ -79,21 +84,23 @@
 			<div class="col-md-2">
 				<p class="text-info text-center">Página ${pageNumber} de ${totalPage}</p>
 			</div>
-			<div class="col-md-offset-6 col-md-1">
+			<div class="col-md-offset-7 col-md-1">
 				<button type="button" class="btn btn-default">
 					<span class="glyphicon glyphicon-chevron-left"></span> Anterior
 				</button>
 			</div>
 			<div class="col-md-offset-1 col-md-1">
-				<button type="button" class="btn btn-default">
-					Siguiente <span class="glyphicon glyphicon-chevron-right"></span>
-				</button>
+				<form action="/persons" method="get">
+					<button type="submit" name="page" value="2" class="btn btn-default pull-right">
+						Siguiente <span class="glyphicon glyphicon-chevron-right"></span>
+					</button>
+				</form>
 			</div>
 		</div>
 	</div>
 
-	<script src="webjars/jquery/1.9.1/jquery.min.js"></script>
-	<script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script src="/webjars/jquery/1.9.1/jquery.min.js"></script>
+	<script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </body>
 
 </html>
