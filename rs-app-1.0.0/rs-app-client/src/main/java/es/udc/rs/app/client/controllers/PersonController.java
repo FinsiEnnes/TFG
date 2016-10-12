@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import es.udc.rs.app.client.util.ClientConstants;
 import es.udc.rs.app.exceptions.FirstPageElementException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
+import es.udc.rs.app.model.domain.Aptitude;
 import es.udc.rs.app.model.domain.Person;
 import es.udc.rs.app.model.service.person.PersonService;
 
@@ -50,11 +51,16 @@ public class PersonController {
     
     
     @RequestMapping("/persons/{idPerson}")
-    public ModelAndView personInfo(@PathVariable String idPerson, Model model) throws InstanceNotFoundException {
+    public String personInfo(@PathVariable String idPerson, Model model) throws InstanceNotFoundException {
     	
     	Long idPersonLong = Long.parseLong(idPerson, 10);
     	Person thisPerson = personService.findPerson(idPersonLong);
     	
-    	return new ModelAndView("personInfo", "person", thisPerson);
+    	List<Aptitude> aptitudes = personService.findAptitudeByPerson(thisPerson);
+    	
+    	model.addAttribute("person", thisPerson);
+    	model.addAttribute("aptitudes", aptitudes);
+    	
+    	return "personInfo";
     }
 }
