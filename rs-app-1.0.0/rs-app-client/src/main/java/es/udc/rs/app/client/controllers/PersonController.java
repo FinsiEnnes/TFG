@@ -61,6 +61,10 @@ public class PersonController {
     	model.addAttribute("person", thisPerson);
     	model.addAttribute("aptitudes", aptitudes);
     	
+    	model.addAttribute("section1State", "active");
+    	model.addAttribute("section2State", "");
+    	model.addAttribute("section3State", "");
+    	
     	return "personInfo";
     }
 }
