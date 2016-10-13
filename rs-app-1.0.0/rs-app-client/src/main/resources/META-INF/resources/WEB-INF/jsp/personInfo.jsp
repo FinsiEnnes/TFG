@@ -16,9 +16,12 @@
 			<!-- required for floating -->
 			<!-- Nav tabs -->
 			<ul class="nav nav-tabs tabs-left sideways">
-				<li class="${section1State}"><a href="#section1" data-toggle="tab">Información</a></li>
-				<li class="${section2State}"><a href="#section2" data-toggle="tab">Aptitudes</a></li>
-				<li class="${section3State}"><a href="#messages-v" data-toggle="tab">Bajas</a></li>
+				<li class="${section1State}"><a href="#section1"
+					data-toggle="tab">Información</a></li>
+				<li class="${section2State}"><a href="#section2"
+					data-toggle="tab">Aptitudes</a></li>
+				<li class="${section3State}"><a href="#messages-v"
+					data-toggle="tab">Bajas</a></li>
 			</ul>
 		</div>
 
@@ -141,7 +144,7 @@
 									<td class="col-md-1">${aptitude.value}</td>
 									<td class="col-md-5">${aptitude.comment}</td>
 									<td class="col-md-1">
-										<div class="col-md-1 checkbox">
+										<div class="col-md-1 checkbox-inline">
 											<label><input type="checkbox"></label>
 										</div>
 									</td>
@@ -151,34 +154,47 @@
 					</table>
 
 				</div>
-				<div class="tab-pane ${section3State}" id="messages-v">Messages Tab.</div>
+				<div class="tab-pane ${section3State}" id="messages-v">Messages
+					Tab.</div>
 			</div>
 		</div>
+
 		<!-- Modal -->
-		<div id="myModal" class="modal fade" role="dialog">
+		<div class="modal fade" id="myModal" role="dialog">
 			<div class="modal-dialog">
 
 				<!-- Modal content-->
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Nueva aptitud</h4>
+						<h4 class="modal-title">Creación de nueva aptitud</h4>
 					</div>
 					<div class="modal-body">
-						<form class="form-horizontal" method="POST" action="/persons/${person.name}"
-						modelAttribute="aptitude">
-							<div class="row">
-								<div class="col-md-offset-1 col-md-4 form-group">
-									<label for="usr">Nombre</label> <input type="text"
-										class="form-control" id="usr">
+						
+						<form class="form-horizontal" method="post" action='/persons/${person.id}' name="employeeForm" id="employeeForm">
+							<div class="form-group">
+								<div class="col-md-7">
+									<label for="usr">Nombre</label> 
+									<input type="text" class="form-control" name="nameAptitude" id="nameAptitude" title="First Name">
 								</div>
-								<div class="col-md-4 form-group">
-									<label for="usr">Tipo</label> <input type="text"
-										class="form-control" id="usr">
+
+								<div class="col-md-3">
+									<label for="selectValue">Tipo</label> <select
+										class="form-control" name="typeAptitude" id="typeAptitude">
+										<option>Artistica</option>
+										<option>Cientifica</option>
+										<option>Directiva</option>
+										<option>Espacial</option>
+										<option>Mecanica</option>
+										<option>Numerica</option>
+										<option>Organizativa</option>
+										<option>Social</option>
+									</select>
 								</div>
-								<div class="col-md-2 form-group">
+
+								<div class="col-md-2">
 									<label for="selectValue">Valoración</label> <select
-										class="form-control" id="selectValue">
+										class="form-control" name="valueAptitude" id="valueAptitude">
 										<option>1</option>
 										<option>2</option>
 										<option>3</option>
@@ -192,19 +208,17 @@
 									</select>
 								</div>
 							</div>
-							<div class="modal-footer">
-								<button type="submit" class="btn btn-success"
-									data-dismiss="modal">Crear</button>
-	
-								<button type="button" class="btn btn-default"
-									data-dismiss="modal">Cerrar</button>
+							
+							<div class="form-group">
+								<button type="submit" class="btn btn-success center-block">Crear aptitud</button>
 							</div>
 						</form>
 					</div>
-
 				</div>
+
 			</div>
 		</div>
+
 	</div>
 
 

@@ -3,18 +3,23 @@ package es.udc.rs.app.client.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import es.udc.rs.app.client.util.ClientConstants;
 import es.udc.rs.app.exceptions.FirstPageElementException;
+import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Aptitude;
+import es.udc.rs.app.model.domain.AptitudeType;
 import es.udc.rs.app.model.domain.Person;
 import es.udc.rs.app.model.service.person.PersonService;
 
@@ -50,7 +55,7 @@ public class PersonController {
     }
     
     
-    @RequestMapping("/persons/{idPerson}")
+    @RequestMapping(value="/persons/{idPerson}",  method=RequestMethod.GET)
     public String personInfo(@PathVariable String idPerson, Model model) throws InstanceNotFoundException {
     	
     	Long idPersonLong = Long.parseLong(idPerson, 10);
@@ -63,6 +68,36 @@ public class PersonController {
     	
     	model.addAttribute("section1State", "active");
     	model.addAttribute("section2State", "");
+    	model.addAttribute("section3State", "");
+    	
+    	return "personInfo";
+    }
+    
+    @RequestMapping(value="/persons/{idPerson}",  method=RequestMethod.POST)
+    public String addAptitude(@PathVariable String idPerson, Model model, HttpServletRequest request) 
+    		throws InstanceNotFoundException, InputValidationException  {
+    	
+    	// Find the Person
+    	Long idPersonLong = Long.parseLong(idPerson, 10);
+    	Person person = personService.findPerson(idPersonLong);
+    	
+    	// Create the Aptitude
+    	String nameApt = request.getParameter("nameAptitude");
+    	AptitudeType typeApt = personService.findAptitudeType("ART");
+    	Integer valueApt = Integer.parseInt(request.getParameter("valueAptitude"));
+    	
+    	Aptitude apt = new Aptitude(person, nameApt, typeApt, valueApt, "");
+    	
+    	// Add the aptitude to the Person
+    	personService.createAptitude(apt);
+    	
+    	List<Aptitude> aptitudes = personService.findAptitudeByPerson(person);
+    	
+    	model.addAttribute("person", person);
+    	model.addAttribute("aptitudes", aptitudes);
+    	
+    	model.addAttribute("section1State", "");
+    	model.addAttribute("section2State", "active");
     	model.addAttribute("section3State", "");
     	
     	return "personInfo";
