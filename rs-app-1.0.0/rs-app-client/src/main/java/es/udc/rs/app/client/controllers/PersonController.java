@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,8 +41,10 @@ public class PersonController {
     public String personTable 
     	(@RequestParam(value="page", required=false, defaultValue="1") int pageNumber, Model model) throws FirstPageElementException {
 
+    	// Initialization of variables
     	List<PersonDTO> personsDTO = new ArrayList<PersonDTO>();
-    	int totalItems, totalPages= 0;
+    	int totalItems = 0, totalPages = 0, previousPage = 1, nextPage = 1;
+    	String nextActive = "", previousActive = "";
 
     	// First we are going to get the Persons belong to this page number
     	List<Person> persons = new ArrayList<Person>();
@@ -58,15 +63,41 @@ public class PersonController {
 	    	if ((totalItems % ClientConstants.PAGE_SIZE) > 0) {
 	    		totalPages++;
 	    	}
+	    	
+	    	// We set the previous and next page
+	    	previousPage = (pageNumber == 1) ? 1 : (pageNumber - 1);
+	    	nextPage = (pageNumber == totalPages) ? totalPages : (pageNumber + 1);
+	    			
+	    	// If it is the first or last page, we will disable the button previous or next
+	    	previousActive = (pageNumber == 1) ? "disabled" : "";
+	    	nextActive = (pageNumber == totalPages) ? "disabled" : "";
     	}
 	    	
     	// Now create the model
     	model.addAttribute("persons", personsDTO);
     	model.addAttribute("pageNumber", pageNumber);
     	model.addAttribute("totalPage", totalPages);
+    	model.addAttribute("previousActive", previousActive);
+    	model.addAttribute("nextActive", nextActive);
+    	model.addAttribute("previousPage", previousPage);
+    	model.addAttribute("nextPage", nextPage);
+    	model.addAttribute("action", "");
     	
     	// Return the name of the view
         return "personTable";
+    }
+    
+    
+    //-----------------------------------------------------------------------------------------------------
+    // [POST]-> /persons || Addition of a new Person.   
+    //-----------------------------------------------------------------------------------------------------
+    @RequestMapping(value="/persons", method=RequestMethod.POST)
+    public String addPerson(@Valid @ModelAttribute("person")PersonDTO personDto, 
+    	      BindingResult result, Model model, HttpServletRequest request) {
+    	
+    	model.addAttribute("idPerson", request.getParameter("hiredate"));
+    	model.addAttribute("action", "correctCreation");
+    	return "personTable";
     }
     
     

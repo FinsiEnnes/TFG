@@ -88,7 +88,6 @@
 							<div class="col-md-10">
 								<textarea class="form-control" rows="8" id="commentPerson">${person.comment}</textarea>
 							</div>
-							<div class="col-md-3"></div>
 						</div>
 
 						<br>
