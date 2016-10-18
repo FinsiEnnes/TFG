@@ -1,6 +1,7 @@
 package es.udc.rs.app.client.controllers;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import es.udc.rs.app.client.conversor.PersonDTOConversor;
 import es.udc.rs.app.client.dto.PersonDTO;
 import es.udc.rs.app.client.util.ClientConstants;
+import es.udc.rs.app.client.util.ClientUtilMethods;
 import es.udc.rs.app.exceptions.FirstPageElementException;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
@@ -43,7 +45,7 @@ public class PersonController {
 
     	// Initialization of variables
     	List<PersonDTO> personsDTO = new ArrayList<PersonDTO>();
-    	int totalItems = 0, totalPages = 0, previousPage = 1, nextPage = 1;
+    	int totalPages = 0, previousPage = 1, nextPage = 1;
     	String nextActive = "", previousActive = "";
 
     	// First we are going to get the Persons belong to this page number
@@ -57,12 +59,7 @@ public class PersonController {
     		personsDTO = PersonDTOConversor.toPersonDTOs(persons);
     		
     		// Get the number of total pages
-    		totalItems = personService.getTotalPersons();
-	    	totalPages = (int) Math.ceil(totalItems/ClientConstants.PAGE_SIZE);
-	    	
-	    	if ((totalItems % ClientConstants.PAGE_SIZE) > 0) {
-	    		totalPages++;
-	    	}
+	    	totalPages = ClientUtilMethods.getTotalPagesPerson(personService.getTotalPersons());
 	    	
 	    	// We set the previous and next page
 	    	previousPage = (pageNumber == 1) ? 1 : (pageNumber - 1);
@@ -93,10 +90,27 @@ public class PersonController {
     //-----------------------------------------------------------------------------------------------------
     @RequestMapping(value="/persons", method=RequestMethod.POST)
     public String addPerson(@Valid @ModelAttribute("person")PersonDTO personDto, 
-    	      BindingResult result, Model model, HttpServletRequest request) {
+    	      BindingResult result, Model model, HttpServletRequest request) throws InputValidationException, FirstPageElementException {
     	
-    	model.addAttribute("idPerson", request.getParameter("hiredate"));
+    	// Get the PersonDTO
+    	Date hiredate = ClientUtilMethods.toDate(request.getParameter("hiredate"));
+    	personDto.setHiredate(hiredate);
+    	
+    	// Convert the PersonDTO to Person
+    	Person person = PersonDTOConversor.toPerson(personDto);
+    	
+    	// Create the Person calling at the service
+    	Long idPerson = personService.createPerson(person);
+    	
+    	// Get the last page
+    	int lastPage = ClientUtilMethods.getTotalPagesPerson(personService.getTotalPersons());
+    	
+    	// Create the model     	
+    	personTable(lastPage,model);
+    	model.addAttribute("idPerson", idPerson);
     	model.addAttribute("action", "correctCreation");
+    	
+    	// Return the table in the first page 
     	return "personTable";
     }
     

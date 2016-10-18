@@ -20,7 +20,7 @@
 		<div class="row">
 			<div class="col-md-3">
 				<div class="form-group">
-					<input type="password" class="form-control" id="pwd"
+					<input type="text" class="form-control" id="pwd"
 						placeholder="Búsqueda">
 				</div>
 			</div>
@@ -63,7 +63,7 @@
 				<c:forEach var="person" items="${persons}">
 					<tr>
 						<td class="col-md-1 text-info">${person.id}</td>
-						<td class="col-md-3">${person.name}${person.surname1}
+						<td class="col-md-3">${person.name} ${person.surname1}
 							${person.surname2}</td>
 						<td class="col-md-1">${person.nif}</td>
 						<td class="col-md-3">${person.email}</td>
@@ -107,6 +107,8 @@
 				</form>
 			</div>
 		</div>
+		
+		<!-- ------------------------ Modal: Form Person creation  ------------------------ -->
 		<div class="modal fade" id="myModal" role="dialog">
 			<div class="modal-dialog">
 
@@ -151,7 +153,7 @@
 								<div class="col-md-4">
 									<label>Fecha de alta</label> <input type="text"
 										class="form-control datepicker" data-format="dd/MM/yyyy" name="hiredate"
-										id="hiredate">
+										id="hiredate" placeholder="dd/mm/aaaa">
 								</div>
 							</div>
 							
