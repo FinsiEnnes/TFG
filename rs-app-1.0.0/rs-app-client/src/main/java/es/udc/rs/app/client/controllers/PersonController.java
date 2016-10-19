@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +33,8 @@ import es.udc.rs.app.model.service.person.PersonService;
 @Controller
 public class PersonController {
 
+	static Logger log = Logger.getLogger("project");
+	
 	@Autowired 
 	private PersonService personService;
     
@@ -51,6 +54,8 @@ public class PersonController {
     	// First we are going to get the Persons belong to this page number
     	List<Person> persons = new ArrayList<Person>();
     	persons = personService.findAllPersons(pageNumber, ClientConstants.PAGE_SIZE);
+    	
+    	log.info("La fecha de alta de la primera persona de la página es: " + persons.get(0).getHiredate().toString());
     	
     	// Check if the list is empty
     	if (!persons.isEmpty()) {

@@ -40,7 +40,7 @@
 			</div>
 			<div class="col-md-offset-5 col-md-2">
 				<button type="button" class="btn btn-success pull-right"
-					data-toggle="modal" data-target="#myModal">
+					data-toggle="modal" data-target="#formPersonCreation">
 					<span class="glyphicon glyphicon-plus"></span> Añadir nueva persona
 				</button>
 			</div>
@@ -107,65 +107,83 @@
 				</form>
 			</div>
 		</div>
-		
-		<!-- ------------------------ Modal: Form Person creation  ------------------------ -->
-		<div class="modal fade" id="myModal" role="dialog">
+
+		<!-- -------------------------- Modal: Form Person creation  ------------------------- -->
+		<div class="modal fade" id="formPersonCreation" role="dialog">
 			<div class="modal-dialog">
 
-				<!-- Modal content-->
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
 						<h4 class="modal-title">Creación de nueva persona</h4>
 					</div>
 					<div class="modal-body">
+						<form:form class="form" method="post"
+							action='/persons' modelAttribute="person" role="form" data-toggle="validator" >
 
-						<form:form class="form-horizontal" method="post" action='/persons' modelAttribute="person"
-							name="employeeForm" id="employeeForm">
+							<!-- First row -->
 							<div class="form-group">
-								<div class="col-md-4">
-									<label>Nombre</label> <input type="text"
-										class="form-control" name="name" id="name">
-								</div>
+								<div class="row">
+									<div class="form-group col-md-4">
+										<label for="inputName" class="control-label">Nombre</label> <input
+											type="text" class="form-control" name="name" id="name"
+											required>
+									</div>
 
-								<div class="col-md-4">
-									<label>Apellido 1</label> <input type="text"
-										class="form-control" name="surname1" id="surname1">
-								</div>
+									<div class="form-group col-md-4">
+										<label for="inputSurname1" class="control-label">Apellido
+											1</label> <input type="text" class="form-control" name="surname1"
+											id="surname1" required>
+									</div>
 
-								<div class="col-md-4">
-									<label>Apellido 2</label> <input type="text"
-										class="form-control" name="surname2" id="surname2">
+									<div class="form-group col-md-4">
+										<label for="inputSurname2" class="control-label">Apellido
+											2</label> <input type="text" class="form-control" name="surname2"
+											id="surname2" required>
+									</div>
 								</div>
 							</div>
 
+							<!-- Seconnd row -->
 							<div class="form-group">
-								<div class="col-md-4">
-									<label>DNI</label> <input type="text"
-										class="form-control" name="nif" id="nif" placeholder="12345678A">
-								</div>
+								<div class="row">
+									<div class="form-group has-feedback has-feedback col-md-4">
+										<label for="inputNif" class="control-label">DNI</label> <input
+											type="text" class="form-control" name="nif" id="nif"
+											pattern="^(\d{8})([A-Z]{1})$" maxlength="9"
+											placeholder="12345678A" required> <span
+											class="glyphicon form-control-feedback"></span>
+									</div>
 
-								<div class="col-md-4">
-									<label>Email</label> <input type="text"
-										class="form-control" name="email" id="email" placeholder="ejemplo@dominio.com">
-								</div>
+									<div class="form-group col-md-4">
+										<label for="inputEmail" class="control-label">Email </label> <input
+											type="text" class="form-control" name="email" id="email"
+											placeholder="ejemplo@dominio.com" required>
+									</div>
 
-								<div class="col-md-4">
-									<label>Fecha de alta</label> <input type="text"
-										class="form-control datepicker" data-format="dd/MM/yyyy" name="hiredate"
-										id="hiredate" placeholder="dd/mm/aaaa">
+									<div class="form-group col-md-4">
+										<label for="inputHiredate" class="control-label">Fecha
+											de alta </label> <input type="text" class="form-control datepicker"
+											data-format="dd/MM/yyyy" name="hiredate" id="hiredate"
+											placeholder="dd/mm/aaaa" required>
+									</div>
 								</div>
 							</div>
-							
+
+							<!-- Third row -->
 							<div class="form-group">
-								<div class="col-md-12">
-									<label>Cometarios</label>
-									<textarea class="form-control" rows="2" id="comment" name="comment" placeholder="Detalles a destacar..."></textarea>
+								<div class="row">
+									<div class="col-md-12">
+										<label>Cometarios</label>
+										<textarea class="form-control" rows="2" id="comment"
+											name="comment" placeholder="Detalles a destacar..."></textarea>
+									</div>
 								</div>
 							</div>
 
+
 							<div class="form-group">
-								<button type="submit" class="btn btn-success center-block">Añadir</button>
+								<button type="submit" class="btn btn-primary center-block">Añadir</button>
 							</div>
 						</form:form>
 					</div>
@@ -173,7 +191,8 @@
 
 			</div>
 		</div>
-		
+
+		<!-- ------------------------ Modal: Success Person creation  ------------------------ -->
 		<div class="modal fade" id="successCreation" role="dialog">
 			<div class="modal-dialog">
 				<!-- Modal content-->
@@ -184,14 +203,14 @@
 					</div>
 					<div class="modal-body">
 						<div class="row">
-							<div class="col-md-12 center-block">
-								Persona con id ${idPerson} añadida correctamente.
-							</div>
+							<div class="col-md-12 center-block">Persona con id
+								${idPerson} añadida correctamente.</div>
 						</div>
 					</div>
 					<div class="modal-footer">
-          				<button type="button" class="btn btn-success center-block" data-dismiss="modal">Aceptar</button>
-        			</div>
+						<button type="button" class="btn btn-success center-block"
+							data-dismiss="modal">Aceptar</button>
+					</div>
 				</div>
 
 			</div>
@@ -200,8 +219,14 @@
 
 	<script src="/webjars/jquery/1.9.1/jquery.min.js"></script>
 	<script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-	<script src="/webjars/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
-	<script src="/webjars/bootstrap-datepicker/1.6.1/locales/bootstrap-datepicker.es.min.js"></script>
+	<script
+		src="/webjars/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
+	<script
+		src="/webjars/bootstrap-datepicker/1.6.1/locales/bootstrap-datepicker.es.min.js"></script>
+	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.js"></script>
+	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.min.js"></script>
+
+	<!-- ------------------------ Datapicker language: es  ------------------------ -->
 	<script>
 		$(document).ready(function() {
 			$('.datepicker').datepicker({
@@ -209,11 +234,44 @@
 			});
 		})
 	</script>
+
+
 	<script type="text/javascript">
 		$(window).load(function() {
-			if ( "correctCreation" == '${action}' ) {
+			if ("correctCreation" == '${action}') {
 				$('#successCreation').modal('show');
 			}
+		});
+	</script>
+
+	<!-- ------------------------ Validation in form Person creation  ------------------------ -->
+	<script>
+		$(document).ready(function() {
+			$('#formPersonCreation').formValidation({
+				framework : 'bootstrap',
+				excluded : ':disabled',
+				icon : {
+					valid : 'glyphicon glyphicon-ok',
+					invalid : 'glyphicon glyphicon-remove',
+					validating : 'glyphicon glyphicon-refresh'
+				},
+				fields : {
+					name : {
+						validators : {
+							notEmpty : {
+								message : 'Campo requerido'
+							}
+						}
+					},
+					password : {
+						validators : {
+							notEmpty : {
+								message : 'The password is required'
+							}
+						}
+					}
+				}
+			});
 		});
 	</script>
 </body>
