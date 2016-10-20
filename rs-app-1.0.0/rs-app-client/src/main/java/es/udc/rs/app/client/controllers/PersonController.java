@@ -38,43 +38,114 @@ public class PersonController {
 	@Autowired 
 	private PersonService personService;
     
+	//-----------------------------------------------------------------------------------------------------
+	// [GET]-> /persons?keyword=&search-term=id || Person search by name.   
+	//-----------------------------------------------------------------------------------------------------
+	private List<Person> findPersonByID(Long id) throws InstanceNotFoundException {
+		
+		// List with only a person
+		List<Person> persons = new ArrayList<Person>();
+		
+		// Find the person by id and add to the list
+		Person person = personService.findPerson(id);
+		persons.add(person);
+		
+		return persons;
+	}
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [GET]-> /persons || Show the registered persons in pages of 5 entries.   
+	// [GET]-> /persons?keyword=&search-term=name || People search by name.   
+	//-----------------------------------------------------------------------------------------------------
+	private List<Person> findPersonByName(String fullName) throws InputValidationException {
+		
+		List<Person> persons = new ArrayList<Person>();
+		String[] splited = fullName.split("\\s+");
+		int lengthSplit = splited.length;
+		
+		// Get the name and surnames separately
+		String name = splited[0];
+		String surname1 = (lengthSplit > 1) ? splited[1] : null;
+		String surname2 = (lengthSplit > 2) ? splited[2] : null;
+		
+		// Find by name
+		persons = personService.findPersonsByName(name, surname1, surname2);
+		
+		return persons;
+	}
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [GET]-> /persons?keyword=&search-term=nif || Person search by nif.   
+	//-----------------------------------------------------------------------------------------------------
+	private List<Person> findPersonByNif(String nif) throws InputValidationException, InstanceNotFoundException {
+		
+		// List with only a person
+		List<Person> persons = new ArrayList<Person>();
+		
+		// Find the person by nif and add to the list
+		Person person = personService.findPersonByNif(nif);
+		persons.add(person);
+		
+		return persons;
+	}
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [GET]-> /persons || Main method that deals with the request to /persons   
 	//-----------------------------------------------------------------------------------------------------
     @RequestMapping(value="/persons", method=RequestMethod.GET)
     public String personTable 
-    	(@RequestParam(value="criteria", required=false) String criteria, @RequestParam(value="page", required=false, defaultValue="1") int pageNumber, Model model) throws FirstPageElementException {
+    	(@RequestParam(value="page", required=false) Integer pageNumber,
+    	 @RequestParam(value="search-term", required=false) String searchTerm,
+    	 @RequestParam(value="keyword", required=false) String keyword,
+    	 Model model) throws FirstPageElementException, InputValidationException, 
+    	 					 NumberFormatException, InstanceNotFoundException {
     	
-    	log.info("Criterio elegido: " + criteria);
-
     	// Initialization of variables
     	List<PersonDTO> personsDTO = new ArrayList<PersonDTO>();
+    	List<Person> persons = new ArrayList<Person>();
     	int totalPages = 0, previousPage = 1, nextPage = 1;
     	String nextActive = "", previousActive = "";
+    	
+    	log.info("Page:" + pageNumber + " || Search-term:" + searchTerm + " || Keyword:" + keyword);
 
-    	// First we are going to get the Persons belong to this page number
-    	List<Person> persons = new ArrayList<Person>();
-    	persons = personService.findAllPersons(pageNumber, ClientConstants.PAGE_SIZE);
+    	// Get the table content in function of the parameters
+    	// ...
+    	// Request -> /persons?keyword=X&search-term=ID
+    	if (searchTerm!=null) {
+    		if (searchTerm.equals("ID")) { persons = findPersonByID(Long.parseLong(keyword, 10)); }
+    		if (searchTerm.equals("nombre")) { persons = findPersonByName(keyword); }
+    		if (searchTerm.equals("DNI")) { persons = findPersonByNif(keyword); }    		
+    	} 
+    	// Request -> /persons or /persons?page=X
+    	else { 
+    		pageNumber = (pageNumber==null) ? 1 : pageNumber;
+    		persons = personService.findAllPersons(pageNumber, ClientConstants.PAGE_SIZE);
+    	} 
     	
-    	log.info("La fecha de alta de la primera persona de la página es: " + persons.get(0).getHiredate().toString());
-    	
+    	    	
     	// Check if the list is empty
     	if (!persons.isEmpty()) {
 	    	
     		// Convert to DTO
     		personsDTO = PersonDTOConversor.toPersonDTOs(persons);
     		
-    		// Get the number of total pages
-	    	totalPages = ClientUtilMethods.getTotalPagesPerson(personService.getTotalPersons());
-	    	
-	    	// We set the previous and next page
-	    	previousPage = (pageNumber == 1) ? 1 : (pageNumber - 1);
-	    	nextPage = (pageNumber == totalPages) ? totalPages : (pageNumber + 1);
-	    			
-	    	// If it is the first or last page, we will disable the button previous or next
-	    	previousActive = (pageNumber == 1) ? "disabled" : "";
-	    	nextActive = (pageNumber == totalPages) ? "disabled" : "";
+    		// If is a full search, we need the next attributes
+    		if (pageNumber!=null) {
+	    		// Get the number of total pages
+		    	totalPages = ClientUtilMethods.getTotalPagesPerson(personService.getTotalPersons());
+		    	
+		    	// We set the previous and next page
+		    	previousPage = (pageNumber == 1) ? 1 : (pageNumber - 1);
+		    	nextPage = (pageNumber == totalPages) ? totalPages : (pageNumber + 1);
+		    			
+		    	// If it is the first or last page, we will disable the button previous or next
+		    	previousActive = (pageNumber == 1) ? "disabled" : "";
+		    	nextActive = (pageNumber == totalPages) ? "disabled" : "";
+    		}
+    		else {
+    			pageNumber = 0;
+    		}
+    	} else {
+    		pageNumber = 0;
     	}
 	    	
     	// Now create the model
@@ -97,7 +168,7 @@ public class PersonController {
     //-----------------------------------------------------------------------------------------------------
     @RequestMapping(value="/persons", method=RequestMethod.POST)
     public String addPerson(@Valid @ModelAttribute("person")PersonDTO personDto, 
-    	      BindingResult result, Model model, HttpServletRequest request) throws InputValidationException, FirstPageElementException {
+    	      BindingResult result, Model model, HttpServletRequest request) throws InputValidationException, FirstPageElementException, NumberFormatException, InstanceNotFoundException {
     	
     	// Get the PersonDTO
     	Date hiredate = ClientUtilMethods.toDate(request.getParameter("hiredate"));
@@ -113,7 +184,7 @@ public class PersonController {
     	int lastPage = ClientUtilMethods.getTotalPagesPerson(personService.getTotalPersons());
     	
     	// Create the model     	
-    	personTable("",lastPage,model);
+    	personTable(lastPage,null,null,model);
     	model.addAttribute("idPerson", idPerson);
     	model.addAttribute("action", "correctCreation");
     	

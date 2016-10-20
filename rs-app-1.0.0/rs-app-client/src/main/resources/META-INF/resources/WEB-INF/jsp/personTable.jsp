@@ -26,6 +26,7 @@
 	right: 0px;
 	padding: 10px 12px;
 }
+
 </style>
 
 
@@ -37,28 +38,32 @@
 		<hr>
 		<br>
 
-		<div class="row">
-			<div class="col-md-3">
-				<div class="form-group">
-					<input type="text" class="form-control" id="pwd"
-						placeholder="Búsqueda">
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="btn-group">
-					<form action="/persons" method="get">
-						<button type="submit" id="filter" name="criteria" value="before" class="btn btn-primary">Filtrar</button>
-					</form>
-					<button type="button" class="btn btn-primary dropdown-toggle"
-						data-toggle="dropdown">
-						<span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu" role="menu">
-						<li><a href="#" id="id">ID</a></li>
-						<li><a href="#" id="name">Nombre</a></li>
-						<li><a href="#" id="nif">DNI</a></li>
-					</ul>
-				</div>
+		<div class="row row-eq-height">
+			<div class="col-md-5">
+				<form class="navbar-form" role="search" action="/persons"
+					method="get">
+					<div class="input-group">
+						<input id="searchInput" type="text" class="form-control" placeholder="Búsqueda por ID"
+							name="keyword" id="keyword">
+						<div class="input-group-btn">
+							<button class="btn btn-default" id="filter" type="submit" name="search-term"
+								value="ID">
+								<i class="glyphicon glyphicon-search"></i>
+							</button>
+							<button type="button"
+								class="btn btn-default dropdown-toggle dropdown-toggle-split"
+								data-toggle="dropdown" aria-haspopup="true"
+								aria-expanded="false">
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="#" id="ID">ID</a></li>
+								<li><a href="#" id="nombre">Nombre</a></li>
+								<li><a href="#" id="DNI">DNI</a></li>
+							</ul>
+						</div>
+					</div>
+				</form>
 			</div>
 			<div class="col-md-offset-5 col-md-2">
 				<button type="button" class="btn btn-success pull-right"
@@ -73,7 +78,7 @@
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
-					<th>Id</th>
+					<th>ID</th>
 					<th>Nombre</th>
 					<th>Nif</th>
 					<th>Email</th>
@@ -176,8 +181,8 @@
 										<div class="right-inner-addon">
 											<input type="text" class="form-control" name="nif" id="nif"
 												pattern="^(\d{8})([A-Z]{1})$" maxlength="9"
-												placeholder="12345678A" required> 
-												<span class="glyphicon form-control-feedback"></span>
+												placeholder="12345678A" required> <span
+												class="glyphicon form-control-feedback"></span>
 										</div>
 									</div>
 
@@ -279,6 +284,7 @@
 				$(".dropdown-menu").on("click", "li", function(event) {
 					console.log(event.target.id, event);
 					document.getElementById("filter").value = event.target.id;
+					document.getElementById("searchInput").placeholder = "Búsqueda por " + event.target.id;
 				})
 			})
 		});
