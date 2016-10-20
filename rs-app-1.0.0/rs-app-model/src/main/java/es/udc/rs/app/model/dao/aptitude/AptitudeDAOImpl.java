@@ -43,7 +43,7 @@ public class AptitudeDAOImpl implements AptitudeDAO {
 	public List<Aptitude> findAll() {
 		
 		// Create the query.
-		String query = "FROM Aptitude A ORDER BY A.person ASC";
+		String query = "FROM Aptitude A ORDER BY A.id ASC";
 				
 		// Get the timeoffs
 		@SuppressWarnings("unchecked")

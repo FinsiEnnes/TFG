@@ -13,7 +13,7 @@ public class AssistantMethods {
 		firstElement = (pageNumber - 1) * pageSize;
 		
 		// Check if it is correct
-		if (firstElement >= totalElements) {
+		if (totalElements > 0 && firstElement >= totalElements) {
 			String msg = "For this page, the first element would be " + firstElement + " and the total are " 
 					+ totalElements + " elements";
 			throw new FirstPageElementException(msg);
