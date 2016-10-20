@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <html>
+
 <head>
 <link href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -9,6 +10,25 @@
 	href="/webjars/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.min.css"
 	rel="stylesheet">
 </head>
+
+<style type='text/css'>
+/* Necessary to put the icons inside the inputs */
+.right-inner-addon {
+	position: relative;
+}
+
+.right-inner-addon input {
+	padding-right: 30px;
+}
+
+.right-inner-addon i {
+	position: absolute;
+	right: 0px;
+	padding: 10px 12px;
+}
+</style>
+
+
 <body>
 	<div class="container">
 		<h2>
@@ -26,15 +46,17 @@
 			</div>
 			<div class="col-md-2">
 				<div class="btn-group">
-					<button type="button" class="btn btn-primary">Filtrar</button>
+					<form action="/persons" method="get">
+						<button type="submit" id="filter" name="criteria" value="before" class="btn btn-primary">Filtrar</button>
+					</form>
 					<button type="button" class="btn btn-primary dropdown-toggle"
 						data-toggle="dropdown">
 						<span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="#">ID</a></li>
-						<li><a href="#">Nombre</a></li>
-						<li><a href="#">Nif</a></li>
+						<li><a href="#" id="id">ID</a></li>
+						<li><a href="#" id="name">Nombre</a></li>
+						<li><a href="#" id="nif">DNI</a></li>
 					</ul>
 				</div>
 			</div>
@@ -47,6 +69,7 @@
 		</div>
 
 		<br>
+		<!-- ------------------ Table whose rows include Person information  ------------------ -->
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
@@ -85,6 +108,7 @@
 			</tbody>
 		</table>
 
+		<!-- ----------- Pagination information with the previous and next buttons  ----------- -->
 		<div class="row">
 			<div class="col-md-2">
 				<p class="text-info text-center">Página ${pageNumber} de
@@ -108,7 +132,7 @@
 			</div>
 		</div>
 
-		<!-- -------------------------- Modal: Form Person creation  ------------------------- -->
+		<!-- -------------------------- Modal: Form Person creation  -------------------------- -->
 		<div class="modal fade" id="formPersonCreation" role="dialog">
 			<div class="modal-dialog">
 
@@ -118,8 +142,8 @@
 						<h4 class="modal-title">Creación de nueva persona</h4>
 					</div>
 					<div class="modal-body">
-						<form:form class="form" method="post"
-							action='/persons' modelAttribute="person" role="form" data-toggle="validator" >
+						<form:form class="form" method="post" action='/persons'
+							modelAttribute="person" role="form" data-toggle="validator">
 
 							<!-- First row -->
 							<div class="form-group">
@@ -147,18 +171,23 @@
 							<!-- Seconnd row -->
 							<div class="form-group">
 								<div class="row">
-									<div class="form-group has-feedback has-feedback col-md-4">
-										<label for="inputNif" class="control-label">DNI</label> <input
-											type="text" class="form-control" name="nif" id="nif"
-											pattern="^(\d{8})([A-Z]{1})$" maxlength="9"
-											placeholder="12345678A" required> <span
-											class="glyphicon form-control-feedback"></span>
+									<div class="form-group has-feedback col-md-4">
+										<label for="inputNif" class="control-label">DNI</label>
+										<div class="right-inner-addon">
+											<input type="text" class="form-control" name="nif" id="nif"
+												pattern="^(\d{8})([A-Z]{1})$" maxlength="9"
+												placeholder="12345678A" required> 
+												<span class="glyphicon form-control-feedback"></span>
+										</div>
 									</div>
 
-									<div class="form-group col-md-4">
-										<label for="inputEmail" class="control-label">Email </label> <input
-											type="text" class="form-control" name="email" id="email"
-											placeholder="ejemplo@dominio.com" required>
+									<div class="form-group has-feedback col-md-4">
+										<label for="inputEmail" class="control-label">Email </label>
+										<div class="right-inner-addon">
+											<input type="email" class="form-control" name="email"
+												id="email" placeholder="ejemplo@dominio.com" required>
+											<span class="glyphicon form-control-feedback"></span>
+										</div>
 									</div>
 
 									<div class="form-group col-md-4">
@@ -181,7 +210,6 @@
 								</div>
 							</div>
 
-
 							<div class="form-group">
 								<button type="submit" class="btn btn-primary center-block">Añadir</button>
 							</div>
@@ -192,7 +220,7 @@
 			</div>
 		</div>
 
-		<!-- ------------------------ Modal: Success Person creation  ------------------------ -->
+		<!-- ------------------------ Modal: Success Person creation  ------------------------- -->
 		<div class="modal fade" id="successCreation" role="dialog">
 			<div class="modal-dialog">
 				<!-- Modal content-->
@@ -244,36 +272,18 @@
 		});
 	</script>
 
-	<!-- ------------------------ Validation in form Person creation  ------------------------ -->
-	<script>
-		$(document).ready(function() {
-			$('#formPersonCreation').formValidation({
-				framework : 'bootstrap',
-				excluded : ':disabled',
-				icon : {
-					valid : 'glyphicon glyphicon-ok',
-					invalid : 'glyphicon glyphicon-remove',
-					validating : 'glyphicon glyphicon-refresh'
-				},
-				fields : {
-					name : {
-						validators : {
-							notEmpty : {
-								message : 'Campo requerido'
-							}
-						}
-					},
-					password : {
-						validators : {
-							notEmpty : {
-								message : 'The password is required'
-							}
-						}
-					}
-				}
-			});
+
+	<script type='text/javascript'>
+		$(window).load(function() {
+			$(function() {
+				$(".dropdown-menu").on("click", "li", function(event) {
+					console.log(event.target.id, event);
+					document.getElementById("filter").value = event.target.id;
+				})
+			})
 		});
 	</script>
+
 </body>
 
 </html>

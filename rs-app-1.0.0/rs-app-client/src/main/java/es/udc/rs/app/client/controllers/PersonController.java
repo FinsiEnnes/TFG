@@ -44,7 +44,9 @@ public class PersonController {
 	//-----------------------------------------------------------------------------------------------------
     @RequestMapping(value="/persons", method=RequestMethod.GET)
     public String personTable 
-    	(@RequestParam(value="page", required=false, defaultValue="1") int pageNumber, Model model) throws FirstPageElementException {
+    	(@RequestParam(value="criteria", required=false) String criteria, @RequestParam(value="page", required=false, defaultValue="1") int pageNumber, Model model) throws FirstPageElementException {
+    	
+    	log.info("Criterio elegido: " + criteria);
 
     	// Initialization of variables
     	List<PersonDTO> personsDTO = new ArrayList<PersonDTO>();
@@ -111,7 +113,7 @@ public class PersonController {
     	int lastPage = ClientUtilMethods.getTotalPagesPerson(personService.getTotalPersons());
     	
     	// Create the model     	
-    	personTable(lastPage,model);
+    	personTable("",lastPage,model);
     	model.addAttribute("idPerson", idPerson);
     	model.addAttribute("action", "correctCreation");
     	
