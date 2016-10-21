@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import es.udc.rs.app.client.conversor.AptitudeDTOConversor;
 import es.udc.rs.app.client.conversor.PersonDTOConversor;
+import es.udc.rs.app.client.dto.AptitudeDTO;
 import es.udc.rs.app.client.dto.PersonDTO;
 import es.udc.rs.app.client.util.ClientConstants;
 import es.udc.rs.app.client.util.ClientUtilMethods;
@@ -120,7 +122,6 @@ public class PersonController {
     		pageNumber = (pageNumber==null) ? 1 : pageNumber;
     		persons = personService.findAllPersons(pageNumber, ClientConstants.PAGE_SIZE);
     	} 
-    	
     	    	
     	// Check if the list is empty
     	if (!persons.isEmpty()) {
@@ -204,7 +205,7 @@ public class PersonController {
     	Person person = personService.findPerson(idPersonLong);
     	PersonDTO personDTO = PersonDTOConversor.toPersonDTO(person);
     	
-    	
+    	// Get the corresponding aptitudes and times off
     	List<Aptitude> aptitudes = personService.findAptitudeByPerson(person);
     	
     	model.addAttribute("person", personDTO);
@@ -218,29 +219,23 @@ public class PersonController {
     }
     
 	//-----------------------------------------------------------------------------------------------------
-	// [POST]-> /persons/id || Add new features at the Person, such as aptitudes or times off.   
+	// [POST]-> /persons/id/aptitude || Add new aptitudes at the Person.  
 	//-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons/{idPerson}", method=RequestMethod.POST)
-    public String addAptitude(@PathVariable String idPerson, Model model, HttpServletRequest request) 
+    @RequestMapping(value="/persons/{idPerson}/aptitude", method=RequestMethod.POST)
+    public String addAptitude(@Valid @ModelAttribute("aptitude")AptitudeDTO aptitudeDto, 
+    		@PathVariable String idPerson, Model model, HttpServletRequest request) 
     		throws InstanceNotFoundException, InputValidationException  {
     	
-    	// Find the Person
-    	Long idPersonLong = Long.parseLong(idPerson, 10);
-    	Person person = personService.findPerson(idPersonLong);
-    	
-    	// Create the Aptitude
-    	String nameApt = request.getParameter("nameAptitude");
-    	AptitudeType typeApt = personService.findAptitudeType("ART");
-    	Integer valueApt = Integer.parseInt(request.getParameter("valueAptitude"));
-    	
-    	Aptitude apt = new Aptitude(person, nameApt, typeApt, valueApt, "");
+    	// Convert the AptitudeDTO to Aptitude
+    	Aptitude aptitude = AptitudeDTOConversor.toAptitude(aptitudeDto);
     	
     	// Add the aptitude to the Person
-    	personService.createAptitude(apt);
+    	personService.createAptitude(aptitude);
     	
-    	List<Aptitude> aptitudes = personService.findAptitudeByPerson(person);
+    	// Get all the updated aptitudes of the Person
+    	List<Aptitude> aptitudes = personService.findAptitudeByPerson(aptitude.getPerson());
     	
-    	model.addAttribute("person", person);
+    	model.addAttribute("person", aptitude.getPerson());
     	model.addAttribute("aptitudes", aptitudes);
     	
     	model.addAttribute("section1State", "");

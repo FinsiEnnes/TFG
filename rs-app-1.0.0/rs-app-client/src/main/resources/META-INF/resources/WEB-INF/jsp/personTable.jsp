@@ -38,6 +38,7 @@
 		<hr>
 		<br>
 
+		<!-- ----------------------------- Search and add buttons  ---------------------------- -->
 		<div class="row row-eq-height">
 			<div class="col-md-5">
 				<form class="navbar-form" role="search" action="/persons"

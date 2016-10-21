@@ -5,7 +5,9 @@
 <head>
 <link href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
 	rel="stylesheet">
+<link rel="stylesheet" href="/webjars/bootstrap-table/1.11.0/src/bootstrap-table.css">
 <link href="/css/customTabs.css" rel="stylesheet">
+
 </head>
 <body>
 	<div class="container">
@@ -123,7 +125,7 @@
 					</div>
 
 					<br>
-					<table class="table table-bordered table-striped">
+					<table class="table table-bordered" data-toggle="table">
 						<thead>
 							<tr>
 								<th>Id</th>
@@ -131,7 +133,7 @@
 								<th>Tipo</th>
 								<th>Valoración</th>
 								<th>Comentario</th>
-								<th></th>
+								<th data-field="state" data-checkbox="true"></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -143,9 +145,7 @@
 									<td class="col-md-1">${aptitude.value}</td>
 									<td class="col-md-5">${aptitude.comment}</td>
 									<td class="col-md-1">
-										<div class="col-md-1 checkbox-inline">
-											<label><input type="checkbox"></label>
-										</div>
+										
 									</td>
 								</tr>
 							</c:forEach>
@@ -169,49 +169,68 @@
 						<h4 class="modal-title">Creación de nueva aptitud</h4>
 					</div>
 					<div class="modal-body">
-						
-						<form class="form-horizontal" method="post" action='/persons/${person.id}' name="employeeForm" id="employeeForm">
+
+						<form:form class="form" method="post" action='/persons/${person.id}/aptitude' 
+							modelAttribute="aptitude" role="form" data-toggle="validator">
+
+							<!-- First row -->
 							<div class="form-group">
-								<div class="col-md-7">
-									<label for="usr">Nombre</label> 
-									<input type="text" class="form-control" name="nameAptitude" id="nameAptitude" title="First Name">
-								</div>
+								<div class="row">
+									<div class="form-group col-md-7">
+										<label for="inputName" class="control-label">Nombre</label> <input
+											type="text" class="form-control" name="name" id="name"
+											required>
+									</div>
 
-								<div class="col-md-3">
-									<label for="selectValue">Tipo</label> <select
-										class="form-control" name="typeAptitude" id="typeAptitude">
-										<option>Artistica</option>
-										<option>Cientifica</option>
-										<option>Directiva</option>
-										<option>Espacial</option>
-										<option>Mecanica</option>
-										<option>Numerica</option>
-										<option>Organizativa</option>
-										<option>Social</option>
-									</select>
-								</div>
+									<div class="form-group col-md-3">
+										<label for="selectValue">Tipo</label> <select
+											class="form-control" name="type" id="type">
+											<option>Artistica</option>
+											<option>Cientifica</option>
+											<option>Directiva</option>
+											<option>Espacial</option>
+											<option>Mecanica</option>
+											<option>Numerica</option>
+											<option>Organizativa</option>
+											<option>Social</option>
+										</select>
+									</div>
 
-								<div class="col-md-2">
-									<label for="selectValue">Valoración</label> <select
-										class="form-control" name="valueAptitude" id="valueAptitude">
-										<option>1</option>
-										<option>2</option>
-										<option>3</option>
-										<option>4</option>
-										<option>5</option>
-										<option>6</option>
-										<option>7</option>
-										<option>8</option>
-										<option>9</option>
-										<option>10</option>
-									</select>
+									<div class="form-group col-md-2">
+										<label for="selectValue">Valoración</label> <select
+											class="form-control" name="value" id="value">
+											<option>1</option>
+											<option>2</option>
+											<option>3</option>
+											<option>4</option>
+											<option>5</option>
+											<option>6</option>
+											<option>7</option>
+											<option>8</option>
+											<option>9</option>
+											<option>10</option>
+										</select>
+									</div>
 								</div>
 							</div>
 							
+							<!-- Second row -->
 							<div class="form-group">
-								<button type="submit" class="btn btn-success center-block">Crear aptitud</button>
+								<div class="row">
+									<div class="col-md-12">
+										<label>Cometario (max 50 caracteres)</label>
+										<textarea class="form-control" rows="1" id="comment"
+											name="comment" placeholder="Detalles a destacar..."
+											maxlength="50"></textarea>
+									</div>
+								</div>
 							</div>
-						</form>
+
+							<!-- Submit button -->
+							<div class="form-group">
+								<button type="submit" class="btn btn-primary center-block">Añadir</button>
+							</div>
+						</form:form>
 					</div>
 				</div>
 
@@ -223,6 +242,9 @@
 
 	<script src="/webjars/jquery/1.9.1/jquery.min.js"></script>
 	<script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.js"></script>
+	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.min.js"></script>
+	<script src="/webjars/bootstrap-table/1.11.0/src/bootstrap-table.js"></script>
 </body>
 
 </html>
