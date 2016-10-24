@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import es.udc.rs.app.client.conversor.AptitudeDTOConversor;
 import es.udc.rs.app.client.conversor.PersonDTOConversor;
@@ -28,7 +31,6 @@ import es.udc.rs.app.exceptions.FirstPageElementException;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Aptitude;
-import es.udc.rs.app.model.domain.AptitudeType;
 import es.udc.rs.app.model.domain.Person;
 import es.udc.rs.app.model.service.person.PersonService;
 
@@ -75,6 +77,7 @@ public class PersonController {
 		return persons;
 	}
 	
+	
 	//-----------------------------------------------------------------------------------------------------
 	// [GET]-> /persons?keyword=&search-term=nif || Person search by nif.   
 	//-----------------------------------------------------------------------------------------------------
@@ -89,6 +92,7 @@ public class PersonController {
 		
 		return persons;
 	}
+	
 	
 	//-----------------------------------------------------------------------------------------------------
 	// [GET]-> /persons || Main method that deals with the request to /persons   
@@ -111,7 +115,7 @@ public class PersonController {
 
     	// Get the table content in function of the parameters
     	// ...
-    	// Request -> /persons?keyword=X&search-term=ID
+    	// Request -> /persons?keyword=X&search-term=Y
     	if (searchTerm!=null) {
     		if (searchTerm.equals("ID")) { persons = findPersonByID(Long.parseLong(keyword, 10)); }
     		if (searchTerm.equals("nombre")) { persons = findPersonByName(keyword); }
@@ -193,6 +197,23 @@ public class PersonController {
     	return "personTable";
     }
     
+    //-----------------------------------------------------------------------------------------------------
+    // [POST]-> /persons/id/delete || Addition of a new Person.   
+    //-----------------------------------------------------------------------------------------------------
+    @RequestMapping(value="/persons/{idPerson}/delete", method=RequestMethod.POST)
+    public String deletePerson(@PathVariable String idPerson, Model model) throws NumberFormatException, FirstPageElementException, InputValidationException, InstanceNotFoundException {
+    	
+    	log.info("Se pretende eliminar la persona con id: " + idPerson);
+    	
+    	// Create the model     	
+    	personTable(1,null,null,model);
+    	model.addAttribute("idPerson", idPerson);
+    	model.addAttribute("action", "correctCreation");
+    	
+    	// Return the table in the first page 
+    	return "personTable";
+    }
+    
     
 	//-----------------------------------------------------------------------------------------------------
 	// [GET]-> /persons/id || Show the person information included the aptitudes and times off.   
@@ -217,6 +238,7 @@ public class PersonController {
     	
     	return "personInfo";
     }
+    
     
 	//-----------------------------------------------------------------------------------------------------
 	// [POST]-> /persons/id/aptitude || Add new aptitudes at the Person.  

@@ -50,7 +50,7 @@
 							<label class="col-md-2 control-label">DNI</label>
 							<div class="col-md-4">
 								<input class="form-control" id="nifPerson" type="text"
-									value=${person.nif}>
+									value="${person.nif}">
 							</div>
 						</div>
 
@@ -59,13 +59,13 @@
 							<label class="col-md-2 control-label">Apellido 1</label>
 							<div class="col-md-4">
 								<input class="form-control" id="surname1Person" type="text"
-									value=${person.surname1}>
+									value="${person.surname1}">
 							</div>
 
 							<label class="col-md-2 control-label">Email</label>
 							<div class="col-md-4">
 								<input class="form-control" id="emailPerson" type="text"
-									value=${person.email}>
+									value="${person.email}">
 							</div>
 						</div>
 
@@ -74,13 +74,13 @@
 							<label class="col-md-2 control-label">Apellido 2</label>
 							<div class="col-md-4">
 								<input class="form-control" id="surname2Person" type="text"
-									value=${person.surname2}>
+									value="${person.surname2}">
 							</div>
 
 							<label class="col-md-2 control-label">Fecha de alta</label>
 							<div class="col-md-4">
 								<input class="form-control" id="hiredatePerson" type="text"
-									value=${person.hiredate}>
+									value="${person.hiredate}">
 							</div>
 						</div>
 

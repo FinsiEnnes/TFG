@@ -4,10 +4,14 @@
 <html>
 
 <head>
-<link href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+<link 
+	href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
 	rel="stylesheet">
 <link
 	href="/webjars/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.min.css"
+	rel="stylesheet">
+<link 
+	href="/webjars/bootstrap-table/1.11.0/src/bootstrap-table.css"
 	rel="stylesheet">
 </head>
 
@@ -40,6 +44,8 @@
 
 		<!-- ----------------------------- Search and add buttons  ---------------------------- -->
 		<div class="row row-eq-height">
+			
+			<!-- Search button -->
 			<div class="col-md-5">
 				<form class="navbar-form" role="search" action="/persons"
 					method="get">
@@ -66,53 +72,69 @@
 					</div>
 				</form>
 			</div>
+			
+			<!-- Add button -->
 			<div class="col-md-offset-5 col-md-2">
 				<button type="button" class="btn btn-success pull-right"
 					data-toggle="modal" data-target="#formPersonCreation">
 					<span class="glyphicon glyphicon-plus"></span> Añadir nueva persona
 				</button>
 			</div>
+
 		</div>
 
 		<br>
 		<!-- ------------------ Table whose rows include Person information  ------------------ -->
-		<table class="table table-bordered table-striped">
+		<table id="person_table" class="table table-bordered"  data-toggle="table">
 			<thead>
 				<tr>
 					<th>ID</th>
 					<th>Nombre</th>
+					<th>Apellido 1</th>
+					<th>Apellido 2</th>
 					<th>Nif</th>
 					<th>Email</th>
 					<th>Alta</th>
-					<th></th>
-					<th></th>
+					<th>Acción</th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:forEach var="person" items="${persons}">
 					<tr>
 						<td class="col-md-1 text-info">${person.id}</td>
-						<td class="col-md-3">${person.name} ${person.surname1}
-							${person.surname2}</td>
+						<td class="col-md-1">${person.name}</td>
+						<td class="col-md-1">${person.surname1}</td>
+						<td class="col-md-1">${person.surname2}</td>
 						<td class="col-md-1">${person.nif}</td>
-						<td class="col-md-3">${person.email}</td>
-						<td class="col-md-2">${person.hiredate}</td>
+						<td class="col-md-2">${person.email}</td>
+						<td class="col-md-1">${person.hiredate}</td>
 						<td class="col-md-1">
-							<form action="/persons/${person.id}" method="get">
-								<button type="submit" class="btn btn-info btn-xs center-block">
-									<span class="glyphicon glyphicon-info-sign"></span> Info
-								</button>
-							</form>
-						</td>
-						<td class="col-md-1">
-							<button type="button" class="btn btn-danger btn-xs center-block">
-								<span class="glyphicon glyphicon-remove"></span> Borrado
-							</button>
+							<table>
+								<tr>
+									<td>
+									<form action="/persons/${person.id}" method="get">
+										<button type="submit"
+											class="btn btn-primary btn-xs center-block">
+											<span class="glyphicon glyphicon-edit"></span>
+										</button>
+									</form>
+									</td>
+									<td>
+									<form action="/persons/${person.id}" method="get">
+										<button type="submit"
+											class="btn btn-danger btn-xs center-block">
+											<span class="glyphicon glyphicon-remove"></span>
+										</button>
+									</form>
+									</td>
+								</tr>
+							</table>
 						</td>
 					</tr>
 				</c:forEach>
 			</tbody>
 		</table>
+		<br>
 
 		<!-- ----------- Pagination information with the previous and next buttons  ----------- -->
 		<div class="row">
@@ -137,6 +159,8 @@
 				</form>
 			</div>
 		</div>
+		<br>
+
 
 		<!-- -------------------------- Modal: Form Person creation  -------------------------- -->
 		<div class="modal fade" id="formPersonCreation" role="dialog">
@@ -259,6 +283,7 @@
 		src="/webjars/bootstrap-datepicker/1.6.1/locales/bootstrap-datepicker.es.min.js"></script>
 	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.js"></script>
 	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.min.js"></script>
+	<script src="/webjars/bootstrap-table/1.11.0/src/bootstrap-table.js"></script>
 
 	<!-- ------------------------ Datapicker language: es  ------------------------ -->
 	<script>
@@ -288,6 +313,18 @@
 					document.getElementById("searchInput").placeholder = "Búsqueda por " + event.target.id;
 				})
 			})
+		});
+	</script>
+
+	<script type='text/javascript'>
+		$(function() {            
+			$('#delete_button').click(function () {
+				var json = JSON.parse(JSON.stringify($('#person_table').bootstrapTable('getSelections')));
+				var idPerson = json[0]['0'];
+				var url = "/persons/" + idPerson + "/delete";			    
+                
+				document.getElementById("delete_button").action = url;
+            });
 		});
 	</script>
 
