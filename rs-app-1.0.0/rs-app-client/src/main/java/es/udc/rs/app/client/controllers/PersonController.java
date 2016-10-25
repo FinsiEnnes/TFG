@@ -9,7 +9,6 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import es.udc.rs.app.client.conversor.AptitudeDTOConversor;
 import es.udc.rs.app.client.conversor.PersonDTOConversor;
@@ -147,10 +144,11 @@ public class PersonController {
 		    	nextActive = (pageNumber == totalPages) ? "disabled" : "";
     		}
     		else {
-    			pageNumber = 0;
+    			totalPages = 1; pageNumber = 1;
+    			previousActive = "disabled"; nextActive = "disabled";
     		}
     	} else {
-    		pageNumber = 0;
+    		totalPages = 0; pageNumber = 0;
     	}
 	    	
     	// Now create the model
@@ -165,53 +163,6 @@ public class PersonController {
     	
     	// Return the name of the view
         return "personTable";
-    }
-    
-    
-    //-----------------------------------------------------------------------------------------------------
-    // [POST]-> /persons || Addition of a new Person.   
-    //-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons", method=RequestMethod.POST)
-    public String addPerson(@Valid @ModelAttribute("person")PersonDTO personDto, 
-    	      BindingResult result, Model model, HttpServletRequest request) throws InputValidationException, FirstPageElementException, NumberFormatException, InstanceNotFoundException {
-    	
-    	// Get the PersonDTO
-    	Date hiredate = ClientUtilMethods.toDate(request.getParameter("hiredate"));
-    	personDto.setHiredate(hiredate);
-    	
-    	// Convert the PersonDTO to Person
-    	Person person = PersonDTOConversor.toPerson(personDto);
-    	
-    	// Create the Person calling at the service
-    	Long idPerson = personService.createPerson(person);
-    	
-    	// Get the last page
-    	int lastPage = ClientUtilMethods.getTotalPagesPerson(personService.getTotalPersons());
-    	
-    	// Create the model     	
-    	personTable(lastPage,null,null,model);
-    	model.addAttribute("idPerson", idPerson);
-    	model.addAttribute("action", "correctCreation");
-    	
-    	// Return the table in the first page 
-    	return "personTable";
-    }
-    
-    //-----------------------------------------------------------------------------------------------------
-    // [POST]-> /persons/id/delete || Addition of a new Person.   
-    //-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons/{idPerson}/delete", method=RequestMethod.POST)
-    public String deletePerson(@PathVariable String idPerson, Model model) throws NumberFormatException, FirstPageElementException, InputValidationException, InstanceNotFoundException {
-    	
-    	log.info("Se pretende eliminar la persona con id: " + idPerson);
-    	
-    	// Create the model     	
-    	personTable(1,null,null,model);
-    	model.addAttribute("idPerson", idPerson);
-    	model.addAttribute("action", "correctCreation");
-    	
-    	// Return the table in the first page 
-    	return "personTable";
     }
     
     
@@ -237,6 +188,59 @@ public class PersonController {
     	model.addAttribute("section3State", "");
     	
     	return "personInfo";
+    }
+    
+    
+    //-----------------------------------------------------------------------------------------------------
+    // [POST]-> /persons || Addition of a new Person.   
+    //-----------------------------------------------------------------------------------------------------
+    @RequestMapping(value="/persons", method=RequestMethod.POST)
+    public String addPerson(@Valid @ModelAttribute("person")PersonDTO personDto, 
+    	      BindingResult result, Model model, HttpServletRequest request) throws InputValidationException, FirstPageElementException, NumberFormatException, InstanceNotFoundException {
+    	
+    	// Get the PersonDTO
+    	Date hiredate = ClientUtilMethods.toDate(request.getParameter("hiredate"));
+    	personDto.setHiredate(hiredate);
+    	
+    	// Convert the PersonDTO to Person
+    	Person person = PersonDTOConversor.toPerson(personDto);
+    	
+    	// Create the Person calling at the service
+    	Long idPerson = personService.createPerson(person);
+    	
+    	// Get the last page
+    	int lastPage = ClientUtilMethods.getTotalPagesPerson(personService.getTotalPersons());
+    	
+    	// Create a message with feedback for the user
+    	String msg = "Persona creada correctamente. Identificador asignado: " + idPerson;
+    	
+    	// Create the model     	
+    	personTable(lastPage,null,null,model);
+    	model.addAttribute("action", "correctCreation");
+    	model.addAttribute("msg",msg);
+    	
+    	// Return the table in the first page 
+    	return "personTable";
+    }
+    
+    //-----------------------------------------------------------------------------------------------------
+    // [POST]-> /persons/id/delete || Delete of a Person.   
+    //-----------------------------------------------------------------------------------------------------
+    @RequestMapping(value="/persons/{idPerson}/delete", method=RequestMethod.POST)
+    public String deletePerson(@PathVariable String idPerson, Model model) throws InstanceNotFoundException, NumberFormatException, FirstPageElementException, InputValidationException {
+    	
+    	Long id = Long.parseLong(idPerson, 10);
+    	
+    	// Call the service to delete the person
+    	personService.removePerson(id);
+    	
+    	// Create the model     	
+    	personTable(1,null,null,model);
+    	model.addAttribute("idPerson", idPerson);
+    	model.addAttribute("action", "correctCreation");
+    	
+    	// Return the table in the first page 
+    	return "personTable";
     }
     
     
