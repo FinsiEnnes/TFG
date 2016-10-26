@@ -40,7 +40,7 @@ public class PersonController {
 	private PersonService personService;
     
 	//-----------------------------------------------------------------------------------------------------
-	// [GET]-> /persons?keyword=&search-term=id || Person search by name.   
+	// [GET]-> /persons?keyword=&search-term=id || Person search by id.   
 	//-----------------------------------------------------------------------------------------------------
 	private List<Person> findPersonByID(Long id) throws InstanceNotFoundException {
 		
@@ -114,9 +114,9 @@ public class PersonController {
     	// ...
     	// Request -> /persons?keyword=X&search-term=Y
     	if (searchTerm!=null) {
-    		if (searchTerm.equals("ID")) { persons = findPersonByID(Long.parseLong(keyword, 10)); }
+    		if (searchTerm.equals("ID")) 	 { persons = findPersonByID(Long.parseLong(keyword, 10)); }
     		if (searchTerm.equals("nombre")) { persons = findPersonByName(keyword); }
-    		if (searchTerm.equals("DNI")) { persons = findPersonByNif(keyword); }    		
+    		if (searchTerm.equals("DNI")) 	 { persons = findPersonByNif(keyword); }    		
     	} 
     	// Request -> /persons or /persons?page=X
     	else { 
@@ -128,7 +128,7 @@ public class PersonController {
     	if (!persons.isEmpty()) {
 	    	
     		// Convert to DTO
-    		personsDTO = PersonDTOConversor.toPersonDTOs(persons);
+    		personsDTO = PersonDTOConversor.toPersonDTOList(persons);
     		
     		// If is a full search, we need the next attributes
     		if (pageNumber!=null) {
@@ -179,9 +179,10 @@ public class PersonController {
     	
     	// Get the corresponding aptitudes and times off
     	List<Aptitude> aptitudes = personService.findAptitudeByPerson(person);
+    	List<AptitudeDTO> aptitudeDTOList = AptitudeDTOConversor.toAptitudeDTOList(aptitudes);
     	
     	model.addAttribute("person", personDTO);
-    	model.addAttribute("aptitudes", aptitudes);
+    	model.addAttribute("aptitudes", aptitudeDTOList);
     	
     	model.addAttribute("section1State", "active");
     	model.addAttribute("section2State", "");
@@ -195,15 +196,15 @@ public class PersonController {
     // [POST]-> /persons || Addition of a new Person.   
     //-----------------------------------------------------------------------------------------------------
     @RequestMapping(value="/persons", method=RequestMethod.POST)
-    public String addPerson(@Valid @ModelAttribute("person")PersonDTO personDto, 
+    public String addPerson(@Valid @ModelAttribute("person")PersonDTO personDTO, 
     	      BindingResult result, Model model, HttpServletRequest request) throws InputValidationException, FirstPageElementException, NumberFormatException, InstanceNotFoundException {
     	
     	// Get the PersonDTO
     	Date hiredate = ClientUtilMethods.toDate(request.getParameter("hiredate"));
-    	personDto.setHiredate(hiredate);
+    	personDTO.setHiredate(hiredate);
     	
     	// Convert the PersonDTO to Person
-    	Person person = PersonDTOConversor.toPerson(personDto);
+    	Person person = PersonDTOConversor.toPerson(personDTO);
     	
     	// Create the Person calling at the service
     	Long idPerson = personService.createPerson(person);
@@ -223,8 +224,33 @@ public class PersonController {
     	return "personTable";
     }
     
+    
     //-----------------------------------------------------------------------------------------------------
-    // [POST]-> /persons/id/delete || Delete of a Person.   
+    // [POST]-> /persons/id/update || Update a Person.   
+    //-----------------------------------------------------------------------------------------------------
+    @RequestMapping(value="/persons/{idPerson}/update", method=RequestMethod.POST)
+    public String updatePerson(@Valid @ModelAttribute("person")PersonDTO personDto, BindingResult result,
+    						   @PathVariable String idPerson, Model model, HttpServletRequest request) 
+    							throws InstanceNotFoundException, InputValidationException {
+    
+    	// Get the PersonDTO
+    	Date hiredate = ClientUtilMethods.toDate(request.getParameter("hiredate"));
+    	personDto.setId(Long.parseLong(idPerson, 10));
+    	personDto.setHiredate(hiredate);
+    	
+    	// Convert the PersonDTO to Person
+    	Person person = PersonDTOConversor.toPerson(personDto);
+    	
+    	// Update the Person
+    	personService.updatePerson(person);
+    	
+    	// If the operation is correct, the view maintains
+    	return personInfo(idPerson, model);
+    	
+    }
+    
+    //-----------------------------------------------------------------------------------------------------
+    // [POST]-> /persons/id/delete || Delete a Person.   
     //-----------------------------------------------------------------------------------------------------
     @RequestMapping(value="/persons/{idPerson}/delete", method=RequestMethod.POST)
     public String deletePerson(@PathVariable String idPerson, Model model) throws InstanceNotFoundException, NumberFormatException, FirstPageElementException, InputValidationException {
@@ -248,12 +274,12 @@ public class PersonController {
 	// [POST]-> /persons/id/aptitude || Add new aptitudes at the Person.  
 	//-----------------------------------------------------------------------------------------------------
     @RequestMapping(value="/persons/{idPerson}/aptitude", method=RequestMethod.POST)
-    public String addAptitude(@Valid @ModelAttribute("aptitude")AptitudeDTO aptitudeDto, 
-    		@PathVariable String idPerson, Model model, HttpServletRequest request) 
+    public String addAptitude(@Valid @ModelAttribute("aptitude")AptitudeDTO aptitudeDTO, 
+    		 BindingResult result, @PathVariable String idPerson, Model model, HttpServletRequest request) 
     		throws InstanceNotFoundException, InputValidationException  {
     	
     	// Convert the AptitudeDTO to Aptitude
-    	Aptitude aptitude = AptitudeDTOConversor.toAptitude(aptitudeDto);
+    	Aptitude aptitude = AptitudeDTOConversor.toAptitude(aptitudeDTO);
     	
     	// Add the aptitude to the Person
     	personService.createAptitude(aptitude);
@@ -261,8 +287,11 @@ public class PersonController {
     	// Get all the updated aptitudes of the Person
     	List<Aptitude> aptitudes = personService.findAptitudeByPerson(aptitude.getPerson());
     	
+    	// Convert the aptitudes to a aptitudeDTO list
+    	List<AptitudeDTO> aptitudeDTOList = AptitudeDTOConversor.toAptitudeDTOList(aptitudes);
+    	
     	model.addAttribute("person", aptitude.getPerson());
-    	model.addAttribute("aptitudes", aptitudes);
+    	model.addAttribute("aptitudes", aptitudeDTOList);
     	
     	model.addAttribute("section1State", "");
     	model.addAttribute("section2State", "active");

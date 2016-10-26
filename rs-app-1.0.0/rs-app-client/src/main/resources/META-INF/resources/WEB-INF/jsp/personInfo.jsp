@@ -5,7 +5,11 @@
 <head>
 <link href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
 	rel="stylesheet">
-<link rel="stylesheet" href="/webjars/bootstrap-table/1.11.0/src/bootstrap-table.css">
+<link rel="stylesheet"
+	href="/webjars/bootstrap-table/1.11.0/src/bootstrap-table.css">
+<link
+	href="/webjars/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.min.css"
+	rel="stylesheet">
 <link href="/css/customTabs.css" rel="stylesheet">
 
 </head>
@@ -14,14 +18,15 @@
 		<h3>Persona</h3>
 		<br>
 
+		<!-- ------ Interface sections. From the controller we set which one is actived.  ----- -->
 		<div class="col-md-3">
-			<!-- required for floating -->
-			<!-- Nav tabs -->
 			<ul class="nav nav-tabs tabs-left sideways">
 				<li class="${section1State}"><a href="#section1"
 					data-toggle="tab">Información</a></li>
+					
 				<li class="${section2State}"><a href="#section2"
 					data-toggle="tab">Aptitudes</a></li>
+					
 				<li class="${section3State}"><a href="#messages-v"
 					data-toggle="tab">Bajas</a></li>
 			</ul>
@@ -29,81 +34,90 @@
 
 		<div class="col-md-9">
 
-			<!-- First section: Basic person information  -->
+		<!-- --------------------- First section: Basic person information -------------------- -->
 			<div class="tab-content">
-				<div class="tab-pane ${section1State}" id="section1">
+				<div id="section1" class="tab-pane ${section1State}">
 					<h3>
-						Información <br> <small>Cambia la información básica
-							de esta persona</small>
+						Información <br> 
+						<small>Cambia la información básica	de esta persona</small>
 					</h3>
 					<hr>
-					<form:form class="form-horizontal" method="POST" action="/persons"
-						modelAttribute="person">
+					<form:form id="personForm" class="form-horizontal" method="post" 
+						action="/persons/${person.id}/update" modelAttribute="person"
+						role="form" data-toggle="validator">
 
+						<!-- First row -->
 						<div class="row">
 							<label class="col-md-2 control-label">Nombre</label>
-							<div class="col-md-4">
-								<input class="form-control" id="namePerson" type="text"
-									value="${person.name}">
+							<div class="form-group col-md-4">
+								<input class="form-control" name="name" id="name" type="text"
+									value="${person.name}" required>
 							</div>
 
 							<label class="col-md-2 control-label">DNI</label>
-							<div class="col-md-4">
-								<input class="form-control" id="nifPerson" type="text"
-									value="${person.nif}">
+							<div class="form-group col-md-4">
+								<input class="form-control" readonly name="nif" id="nif" type="text"
+									value="${person.nif}" required>
 							</div>
 						</div>
-
 						<br>
+						
+						<!-- Second row -->
 						<div class="row">
 							<label class="col-md-2 control-label">Apellido 1</label>
-							<div class="col-md-4">
-								<input class="form-control" id="surname1Person" type="text"
-									value="${person.surname1}">
+							<div class="form-group col-md-4">
+								<input class="form-control" name="surname1" id="surname1"
+									type="text" value="${person.surname1}" required>
 							</div>
 
 							<label class="col-md-2 control-label">Email</label>
-							<div class="col-md-4">
-								<input class="form-control" id="emailPerson" type="text"
-									value="${person.email}">
+							<div class="form-group col-md-4">
+								<input class="form-control" name="email" id="email" type="text"
+									value="${person.email}" required>
 							</div>
 						</div>
-
 						<br>
+						
+						<!-- Third row -->
 						<div class="row">
 							<label class="col-md-2 control-label">Apellido 2</label>
-							<div class="col-md-4">
-								<input class="form-control" id="surname2Person" type="text"
-									value="${person.surname2}">
+							<div class="form-group col-md-4">
+								<input class="form-control" name="surname2" id="surname2"
+									type="text" value="${person.surname2}" required>
 							</div>
 
 							<label class="col-md-2 control-label">Fecha de alta</label>
-							<div class="col-md-4">
-								<input class="form-control" id="hiredatePerson" type="text"
-									value="${person.hiredate}">
+							<div class="form-group col-md-4">
+								<input type="text" class="form-control datepicker"
+									data-format="dd/MM/yyyy" name="hiredate" id="hiredate"
+									placeholder="dd/mm/aaaa" required value="${person.hiredate}">
 							</div>
 						</div>
-
 						<br>
+
+						<!-- Fourth row -->
 						<div class="row">
 							<label class="col-md-2 control-label" for="comment">Comentarios</label>
-							<div class="col-md-10">
-								<textarea class="form-control" rows="8" id="commentPerson">${person.comment}</textarea>
+							<div class="form-group col-md-10" style="width: 79.8%">
+								<textarea class="form-control pull-right" rows="6" name="comment"
+									id="comment">${person.comment}
+									</textarea>
 							</div>
 						</div>
-
 						<br>
+
+						<!-- Submit button -->
 						<div class="row">
-							<div class="col-md-offset-10 col-md-2">
-								<button type="submit" class="btn btn-primary pull-right">Guardar
-									cambios</button>
+							<div class="col-md-offset-5 col-md-2">
+								<button id="saveChangesButton" type="submit" disabled='true'
+									class="btn btn-primary">Guardar cambios</button>
 							</div>
 						</div>
 					</form:form>
 				</div>
 
-				<!-- Second section: Aptitudes information  -->
-				<div class="tab-pane ${section2State}" id="section2">
+		<!-- ---------------------- Second section: Aptitudes information -------------------- -->
+				<div id="section2" class="tab-pane ${section2State}">
 					<h3>
 						Aptitudes <br> <small>Virtudes destacadas de esta
 							persona</small>
@@ -112,12 +126,12 @@
 					<div class="row">
 						<div class="col-md-offset-7 col-md-2">
 							<button type="button" class="btn btn-success" data-toggle="modal"
-								data-target="#myModal">
+								data-target="#aptitudeCreate">
 								<span class="glyphicon glyphicon-plus"></span> Crear aptitud
 							</button>
 						</div>
 						<div class="col-md-offset-1 col-md-2">
-							<button type="button" class="btn btn-danger pull-right">
+							<button id="deleteAptitude" type="button" class="btn btn-danger pull-right">
 								<span class="glyphicon glyphicon-remove"></span> Borrar
 								seleccionados
 							</button>
@@ -125,7 +139,7 @@
 					</div>
 
 					<br>
-					<table class="table table-bordered" data-toggle="table">
+					<table id="aptitudeTable" class="table table-bordered" data-toggle="table">
 						<thead>
 							<tr>
 								<th>Id</th>
@@ -141,12 +155,10 @@
 								<tr>
 									<td class="col-md-1 text-info">${aptitude.id}</td>
 									<td class="col-md-2">${aptitude.name}</td>
-									<td class="col-md-2">${aptitude.type.name}</td>
+									<td class="col-md-2">${aptitude.type}</td>
 									<td class="col-md-1">${aptitude.value}</td>
 									<td class="col-md-5">${aptitude.comment}</td>
-									<td class="col-md-1">
-										
-									</td>
+									<td class="col-md-1"></td>
 								</tr>
 							</c:forEach>
 						</tbody>
@@ -159,7 +171,7 @@
 		</div>
 
 		<!-- Modal -->
-		<div class="modal fade" id="myModal" role="dialog">
+		<div class="modal fade" id="aptitudeCreate" role="dialog">
 			<div class="modal-dialog">
 
 				<!-- Modal content-->
@@ -170,8 +182,9 @@
 					</div>
 					<div class="modal-body">
 
-						<form:form class="form" method="post" action='/persons/${person.id}/aptitude' 
-							modelAttribute="aptitude" role="form" data-toggle="validator">
+						<form:form class="form" method="post"
+							action='/persons/${person.id}/aptitude' modelAttribute="aptitude"
+							role="form" data-toggle="validator">
 
 							<!-- First row -->
 							<div class="form-group">
@@ -213,7 +226,7 @@
 									</div>
 								</div>
 							</div>
-							
+
 							<!-- Second row -->
 							<div class="form-group">
 								<div class="row">
@@ -245,6 +258,48 @@
 	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.js"></script>
 	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.min.js"></script>
 	<script src="/webjars/bootstrap-table/1.11.0/src/bootstrap-table.js"></script>
+	<script src="/webjars/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
+	<script src="/webjars/bootstrap-datepicker/1.6.1/locales/bootstrap-datepicker.es.min.js"></script>
+	
+	<!-- ------------------------------ Datapicker language: es  ------------------------------ -->
+	<script>
+		$(document).ready(function() {
+			$('.datepicker').datepicker({
+				language : 'es'
+			});
+		})
+	</script>
+
+	<!-- --------- Able the save button for Person updates when its data has changed  --------- -->
+	<script type="text/javascript">
+		var somethingChanged = false;
+		$(document).ready(function() { 
+		   $('#section1 input').change(function() { 
+		        document.getElementById("saveChangesButton").disabled = false;
+		        
+		   }); 
+		   $('#section1 textarea').change(function() { 
+		        document.getElementById("saveChangesButton").disabled = false;
+		        
+		   }); 
+		});
+	</script>
+	
+	<script type='text/javascript'>
+		$(function() {            
+			$('#deleteAptitude').click(function () {
+				var json = JSON.parse(JSON.stringify($('#aptitudeTable').bootstrapTable('getSelections')));
+				var size = json.length;
+				
+				alert(size);
+				var idPerson = json[0]['0'];
+				var url = "/persons/" + idPerson + "/delete";			    
+                
+				document.getElementById("delete_button").action = url;
+            });
+		});
+	</script>
+
 </body>
 
 </html>

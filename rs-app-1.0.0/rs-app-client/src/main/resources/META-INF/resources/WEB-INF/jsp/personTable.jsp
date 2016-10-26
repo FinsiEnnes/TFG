@@ -107,7 +107,9 @@
 						<td class="col-md-1">${person.surname2}</td>
 						<td class="col-md-1">${person.nif}</td>
 						<td class="col-md-2">${person.email}</td>
-						<td class="col-md-1">${person.hiredate}</td>
+						<td class="col-md-1">
+							${person.hiredate}
+						</td>
 						<td class="col-md-1">
 							<table>
 								<tr>
@@ -251,7 +253,9 @@
 							</div>
 
 							<div class="form-group">
+								<div class="row">
 								<button type="submit" class="btn btn-primary center-block">Añadir</button>
+								</div>
 							</div>
 						</form:form>
 					</div>

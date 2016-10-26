@@ -8,7 +8,7 @@ import es.udc.rs.app.model.domain.Person;
 
 public class PersonDTOConversor {
 
-	public static List<PersonDTO> toPersonDTOs(List<Person> persons) {
+	public static List<PersonDTO> toPersonDTOList(List<Person> persons) {
 		
 		List<PersonDTO> personsDTO = new ArrayList<PersonDTO>();
 		
