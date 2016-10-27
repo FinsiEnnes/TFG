@@ -87,7 +87,7 @@
 							</div>
 
 							<label class="col-md-2 control-label">Fecha de alta</label>
-							<div class="form-group col-md-4">
+							<div class="form-group col-md-4 date">
 								<input type="text" class="form-control datepicker"
 									data-format="dd/MM/yyyy" name="hiredate" id="hiredate"
 									placeholder="dd/mm/aaaa" required value="${person.hiredate}">
@@ -116,6 +116,7 @@
 					</form:form>
 				</div>
 
+
 		<!-- ---------------------- Second section: Aptitudes information -------------------- -->
 				<div id="section2" class="tab-pane ${section2State}">
 					<h3>
@@ -131,10 +132,14 @@
 							</button>
 						</div>
 						<div class="col-md-offset-1 col-md-2">
-							<button id="deleteAptitude" type="button" class="btn btn-danger pull-right">
-								<span class="glyphicon glyphicon-remove"></span> Borrar
-								seleccionados
-							</button>
+							<form action="/persons/${person.id}/aptitude/delete" method="post">
+								<input type="hidden" name="ids" value="0" id="idsToDelete" class="form-control">
+								<button id="deleteAptitude" type="submit" name="ids" value="0"
+									class="btn btn-danger pull-right" >
+									<span class="glyphicon glyphicon-remove"></span> Borrar
+									seleccionados
+								</button>
+							</form>
 						</div>
 					</div>
 
@@ -289,13 +294,16 @@
 		$(function() {            
 			$('#deleteAptitude').click(function () {
 				var json = JSON.parse(JSON.stringify($('#aptitudeTable').bootstrapTable('getSelections')));
-				var size = json.length;
+				var idApts = "";
 				
-				alert(size);
-				var idPerson = json[0]['0'];
-				var url = "/persons/" + idPerson + "/delete";			    
-                
-				document.getElementById("delete_button").action = url;
+				for (i = 0; i < json.length; i++) {
+					idApts += json[i]['0'] + "-";
+				}
+				
+				var idApts = idApts.substring(0, (idApts.length-1));
+				
+				alert(idApts);
+				document.getElementById("idsToDelete").value = idApts;		
             });
 		});
 	</script>

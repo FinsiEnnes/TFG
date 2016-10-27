@@ -1,6 +1,5 @@
 package es.udc.rs.app.client.dto;
 
-import java.util.Date;
 
 public class PersonDTO {
 
@@ -10,14 +9,14 @@ public class PersonDTO {
 	private String surname2;
 	private String nif;
 	private String email;
-	private Date hiredate;
+	private String hiredate;
 	private String comment;
 	
 	public PersonDTO() {
 	}
 	
 	public PersonDTO(Long id, String name, String surname1, String surname2, String nif,
-			String email, Date hiredate, String comment) {
+			String email, String hiredate, String comment) {
 		this.id = id;
 		this.name = name;
 		this.surname1 = surname1;
@@ -29,7 +28,7 @@ public class PersonDTO {
 	}
 	
 	public PersonDTO(String name, String surname1, String surname2, String nif,
-			String email, Date hiredate, String comment) {
+			String email, String hiredate, String comment) {
 		this.name = name;
 		this.surname1 = surname1;
 		this.surname2 = surname2;
@@ -87,11 +86,11 @@ public class PersonDTO {
 		this.email = email;
 	}
 
-	public Date getHiredate() {
+	public String getHiredate() {
 		return hiredate;
 	}
 
-	public void setHiredate(Date hiredate) {
+	public void setHiredate(String hiredate) {
 		this.hiredate = hiredate;
 	}
 

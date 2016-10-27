@@ -46,8 +46,8 @@
 		<div class="row row-eq-height">
 			
 			<!-- Search button -->
-			<div class="col-md-5">
-				<form class="navbar-form" role="search" action="/persons" method="get" data-toggle="validator">
+			<div class="col-md-3">
+				<form class="form" role="search" action="/persons" method="get" data-toggle="validator">
 					<div class="input-group">
 						<input id="searchInput" type="text" class="form-control" placeholder="Búsqueda por ID"
 							name="keyword" id="keyword" required>
@@ -73,7 +73,7 @@
 			</div>
 			
 			<!-- Add button -->
-			<div class="col-md-offset-5 col-md-2">
+			<div class="col-md-offset-7 col-md-2">
 				<button type="button" class="btn btn-success pull-right"
 						data-toggle="modal" data-target="#formPersonCreation">
 					<span class="glyphicon glyphicon-plus"></span> 
@@ -236,7 +236,7 @@
 										<label for="inputHiredate" class="control-label">Fecha
 											de alta </label> <input type="text" class="form-control datepicker"
 											data-format="dd/MM/yyyy" name="hiredate" id="hiredate"
-											placeholder="dd/mm/aaaa" required>
+											placeholder="aaaa/mm/dd" required>
 									</div>
 								</div>
 							</div>

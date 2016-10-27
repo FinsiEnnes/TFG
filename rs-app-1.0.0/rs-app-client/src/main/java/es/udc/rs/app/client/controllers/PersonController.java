@@ -200,7 +200,7 @@ public class PersonController {
     	      BindingResult result, Model model, HttpServletRequest request) throws InputValidationException, FirstPageElementException, NumberFormatException, InstanceNotFoundException {
     	
     	// Get the PersonDTO
-    	Date hiredate = ClientUtilMethods.toDate(request.getParameter("hiredate"));
+    	String hiredate = request.getParameter("hiredate");
     	personDTO.setHiredate(hiredate);
     	
     	// Convert the PersonDTO to Person
@@ -234,7 +234,7 @@ public class PersonController {
     							throws InstanceNotFoundException, InputValidationException {
     
     	// Get the PersonDTO
-    	Date hiredate = ClientUtilMethods.toDate(request.getParameter("hiredate"));
+    	String hiredate = request.getParameter("hiredate");
     	personDto.setId(Long.parseLong(idPerson, 10));
     	personDto.setHiredate(hiredate);
     	
@@ -291,6 +291,42 @@ public class PersonController {
     	List<AptitudeDTO> aptitudeDTOList = AptitudeDTOConversor.toAptitudeDTOList(aptitudes);
     	
     	model.addAttribute("person", aptitude.getPerson());
+    	model.addAttribute("aptitudes", aptitudeDTOList);
+    	
+    	model.addAttribute("section1State", "");
+    	model.addAttribute("section2State", "active");
+    	model.addAttribute("section3State", "");
+    	
+    	return "personInfo";
+    }
+    
+    
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /persons/id/aptitude/delete || Delete aptitudes at the Person.  
+	//-----------------------------------------------------------------------------------------------------
+    @RequestMapping(value="/persons/{idPerson}/aptitude/delete", method=RequestMethod.POST)
+    public String deleteAptitude(@PathVariable String idPerson,
+    							 Model model, HttpServletRequest request) 
+    		throws InstanceNotFoundException, InputValidationException  {
+    	
+    	String ids = request.getParameter("ids");
+    	Person person = personService.findPerson(Long.parseLong(idPerson, 10));
+    	
+    	// Get the aptitudes ids in an array
+		String[] splited = ids.split("-");
+		int lengthSplit = splited.length;
+		
+		for(int i=0; i<lengthSplit; i++){
+			personService.removeAptitude(Long.parseLong(splited[i],10));
+       }
+    	
+    	// Get the aptitudes of the Person
+    	List<Aptitude> aptitudes = personService.findAptitudeByPerson(person);
+    	
+    	// Convert the aptitudes to a aptitudeDTO list
+    	List<AptitudeDTO> aptitudeDTOList = AptitudeDTOConversor.toAptitudeDTOList(aptitudes);
+    	
+    	model.addAttribute("person", person);
     	model.addAttribute("aptitudes", aptitudeDTOList);
     	
     	model.addAttribute("section1State", "");

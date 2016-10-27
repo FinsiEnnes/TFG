@@ -20,16 +20,26 @@ public class ClientUtilMethods {
 		Date date = new Date();
 		
 		try {
-
 			date = formatter.parse(dateInString);
-			System.out.println(date);
-			System.out.println(formatter.format(date));
-
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		
 		return date;
+	}
+	
+	
+	public static String convertDateToString(Date indate) {
+
+		String dateString = null;
+		SimpleDateFormat sdfr = new SimpleDateFormat("dd/MM/yyyy");
+
+		try{
+			dateString = sdfr.format( indate );
+		}catch (Exception ex ){
+			System.out.println(ex);
+		}
+		return dateString;
 	}
 	
 	

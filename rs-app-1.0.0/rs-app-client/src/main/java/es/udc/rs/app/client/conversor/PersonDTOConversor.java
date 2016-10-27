@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.udc.rs.app.client.dto.PersonDTO;
+import es.udc.rs.app.client.util.ClientUtilMethods;
 import es.udc.rs.app.model.domain.Person;
 
 public class PersonDTOConversor {
-
+	
 	public static List<PersonDTO> toPersonDTOList(List<Person> persons) {
 		
 		List<PersonDTO> personsDTO = new ArrayList<PersonDTO>();
@@ -28,7 +29,7 @@ public class PersonDTOConversor {
 		personDto.setSurname2(person.getSurname2());
 		personDto.setNif(person.getNif());
 		personDto.setEmail(person.getEmail());
-		personDto.setHiredate(person.getHiredate());
+		personDto.setHiredate(ClientUtilMethods.convertDateToString(person.getHiredate()));
 		personDto.setComment(person.getComment());
 		
 		return personDto;
@@ -44,7 +45,7 @@ public class PersonDTOConversor {
 		person.setSurname2(personDto.getSurname2());
 		person.setNif(personDto.getNif());
 		person.setEmail(personDto.getEmail());
-		person.setHiredate(personDto.getHiredate());
+		person.setHiredate(ClientUtilMethods.toDate(personDto.getHiredate()));
 		person.setComment(personDto.getComment());
 		
 		return person;
