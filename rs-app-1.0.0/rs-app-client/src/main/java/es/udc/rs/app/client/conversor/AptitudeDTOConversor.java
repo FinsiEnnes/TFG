@@ -53,34 +53,35 @@ public class AptitudeDTOConversor {
 	
 	public static AptitudeDTO toAptitudeDTO(Aptitude aptitude) {
 		
-		AptitudeDTO aptitudeDto = new AptitudeDTO();
+		AptitudeDTO aptitudeDTO = new AptitudeDTO();
 		
-		aptitudeDto.setId(aptitude.getId());
-		aptitudeDto.setIdPerson(aptitude.getPerson().getId());
-		aptitudeDto.setName(aptitude.getName());
-		aptitudeDto.setType(aptitude.getType().getName());
-		aptitudeDto.setValue(aptitude.getValue());
-		aptitudeDto.setComment(aptitude.getComment());
+		aptitudeDTO.setId(aptitude.getId());
+		aptitudeDTO.setIdPerson(aptitude.getPerson().getId());
+		aptitudeDTO.setName(aptitude.getName());
+		aptitudeDTO.setType(aptitude.getType().getName());
+		aptitudeDTO.setValue(aptitude.getValue());
+		aptitudeDTO.setComment(aptitude.getComment());
 		
-		return aptitudeDto;
+		return aptitudeDTO;
 	}
 	
-	public static Aptitude toAptitude(AptitudeDTO aptitudeDto) throws InstanceNotFoundException {
+	public static Aptitude toAptitude(AptitudeDTO aptitudeDTO) throws InstanceNotFoundException {
 		
 		Aptitude aptitude = new Aptitude();
 		
 		// Get the Person
-		Person person = personService.findPerson(aptitudeDto.getIdPerson());
+		Person person = personService.findPerson(aptitudeDTO.getIdPerson());
 		
 		// Get the AptitudeType
-		AptitudeType aptitudeType = personService.findAptitudeType(getAptitudeTypeId(aptitudeDto.getType()));
+		AptitudeType aptitudeType = personService.findAptitudeType(getAptitudeTypeId(aptitudeDTO.getType()));
 		
 		// Now we can create the Aptitude
+		aptitude.setId(aptitudeDTO.getId());
 		aptitude.setPerson(person);
-		aptitude.setName(aptitudeDto.getName());
+		aptitude.setName(aptitudeDTO.getName());
 		aptitude.setType(aptitudeType);
-		aptitude.setValue(aptitudeDto.getValue());
-		aptitude.setComment(aptitudeDto.getComment());
+		aptitude.setValue(aptitudeDTO.getValue());
+		aptitude.setComment(aptitudeDTO.getComment());
 		
 		return aptitude;
 	}

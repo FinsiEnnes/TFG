@@ -27,7 +27,7 @@
 				<li class="${section2State}"><a href="#section2"
 					data-toggle="tab">Aptitudes</a></li>
 					
-				<li class="${section3State}"><a href="#messages-v"
+				<li class="${section3State}"><a href="#section3"
 					data-toggle="tab">Bajas</a></li>
 			</ul>
 		</div>
@@ -132,10 +132,9 @@
 							</button>
 						</div>
 						<div class="col-md-offset-1 col-md-2">
-							<form action="/persons/${person.id}/aptitude/delete" method="post">
+							<form id="deleteAptitude" action="javascript:void(0);" method="post">
 								<input type="hidden" name="ids" value="0" id="idsToDelete" class="form-control">
-								<button id="deleteAptitude" type="submit" name="ids" value="0"
-									class="btn btn-danger pull-right" >
+								<button type="submit" class="btn btn-danger pull-right" >
 									<span class="glyphicon glyphicon-remove"></span> Borrar
 									seleccionados
 								</button>
@@ -152,6 +151,7 @@
 								<th>Tipo</th>
 								<th>Valoración</th>
 								<th>Comentario</th>
+								<th>Acción</th>
 								<th data-field="state" data-checkbox="true"></th>
 							</tr>
 						</thead>
@@ -162,20 +162,90 @@
 									<td class="col-md-2">${aptitude.name}</td>
 									<td class="col-md-2">${aptitude.type}</td>
 									<td class="col-md-1">${aptitude.value}</td>
-									<td class="col-md-5">${aptitude.comment}</td>
+									<td class="col-md-4">${aptitude.comment}</td>
+									<td>
+										<button id="updateAptitude" type="button"
+											class="btn btn-primary btn-xs center-block"
+											 data-toggle="modal" data-target="#aptitudeUpdate" 
+											 data-idapt="${aptitude.id}"
+											 data-nameapt="${aptitude.name}"
+											 data-typeapt="${aptitude.type}"
+											 data-valueapt="${aptitude.value}"
+											 data-commentapt="${aptitude.comment}">
+											<span class="glyphicon glyphicon-edit"></span>
+										</button>
+									</td>
 									<td class="col-md-1"></td>
 								</tr>
 							</c:forEach>
 						</tbody>
 					</table>
-
 				</div>
-				<div class="tab-pane ${section3State}" id="messages-v">Messages
-					Tab.</div>
+				
+		<!-- ----------------------- Third section: Times Off information --------------------- -->
+				<div class="tab-pane ${section3State}" id="section3">
+					<h3>
+						Bajas <br> <small>Detalles de las bajas laborales</small>
+					</h3>
+					<hr>
+					<div class="row">
+						<div class="col-md-offset-7 col-md-2">
+							<button type="button" class="btn btn-success" data-toggle="modal"
+								data-target="#timeoffCreate">
+								<span class="glyphicon glyphicon-plus"></span> Añadir baja
+							</button>
+						</div>
+						<div class="col-md-offset-1 col-md-2">
+							<form id="deleteTimeoff" action="javascript:void(0);" method="post">
+								<input type="hidden" name="ids" value="0" id="idsToDelete" class="form-control">
+								<button type="submit" class="btn btn-danger pull-right" >
+									<span class="glyphicon glyphicon-remove"></span> Borrar
+									seleccionados
+								</button>
+							</form>
+						</div>
+					</div>
+
+					<br>
+					<table id="timeoffTable" class="table table-bordered" data-toggle="table">
+						<thead>
+							<tr>
+								<th>Id</th>
+								<th>Inicio</th>
+								<th>Fin</th>
+								<th>Causa</th>
+								<th>Acción</th>
+								<th data-field="state" data-checkbox="true"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach var="timeoff" items="${timeoffs}">
+								<tr>
+									<td class="col-md-1 text-info">${timeoff.id}</td>
+									<td class="col-md-2">${timeoff.name}</td>
+									<td class="col-md-2">${timeoff.ini}</td>
+									<td class="col-md-1">${timeoff.end}</td>
+									<td>
+										<button id="updateTimeoff" type="button"
+											class="btn btn-primary btn-xs center-block"
+											 data-toggle="modal" data-target="#aptitudeUpdate" 
+											 data-idtime="${timeoff.id}"
+											 data-nametime="${timeoff.name}"
+											 data-initime="${timeoff.ini}"
+											 data-endtime="${timeoff.end}">
+											<span class="glyphicon glyphicon-edit"></span>
+										</button>
+									</td>
+									<td class="col-md-1"></td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>				
+				</div>
 			</div>
 		</div>
 
-		<!-- Modal -->
+		<!-- ---------------------------- Modal: Aptitudes creation --------------------------- -->
 		<div class="modal fade" id="aptitudeCreate" role="dialog">
 			<div class="modal-dialog">
 
@@ -187,7 +257,7 @@
 					</div>
 					<div class="modal-body">
 
-						<form:form class="form" method="post"
+						<form:form id="submitAptitude" class="form" method="post"
 							action='/persons/${person.id}/aptitude' modelAttribute="aptitude"
 							role="form" data-toggle="validator">
 
@@ -237,7 +307,7 @@
 								<div class="row">
 									<div class="col-md-12">
 										<label>Cometario (max 50 caracteres)</label>
-										<textarea class="form-control" rows="1" id="comment"
+										<textarea class="form-control" rows="1"
 											name="comment" placeholder="Detalles a destacar..."
 											maxlength="50"></textarea>
 									</div>
@@ -251,7 +321,90 @@
 						</form:form>
 					</div>
 				</div>
+			</div>
+		</div>
+		
+		
+		<!-- ----------------------------- Modal: Aptitudes update ---------------------------- -->
+		<div class="modal fade" id="aptitudeUpdate" role="dialog">
+			<div class="modal-dialog">
 
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Actualización de aptitud</h4>
+					</div>
+					<div class="modal-body">
+
+						<form:form id="submitAptitude" class="form" method="post"
+							action='/persons/${person.id}/aptitude/update' modelAttribute="aptitude"
+							role="form" data-toggle="validator">
+
+							<!-- First row -->
+							<div class="form-group">
+								<div class="row">
+									<input type="hidden" name="id" id="idAptToDelete"
+										class="form-control" value="0">
+									<div class="form-group col-md-7">
+										<label for="inputName" class="control-label">Nombre</label> <input
+											type="text" class="form-control" name="name" id="nameApt"
+											required>
+									</div>
+
+									<div class="form-group col-md-3">
+										<label for="selectValue">Tipo</label> <select
+											class="form-control" name="type" id="typeApt">
+											<option>Artistica</option>
+											<option>Cientifica</option>
+											<option>Directiva</option>
+											<option>Espacial</option>
+											<option>Mecanica</option>
+											<option>Numerica</option>
+											<option>Organizativa</option>
+											<option>Social</option>
+										</select>
+									</div>
+
+									<div class="form-group col-md-2">
+										<label for="selectValue">Valoración</label> <select
+											class="form-control" name="value" id="valueApt">
+											<option>1</option>
+											<option>2</option>
+											<option>3</option>
+											<option>4</option>
+											<option>5</option>
+											<option>6</option>
+											<option>7</option>
+											<option>8</option>
+											<option>9</option>
+											<option>10</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<!-- Second row -->
+							<div class="form-group">
+								<div class="row">
+									<div class="col-md-12">
+										<label>Cometario (max 50 caracteres)</label>
+										<textarea class="form-control" rows="1" id="commentApt"
+											name="comment" placeholder="Detalles a destacar..."
+											maxlength="50"></textarea>
+									</div>
+								</div>
+							</div>
+
+							<!-- Submit button -->
+							<div class="form-group">
+								<button id="aptitudeSubmit" type="submit" class="btn btn-primary center-block">
+									Guardar cambios
+								</button>
+							</div>
+						</form:form>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -290,21 +443,52 @@
 		});
 	</script>
 	
+	<!-- ----------- Get the selected aptitudes and send its id as the form param  ------------ -->
 	<script type='text/javascript'>
 		$(function() {            
 			$('#deleteAptitude').click(function () {
 				var json = JSON.parse(JSON.stringify($('#aptitudeTable').bootstrapTable('getSelections')));
-				var idApts = "";
+				var size = json.length;
 				
-				for (i = 0; i < json.length; i++) {
-					idApts += json[i]['0'] + "-";
+				if (size > 0) {
+					var idApts = "";
+					
+					for (i = 0; i < json.length; i++) {
+						idApts += json[i]['0'] + "-";
+					}
+					
+					var idApts = idApts.substring(0, (idApts.length-1));
+					
+					document.getElementById("idsToDelete").value = idApts;
+					document.getElementById("deleteAptitude").action = "/persons/${person.id}/aptitude/delete"
 				}
-				
-				var idApts = idApts.substring(0, (idApts.length-1));
-				
-				alert(idApts);
-				document.getElementById("idsToDelete").value = idApts;		
+					
             });
+		});
+	</script>
+	
+	<script type='text/javascript'>
+		$(function() {
+			$('#aptitudeUpdate').on('show.bs.modal', function(event) {
+				
+				// Button that triggered the modal
+				var button = $(event.relatedTarget) 
+				
+				// Extract info from data attributes
+				var id = button.data('idapt') 
+				var name = button.data('nameapt')
+				var type = button.data('typeapt')
+				var value = button.data('valueapt')
+				var comment = button.data('commentapt')
+				var url = "/persons/" + id + "/aptitude/update"
+
+				// Set the values at the modal components
+				document.getElementById('idAptToDelete').value = id
+				document.getElementById('nameApt').value = name
+				document.getElementById('typeApt').value = type
+				document.getElementById('valueApt').value = value
+				document.getElementById('commentApt').value = comment
+			})
 		});
 	</script>
 

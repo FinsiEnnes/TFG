@@ -29,6 +29,7 @@ import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Aptitude;
 import es.udc.rs.app.model.domain.Person;
+import es.udc.rs.app.model.domain.TimeOff;
 import es.udc.rs.app.model.service.person.PersonService;
 
 @Controller
@@ -177,12 +178,17 @@ public class PersonController {
     	Person person = personService.findPerson(idPersonLong);
     	PersonDTO personDTO = PersonDTOConversor.toPersonDTO(person);
     	
-    	// Get the corresponding aptitudes and times off
+    	// Get the corresponding aptitudes
     	List<Aptitude> aptitudes = personService.findAptitudeByPerson(person);
     	List<AptitudeDTO> aptitudeDTOList = AptitudeDTOConversor.toAptitudeDTOList(aptitudes);
     	
+    	// Now the time offs
+    	List<TimeOff> timeOffs = personService.findTimeOffByPerson(person);
+    	
+    	
     	model.addAttribute("person", personDTO);
     	model.addAttribute("aptitudes", aptitudeDTOList);
+    	model.addAttribute("timeoffs", timeOffs);
     	
     	model.addAttribute("section1State", "active");
     	model.addAttribute("section2State", "");
@@ -287,10 +293,11 @@ public class PersonController {
     	// Get all the updated aptitudes of the Person
     	List<Aptitude> aptitudes = personService.findAptitudeByPerson(aptitude.getPerson());
     	
-    	// Convert the aptitudes to a aptitudeDTO list
+    	// Convert the objects to DTO
     	List<AptitudeDTO> aptitudeDTOList = AptitudeDTOConversor.toAptitudeDTOList(aptitudes);
+    	PersonDTO personDTO = PersonDTOConversor.toPersonDTO(aptitude.getPerson());
     	
-    	model.addAttribute("person", aptitude.getPerson());
+    	model.addAttribute("person", personDTO);
     	model.addAttribute("aptitudes", aptitudeDTOList);
     	
     	model.addAttribute("section1State", "");
@@ -302,31 +309,65 @@ public class PersonController {
     
     
 	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /persons/id/aptitude/update || Update the Aptitude of a Person.  
+	//-----------------------------------------------------------------------------------------------------
+    @RequestMapping(value="/persons/{idPerson}/aptitude/update", method=RequestMethod.POST)
+    public String updateAptitude(@Valid @ModelAttribute("aptitude")AptitudeDTO aptitudeDTO, 
+    		 BindingResult result, @PathVariable String idPerson, Model model, HttpServletRequest request) 
+    		throws InstanceNotFoundException, InputValidationException  {
+    	
+    	// Convert the AptitudeDTO to Aptitude
+    	Aptitude aptitude = AptitudeDTOConversor.toAptitude(aptitudeDTO);
+    	
+    	// Update the aptitude to the Person
+    	personService.updateAptitude(aptitude);
+    	
+    	// Get all the updated aptitudes of the Person
+    	List<Aptitude> aptitudes = personService.findAptitudeByPerson(aptitude.getPerson());
+    	
+    	// Convert the objects to DTO
+    	List<AptitudeDTO> aptitudeDTOList = AptitudeDTOConversor.toAptitudeDTOList(aptitudes);
+    	PersonDTO personDTO = PersonDTOConversor.toPersonDTO(aptitude.getPerson());
+    	
+    	model.addAttribute("person", personDTO);
+    	model.addAttribute("aptitudes", aptitudeDTOList);
+    	
+    	model.addAttribute("section1State", "");
+    	model.addAttribute("section2State", "active");
+    	model.addAttribute("section3State", "");
+    	
+    	return "personInfo";
+    }
+    
+   
+	//-----------------------------------------------------------------------------------------------------
 	// [POST]-> /persons/id/aptitude/delete || Delete aptitudes at the Person.  
 	//-----------------------------------------------------------------------------------------------------
     @RequestMapping(value="/persons/{idPerson}/aptitude/delete", method=RequestMethod.POST)
-    public String deleteAptitude(@PathVariable String idPerson,
-    							 Model model, HttpServletRequest request) 
+    public String deleteAptitude(@PathVariable String idPerson, Model model, HttpServletRequest request) 
     		throws InstanceNotFoundException, InputValidationException  {
     	
+    	// Get the aptitudes id to delete these
     	String ids = request.getParameter("ids");
-    	Person person = personService.findPerson(Long.parseLong(idPerson, 10));
     	
-    	// Get the aptitudes ids in an array
-		String[] splited = ids.split("-");
+    	String[] splited = ids.split("-");
 		int lengthSplit = splited.length;
-		
+
+		// Now call the service to delete the aptitudes
 		for(int i=0; i<lengthSplit; i++){
 			personService.removeAptitude(Long.parseLong(splited[i],10));
        }
     	
     	// Get the aptitudes of the Person
+    	Person person = personService.findPerson(Long.parseLong(idPerson, 10));
     	List<Aptitude> aptitudes = personService.findAptitudeByPerson(person);
     	
-    	// Convert the aptitudes to a aptitudeDTO list
+    	// Convert the objects to DTO
     	List<AptitudeDTO> aptitudeDTOList = AptitudeDTOConversor.toAptitudeDTOList(aptitudes);
+    	PersonDTO personDTO = PersonDTOConversor.toPersonDTO(person);
     	
-    	model.addAttribute("person", person);
+    	// Create the model
+    	model.addAttribute("person", personDTO);
     	model.addAttribute("aptitudes", aptitudeDTOList);
     	
     	model.addAttribute("section1State", "");

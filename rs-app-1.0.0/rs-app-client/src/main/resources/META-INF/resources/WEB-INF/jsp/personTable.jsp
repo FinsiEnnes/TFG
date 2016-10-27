@@ -236,7 +236,7 @@
 										<label for="inputHiredate" class="control-label">Fecha
 											de alta </label> <input type="text" class="form-control datepicker"
 											data-format="dd/MM/yyyy" name="hiredate" id="hiredate"
-											placeholder="aaaa/mm/dd" required>
+											placeholder="dd/mm/aaaa" required>
 									</div>
 								</div>
 							</div>
