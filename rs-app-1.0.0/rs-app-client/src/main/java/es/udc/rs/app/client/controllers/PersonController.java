@@ -1,7 +1,6 @@
 package es.udc.rs.app.client.controllers;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,19 +8,25 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
 
 import es.udc.rs.app.client.conversor.AptitudeDTOConversor;
 import es.udc.rs.app.client.conversor.PersonDTOConversor;
+import es.udc.rs.app.client.conversor.TimeOffDTOConversor;
 import es.udc.rs.app.client.dto.AptitudeDTO;
 import es.udc.rs.app.client.dto.PersonDTO;
+import es.udc.rs.app.client.dto.TimeOffDTO;
 import es.udc.rs.app.client.util.ClientConstants;
 import es.udc.rs.app.client.util.ClientUtilMethods;
 import es.udc.rs.app.exceptions.FirstPageElementException;
@@ -184,11 +189,11 @@ public class PersonController {
     	
     	// Now the time offs
     	List<TimeOff> timeOffs = personService.findTimeOffByPerson(person);
-    	
+    	List<TimeOffDTO> timeOffDTOList = TimeOffDTOConversor.toTimeOffDTOList(timeOffs);
     	
     	model.addAttribute("person", personDTO);
     	model.addAttribute("aptitudes", aptitudeDTOList);
-    	model.addAttribute("timeoffs", timeOffs);
+    	model.addAttribute("timeoffs", timeOffDTOList);
     	
     	model.addAttribute("section1State", "active");
     	model.addAttribute("section2State", "");
@@ -269,7 +274,7 @@ public class PersonController {
     	// Create the model     	
     	personTable(1,null,null,model);
     	model.addAttribute("idPerson", idPerson);
-    	model.addAttribute("action", "correctCreation");
+    	model.addAttribute("action", "");
     	
     	// Return the table in the first page 
     	return "personTable";
@@ -290,16 +295,10 @@ public class PersonController {
     	// Add the aptitude to the Person
     	personService.createAptitude(aptitude);
     	
-    	// Get all the updated aptitudes of the Person
-    	List<Aptitude> aptitudes = personService.findAptitudeByPerson(aptitude.getPerson());
+    	// Get all the data of this Person
+    	personInfo(idPerson, model);
     	
-    	// Convert the objects to DTO
-    	List<AptitudeDTO> aptitudeDTOList = AptitudeDTOConversor.toAptitudeDTOList(aptitudes);
-    	PersonDTO personDTO = PersonDTOConversor.toPersonDTO(aptitude.getPerson());
-    	
-    	model.addAttribute("person", personDTO);
-    	model.addAttribute("aptitudes", aptitudeDTOList);
-    	
+    	// The section2 is able
     	model.addAttribute("section1State", "");
     	model.addAttribute("section2State", "active");
     	model.addAttribute("section3State", "");
@@ -322,15 +321,8 @@ public class PersonController {
     	// Update the aptitude to the Person
     	personService.updateAptitude(aptitude);
     	
-    	// Get all the updated aptitudes of the Person
-    	List<Aptitude> aptitudes = personService.findAptitudeByPerson(aptitude.getPerson());
-    	
-    	// Convert the objects to DTO
-    	List<AptitudeDTO> aptitudeDTOList = AptitudeDTOConversor.toAptitudeDTOList(aptitudes);
-    	PersonDTO personDTO = PersonDTOConversor.toPersonDTO(aptitude.getPerson());
-    	
-    	model.addAttribute("person", personDTO);
-    	model.addAttribute("aptitudes", aptitudeDTOList);
+    	// Get all the data of this Person
+    	personInfo(idPerson, model);
     	
     	model.addAttribute("section1State", "");
     	model.addAttribute("section2State", "active");
@@ -349,7 +341,6 @@ public class PersonController {
     	
     	// Get the aptitudes id to delete these
     	String ids = request.getParameter("ids");
-    	
     	String[] splited = ids.split("-");
 		int lengthSplit = splited.length;
 
@@ -358,17 +349,8 @@ public class PersonController {
 			personService.removeAptitude(Long.parseLong(splited[i],10));
        }
     	
-    	// Get the aptitudes of the Person
-    	Person person = personService.findPerson(Long.parseLong(idPerson, 10));
-    	List<Aptitude> aptitudes = personService.findAptitudeByPerson(person);
-    	
-    	// Convert the objects to DTO
-    	List<AptitudeDTO> aptitudeDTOList = AptitudeDTOConversor.toAptitudeDTOList(aptitudes);
-    	PersonDTO personDTO = PersonDTOConversor.toPersonDTO(person);
-    	
-    	// Create the model
-    	model.addAttribute("person", personDTO);
-    	model.addAttribute("aptitudes", aptitudeDTOList);
+    	// Get all the data of this Person
+    	personInfo(idPerson, model);
     	
     	model.addAttribute("section1State", "");
     	model.addAttribute("section2State", "active");
@@ -376,4 +358,138 @@ public class PersonController {
     	
     	return "personInfo";
     }
+    
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /persons/id/timeoff || Add new TimeOffs at the Person.  
+	//-----------------------------------------------------------------------------------------------------
+    @RequestMapping(value="/persons/{idPerson}/timeoff", method=RequestMethod.POST)
+    public String addTimeOff(@Valid @ModelAttribute("timeoff")TimeOffDTO timeOffDTO, 
+    		 BindingResult result, @PathVariable String idPerson, Model model, HttpServletRequest request) 
+    		throws InstanceNotFoundException, InputValidationException  {
+    	
+    	// Convert the TimeOffDTO to TimeOff
+    	TimeOff timeOff = TimeOffDTOConversor.toTimeOff(timeOffDTO);
+    	
+    	// Add the TimeOff to the Person
+    	personService.createTimeOff(timeOff);
+    	
+    	// Get all the data of this Person
+    	personInfo(idPerson, model);
+    	
+    	model.addAttribute("section1State", "");
+    	model.addAttribute("section2State", "");
+    	model.addAttribute("section3State", "active");
+    	
+    	return "personInfo";
+    }
+    
+    
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /persons/id/timeoff/update || Update the TimeOff of a Person.  
+	//-----------------------------------------------------------------------------------------------------
+    @RequestMapping(value="/persons/{idPerson}/timeoff/update", method=RequestMethod.POST)
+    public String updateTimeOff(@Valid @ModelAttribute("timeoff")TimeOffDTO timeOffDTO, 
+    		 BindingResult result, @PathVariable String idPerson, Model model, HttpServletRequest request) 
+    		throws InstanceNotFoundException, InputValidationException  {
+    	
+    	// Convert the TimeOffDTO to TimeOff
+    	TimeOff timeOff = TimeOffDTOConversor.toTimeOff(timeOffDTO);
+    	
+    	// Add the TimeOff to the Person
+    	personService.updateTimeOff(timeOff);
+    	
+    	// Get all the data of this Person
+    	personInfo(idPerson, model);
+    	
+    	model.addAttribute("section1State", "");
+    	model.addAttribute("section2State", "");
+    	model.addAttribute("section3State", "active");
+    	
+    	return "personInfo";
+    }
+    
+    
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /persons/id/timeoff/delete || Delete the TimeOff of a Person.  
+	//-----------------------------------------------------------------------------------------------------
+    @RequestMapping(value="/persons/{idPerson}/timeoff/delete", method=RequestMethod.POST)
+    public String deleteTimeOff(@Valid @ModelAttribute("timeoff")TimeOffDTO timeOffDTO, 
+    		 BindingResult result, @PathVariable String idPerson, Model model, HttpServletRequest request) 
+    		throws InstanceNotFoundException, InputValidationException  {
+    	
+    	// Get the aptitudes id to delete these
+    	String ids = request.getParameter("ids");
+    	String[] splited = ids.split("-");
+		int lengthSplit = splited.length;
+
+		// Now call the service to delete the aptitudes
+		for(int i=0; i<lengthSplit; i++){
+			personService.removeTimeOff(Long.parseLong(splited[i],10));
+       }
+    	
+    	// Get all the data of this Person
+    	personInfo(idPerson, model);
+    	
+    	model.addAttribute("section1State", "");
+    	model.addAttribute("section2State", "");
+    	model.addAttribute("section3State", "active");
+    	
+    	return "personInfo";
+    }
+    
+    
+    @ResponseStatus(HttpStatus.NOT_FOUND)  // 404
+    @ExceptionHandler(InstanceNotFoundException.class)
+    public ModelAndView InstanceNotFound(HttpServletRequest req, InstanceNotFoundException e) {
+
+    	List<PersonDTO> personsDTO = new ArrayList<PersonDTO>();
+    	List<Person> persons = new ArrayList<Person>();
+    	int totalPages = 0, pageNumber = 0, nextPage = 1;
+    	String nextActive = "", previousActive = "";
+    	
+    	String uri = ClientUtilMethods.getFullURL(req);
+    	ModelAndView mav = new ModelAndView("personTable");
+
+	    try {
+			persons = personService.findAllPersons(1, ClientConstants.PAGE_SIZE);
+		} catch (FirstPageElementException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	    
+	
+	    // Check if the list is empty
+	    if (!persons.isEmpty()) {
+	
+	    	// Convert to DTO
+	    	personsDTO = PersonDTOConversor.toPersonDTOList(persons);
+	    	pageNumber = 1;
+
+    		// Get the number of total pages
+    		totalPages = ClientUtilMethods.getTotalPagesPerson(personService.getTotalPersons());
+	
+    		// We set the previous and next page
+    		nextPage = (pageNumber == totalPages) ? totalPages : (2);
+
+    		// If it is the first or last page, we will disable the button previous or next
+    		nextActive = (pageNumber == totalPages) ? "disabled" : "";
+    		
+	    } else {
+	    	totalPages = 0; pageNumber = 0;
+	    }
+	
+	    // Now create the model
+	    mav.addObject("persons", personsDTO);
+	    mav.addObject("pageNumber", 1);
+	    mav.addObject("totalPage", totalPages);
+	    mav.addObject("previousActive", "disabled");
+	    mav.addObject("nextActive", nextActive);
+	    mav.addObject("previousPage", 1);
+	    mav.addObject("nextPage", nextPage);
+	    mav.addObject("action", "correctCreation");
+	    mav.addObject("msg","Persona no encontrada");
+	
+	    return mav;
+
+}
 }

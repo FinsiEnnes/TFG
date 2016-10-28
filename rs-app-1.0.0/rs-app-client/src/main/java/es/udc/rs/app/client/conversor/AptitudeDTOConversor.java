@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import es.udc.rs.app.client.dto.AptitudeDTO;
-import es.udc.rs.app.client.dto.PersonDTO;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Aptitude;
 import es.udc.rs.app.model.domain.AptitudeType;

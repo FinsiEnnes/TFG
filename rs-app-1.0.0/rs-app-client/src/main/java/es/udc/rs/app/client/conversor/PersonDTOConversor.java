@@ -21,32 +21,32 @@ public class PersonDTOConversor {
 	
 	public static PersonDTO toPersonDTO(Person person) {
 		
-		PersonDTO personDto = new PersonDTO();
+		PersonDTO personDTO = new PersonDTO();
 		
-		personDto.setId(person.getId());
-		personDto.setName(person.getName());
-		personDto.setSurname1(person.getSurname1());
-		personDto.setSurname2(person.getSurname2());
-		personDto.setNif(person.getNif());
-		personDto.setEmail(person.getEmail());
-		personDto.setHiredate(ClientUtilMethods.convertDateToString(person.getHiredate()));
-		personDto.setComment(person.getComment());
+		personDTO.setId(person.getId());
+		personDTO.setName(person.getName());
+		personDTO.setSurname1(person.getSurname1());
+		personDTO.setSurname2(person.getSurname2());
+		personDTO.setNif(person.getNif());
+		personDTO.setEmail(person.getEmail());
+		personDTO.setHiredate(ClientUtilMethods.convertDateToString(person.getHiredate()));
+		personDTO.setComment(person.getComment());
 		
-		return personDto;
+		return personDTO;
 	}
 	
-	public static Person toPerson(PersonDTO personDto) {
+	public static Person toPerson(PersonDTO personDTO) {
 		
 		Person person = new Person();
 		
-		person.setId(personDto.getId());
-		person.setName(personDto.getName());
-		person.setSurname1(personDto.getSurname1());
-		person.setSurname2(personDto.getSurname2());
-		person.setNif(personDto.getNif());
-		person.setEmail(personDto.getEmail());
-		person.setHiredate(ClientUtilMethods.toDate(personDto.getHiredate()));
-		person.setComment(personDto.getComment());
+		person.setId(personDTO.getId());
+		person.setName(personDTO.getName());
+		person.setSurname1(personDTO.getSurname1());
+		person.setSurname2(personDTO.getSurname2());
+		person.setNif(personDTO.getNif());
+		person.setEmail(personDTO.getEmail());
+		person.setHiredate(ClientUtilMethods.toDate(personDTO.getHiredate()));
+		person.setComment(personDTO.getComment());
 		
 		return person;
 	}

@@ -1,5 +1,7 @@
 package es.udc.rs.app.client.app;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.hibernate.exception.GenericJDBCException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 
-@ControllerAdvice
+
 public class GlobalControllerExceptionHandler {
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)  // 400
@@ -40,8 +42,9 @@ public class GlobalControllerExceptionHandler {
 
 	@ResponseStatus(HttpStatus.NOT_FOUND)  // 404
 	@ExceptionHandler(InstanceNotFoundException.class)
-	public ModelAndView InstanceNotFound(InstanceNotFoundException e) {
+	public ModelAndView InstanceNotFound(HttpServletRequest req, InstanceNotFoundException e) {
 
+		String uri = req.getRequestURI();
 		ModelAndView mav = new ModelAndView("exception");
 		mav.addObject("name", e.getClass().getSimpleName());
 		mav.addObject("message", e.getMessage());

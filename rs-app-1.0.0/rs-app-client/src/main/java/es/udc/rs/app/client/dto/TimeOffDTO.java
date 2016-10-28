@@ -1,26 +1,19 @@
 package es.udc.rs.app.client.dto;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 
 public class TimeOffDTO {
 	
 	private Long id;
 	private Long idPerson;
-	private Date ini;
-	private Date end;
+	private String ini;
+	private String end;
 	private String reason;
-	
-	// Primary key: id.
-	// Not null attribute: person, ini.
-	// Unique attribute: (person, ini).
-	// Business key: idPerson, ini.
 
 	public TimeOffDTO() {
 	}
 	
-	public TimeOffDTO(Long id, Long idPerson, Date ini, Date end, String reason) {
+	public TimeOffDTO(Long id, Long idPerson, String ini, String end, String reason) {
 		super();
 		this.idPerson = idPerson;
 		this.ini = ini;
@@ -28,7 +21,7 @@ public class TimeOffDTO {
 		this.reason = reason;
 	}
 	
-	public TimeOffDTO(Long idPerson, Date ini, Date end, String reason) {
+	public TimeOffDTO(Long idPerson, String ini, String end, String reason) {
 		super();
 		this.idPerson = idPerson;
 		this.ini = ini;
@@ -44,27 +37,27 @@ public class TimeOffDTO {
 		this.id = id;
 	}
 
-	public Long getPerson() {
+	public Long getIdPerson() {
 		return idPerson;
 	}
 
-	public void setPerson(Long idPerson) {
+	public void setIdPerson(Long idPerson) {
 		this.idPerson = idPerson;
 	}
 
-	public Date getIni() {
+	public String getIni() {
 		return ini;
 	}
 
-	public void setIni(Date ini) {
+	public void setIni(String ini) {
 		this.ini = ini;
 	}
 
-	public Date getEnd() {
+	public String getEnd() {
 		return end;
 	}
 
-	public void setEnd(Date end) {
+	public void setEnd(String end) {
 		this.end = end;
 	}
 	
