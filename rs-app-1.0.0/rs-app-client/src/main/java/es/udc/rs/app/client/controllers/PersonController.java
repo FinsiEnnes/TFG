@@ -8,18 +8,14 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.ModelAndView;
 
 import es.udc.rs.app.client.conversor.AptitudeDTOConversor;
 import es.udc.rs.app.client.conversor.PersonDTOConversor;
@@ -106,13 +102,13 @@ public class PersonController {
     	 @RequestParam(value="search-term", required=false) String searchTerm,
     	 @RequestParam(value="keyword", required=false) String keyword,
     	 Model model) throws FirstPageElementException, InputValidationException, 
-    	 					 NumberFormatException, InstanceNotFoundException {
+    	 					 NumberFormatException {
     	
     	// Initialization of variables
     	List<PersonDTO> personsDTO = new ArrayList<PersonDTO>();
     	List<Person> persons = new ArrayList<Person>();
     	int totalPages = 0, previousPage = 1, nextPage = 1;
-    	String nextActive = "", previousActive = "";
+    	String nextActive = "", previousActive = "", action="", msg="";
     	
     	log.info("Page:" + pageNumber + " || Search-term:" + searchTerm + " || Keyword:" + keyword);
 
@@ -120,9 +116,20 @@ public class PersonController {
     	// ...
     	// Request -> /persons?keyword=X&search-term=Y
     	if (searchTerm!=null) {
-    		if (searchTerm.equals("ID")) 	 { persons = findPersonByID(Long.parseLong(keyword, 10)); }
+    		if (searchTerm.equals("ID")) 	 { 
+    			try {
+					persons = findPersonByID(Long.parseLong(keyword, 10));
+				} catch (InstanceNotFoundException e) {
+					action="correctCreation";
+					msg="Error: No existe una persona con este id";
+				} }
     		if (searchTerm.equals("nombre")) { persons = findPersonByName(keyword); }
-    		if (searchTerm.equals("DNI")) 	 { persons = findPersonByNif(keyword); }    		
+    		if (searchTerm.equals("DNI")) 	 { try {
+				persons = findPersonByNif(keyword);
+			} catch (InstanceNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} }    		
     	} 
     	// Request -> /persons or /persons?page=X
     	else { 
@@ -165,10 +172,11 @@ public class PersonController {
     	model.addAttribute("nextActive", nextActive);
     	model.addAttribute("previousPage", previousPage);
     	model.addAttribute("nextPage", nextPage);
-    	model.addAttribute("action", "");
+    	model.addAttribute("action", action);
+    	model.addAttribute("msg", msg);
     	
     	// Return the name of the view
-        return "personTable";
+        return "person/personTable";
     }
     
     
@@ -199,7 +207,7 @@ public class PersonController {
     	model.addAttribute("section2State", "");
     	model.addAttribute("section3State", "");
     	
-    	return "personInfo";
+    	return "person/personInfo";
     }
     
     
@@ -232,7 +240,7 @@ public class PersonController {
     	model.addAttribute("msg",msg);
     	
     	// Return the table in the first page 
-    	return "personTable";
+    	return "person/personTable";
     }
     
     
@@ -277,7 +285,7 @@ public class PersonController {
     	model.addAttribute("action", "");
     	
     	// Return the table in the first page 
-    	return "personTable";
+    	return "person/personTable";
     }
     
     
@@ -303,7 +311,7 @@ public class PersonController {
     	model.addAttribute("section2State", "active");
     	model.addAttribute("section3State", "");
     	
-    	return "personInfo";
+    	return "person/personInfo";
     }
     
     
@@ -328,7 +336,7 @@ public class PersonController {
     	model.addAttribute("section2State", "active");
     	model.addAttribute("section3State", "");
     	
-    	return "personInfo";
+    	return "person/personInfo";
     }
     
    
@@ -356,7 +364,7 @@ public class PersonController {
     	model.addAttribute("section2State", "active");
     	model.addAttribute("section3State", "");
     	
-    	return "personInfo";
+    	return "person/personInfo";
     }
     
 	//-----------------------------------------------------------------------------------------------------
@@ -380,7 +388,7 @@ public class PersonController {
     	model.addAttribute("section2State", "");
     	model.addAttribute("section3State", "active");
     	
-    	return "personInfo";
+    	return "person/personInfo";
     }
     
     
@@ -405,7 +413,7 @@ public class PersonController {
     	model.addAttribute("section2State", "");
     	model.addAttribute("section3State", "active");
     	
-    	return "personInfo";
+    	return "person/personInfo";
     }
     
     
@@ -434,62 +442,62 @@ public class PersonController {
     	model.addAttribute("section2State", "");
     	model.addAttribute("section3State", "active");
     	
-    	return "personInfo";
+    	return "person/personInfo";
     }
     
     
-    @ResponseStatus(HttpStatus.NOT_FOUND)  // 404
-    @ExceptionHandler(InstanceNotFoundException.class)
-    public ModelAndView InstanceNotFound(HttpServletRequest req, InstanceNotFoundException e) {
-
-    	List<PersonDTO> personsDTO = new ArrayList<PersonDTO>();
-    	List<Person> persons = new ArrayList<Person>();
-    	int totalPages = 0, pageNumber = 0, nextPage = 1;
-    	String nextActive = "", previousActive = "";
-    	
-    	String uri = ClientUtilMethods.getFullURL(req);
-    	ModelAndView mav = new ModelAndView("personTable");
-
-	    try {
-			persons = personService.findAllPersons(1, ClientConstants.PAGE_SIZE);
-		} catch (FirstPageElementException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	    
-	
-	    // Check if the list is empty
-	    if (!persons.isEmpty()) {
-	
-	    	// Convert to DTO
-	    	personsDTO = PersonDTOConversor.toPersonDTOList(persons);
-	    	pageNumber = 1;
-
-    		// Get the number of total pages
-    		totalPages = ClientUtilMethods.getTotalPagesPerson(personService.getTotalPersons());
-	
-    		// We set the previous and next page
-    		nextPage = (pageNumber == totalPages) ? totalPages : (2);
-
-    		// If it is the first or last page, we will disable the button previous or next
-    		nextActive = (pageNumber == totalPages) ? "disabled" : "";
-    		
-	    } else {
-	    	totalPages = 0; pageNumber = 0;
-	    }
-	
-	    // Now create the model
-	    mav.addObject("persons", personsDTO);
-	    mav.addObject("pageNumber", 1);
-	    mav.addObject("totalPage", totalPages);
-	    mav.addObject("previousActive", "disabled");
-	    mav.addObject("nextActive", nextActive);
-	    mav.addObject("previousPage", 1);
-	    mav.addObject("nextPage", nextPage);
-	    mav.addObject("action", "correctCreation");
-	    mav.addObject("msg","Persona no encontrada");
-	
-	    return mav;
-
-}
+//    @ResponseStatus(HttpStatus.NOT_FOUND)  // 404
+//    @ExceptionHandler(InstanceNotFoundException.class)
+//    public ModelAndView InstanceNotFound(HttpServletRequest req, InstanceNotFoundException e) {
+//
+//    	List<PersonDTO> personsDTO = new ArrayList<PersonDTO>();
+//    	List<Person> persons = new ArrayList<Person>();
+//    	int totalPages = 0, pageNumber = 0, nextPage = 1;
+//    	String nextActive = "", previousActive = "";
+//    	
+//    	String uri = ClientUtilMethods.getFullURL(req);
+//    	ModelAndView mav = new ModelAndView("personTable");
+//
+//	    try {
+//			persons = personService.findAllPersons(1, ClientConstants.PAGE_SIZE);
+//		} catch (FirstPageElementException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//	    
+//	
+//	    // Check if the list is empty
+//	    if (!persons.isEmpty()) {
+//	
+//	    	// Convert to DTO
+//	    	personsDTO = PersonDTOConversor.toPersonDTOList(persons);
+//	    	pageNumber = 1;
+//
+//    		// Get the number of total pages
+//    		totalPages = ClientUtilMethods.getTotalPagesPerson(personService.getTotalPersons());
+//	
+//    		// We set the previous and next page
+//    		nextPage = (pageNumber == totalPages) ? totalPages : (2);
+//
+//    		// If it is the first or last page, we will disable the button previous or next
+//    		nextActive = (pageNumber == totalPages) ? "disabled" : "";
+//    		
+//	    } else {
+//	    	totalPages = 0; pageNumber = 0;
+//	    }
+//	
+//	    // Now create the model
+//	    mav.addObject("persons", personsDTO);
+//	    mav.addObject("pageNumber", 1);
+//	    mav.addObject("totalPage", totalPages);
+//	    mav.addObject("previousActive", "disabled");
+//	    mav.addObject("nextActive", nextActive);
+//	    mav.addObject("previousPage", 1);
+//	    mav.addObject("nextPage", nextPage);
+//	    mav.addObject("action", "correctCreation");
+//	    mav.addObject("msg","Persona no encontrada");
+//	
+//	    return mav;
+//
+//    }
 }
