@@ -41,4 +41,10 @@ public class CustomerController {
 		
 		return "customer/customerTable";
 	}
+	
+	@RequestMapping(value="/gantt", method=RequestMethod.GET)
+	public String gantt(Model model) {
+		
+		return "myGantt";
+	}
 }
