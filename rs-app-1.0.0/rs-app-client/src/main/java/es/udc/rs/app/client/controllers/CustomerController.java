@@ -47,4 +47,10 @@ public class CustomerController {
 		
 		return "myGantt";
 	}
+	
+	@RequestMapping(value="/dash", method=RequestMethod.GET)
+	public String dash(Model model) {
+		
+		return "dashboard";
+	}
 }
