@@ -1402,6 +1402,31 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
+	public List<Task> findProjectTasks(Project project) throws InstanceNotFoundException {
+		
+		List<Task> tasks = new ArrayList<Task>();
+		
+		// Check if the Project exists
+		findInstanceService.findProject(project);
+		
+		// Find the Tasks of the Project
+		try{
+			tasks = taskDAO.findByProject(project);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + tasks.size() + " registred Tasks for the"
+				+ " Project with idProject[" + project.getId() + "]");
+		return tasks;
+	}
+
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
 	public void updateTask(Task task) throws InputValidationException, InstanceNotFoundException {
 				
 		// First validate the Task

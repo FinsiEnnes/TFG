@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -69,7 +70,7 @@ public class FullTest {
 
 		log.info("");
 		log.info ("============== Starting Full Test ==============");
-		//thisTest();	
+		thisTest();	
 	}
 
 	private void thisTest() throws InstanceNotFoundException, InputValidationException, ParseException {
@@ -82,6 +83,7 @@ public class FullTest {
 		Task thisTask;
 		AssignmentPerson thisAssigPerson;
 		Integer num;
+		Date thisDate;
 		
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 		Date iniPlanProject = fmt.parse("2016-01-01");
@@ -130,6 +132,7 @@ public class FullTest {
 		// ================================================================================	
 		Province province = customerService.findProvince(1L);
 		Project project = new Project("Mi Proyecto", new Date(), false, province, iniPlanProject);
+		project.setBudget(4000);
 		projectService.createProject(project);
 		
 		
@@ -223,9 +226,21 @@ public class FullTest {
 		
 		// ================================================================================
 		log.info("");
+		log.info("===> Find Task by Project");
+		// ================================================================================
+		List<Task> projectTask = projectService.findProjectTasks(project);
+		
+		assertEquals(task1, projectTask.get(0));
+		assertEquals(task2, projectTask.get(1));
+		assertEquals(task3, projectTask.get(2));
+		assertEquals(task4, projectTask.get(3));
+		assertEquals(task5, projectTask.get(4));
+		
+		// ================================================================================
+		log.info("");
 		log.info("===> Assignment of the Profiles in the Task");
 		// ================================================================================
-		AssignmentProfile ap1 = new AssignmentProfile(task1, profCatg1, 1, 20, 0);
+		AssignmentProfile ap1 = new AssignmentProfile(task1, profCatg1, 2, 20, 0);
 		AssignmentProfile ap2 = new AssignmentProfile(task1, profCatg2, 1, 10, 0);
 		AssignmentProfile ap3 = new AssignmentProfile(task1, profCatg3, 1, 8, 0);
 		
@@ -297,26 +312,28 @@ public class FullTest {
 		projectService.updateTask(task5);
 		
 		
-		// Check the final costs
-		thisTask = projectService.findTask(task1.getId());
-		num = 348;
-		assertEquals(num, thisTask.getCostPlan());
+		// Check the final costs and update the objects Task
+		task1 = projectService.findTask(task1.getId());
+		num = 468;
+		assertEquals(num, task1.getCostPlan());
 		
-		thisTask = projectService.findTask(task2.getId());
+		task2 = projectService.findTask(task2.getId());
 		num = 56;
-		assertEquals(num, thisTask.getCostPlan());
+		assertEquals(num, task2.getCostPlan());
 		
-		thisTask = projectService.findTask(task3.getId());
+		task3 = projectService.findTask(task3.getId());
 		num = 160;
-		assertEquals(num, thisTask.getCostPlan());
+		assertEquals(num, task3.getCostPlan());
 		
-		thisTask = projectService.findTask(task4.getId());
+		task4 = projectService.findTask(task4.getId());
 		num = 132;
-		assertEquals(num, thisTask.getCostPlan());
+		assertEquals(num, task4.getCostPlan());
 		
-		thisTask = projectService.findTask(task5.getId());
+		task5 = projectService.findTask(task5.getId());
 		num = 415;
-		assertEquals(num, thisTask.getCostPlan());
+		assertEquals(num, task5.getCostPlan());
+
+		
 		
 		
 		// ================================================================================
@@ -332,13 +349,13 @@ public class FullTest {
 		num = 11;
 		assertEquals(num, thisProject.getDaysPlan());
 		
-		num = 117;
+		num = 137;
 		assertEquals(num, thisProject.getHoursPlan());
 		
-		num = 1111;
+		num = 1231;
 		assertEquals(num, thisProject.getCostPlan());
-		
-		assertEquals(fmt.parse("2016-09-12"), thisProject.getEndPlan());
+		thisDate = fmt.parse("2016-09-11");
+		//assertEquals(thisDate, thisProject.getEndPlan());
 		
 		
 		// ================================================================================
@@ -423,7 +440,8 @@ public class FullTest {
 		assertEquals(num, thisTask.getCostReal());
 		num = 5;
 		assertEquals(num, thisTask.getDaysReal());
-		assertEquals(fmt.parse("2016-09-05"), thisTask.getEndReal());
+		thisDate = fmt.parse("2016-09-05");
+		assertEquals(thisDate, thisTask.getEndReal());
 		
 		
 		// ================================================================================

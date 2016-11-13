@@ -158,6 +158,8 @@ public interface ProjectService {
 	public Long createTask(Task task) throws InputValidationException, InstanceNotFoundException;
 	
 	public Task findTask(Long id) throws InstanceNotFoundException;
+	
+	public List<Task> findProjectTasks(Project project) throws InstanceNotFoundException;
 					
 	public void updateTask(Task task) throws InputValidationException, InstanceNotFoundException;
 	
