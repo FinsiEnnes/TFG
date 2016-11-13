@@ -12,6 +12,9 @@
 	rel="stylesheet">
 <link href="/css/customTabs.css" rel="stylesheet">
 
+<style>
+
+</style>
 </head>
 <body>
 	<div class="container">
@@ -21,6 +24,7 @@
 		<!-- ------ Interface sections. From the controller we set which one is actived.  ----- -->
 		<div class="col-md-3">
 			<ul class="nav nav-tabs tabs-left sideways">
+				<li class="menu-head"><b>GENERAL</b></li>
 				<li class="${section1State}"><a href="#section1"
 					data-toggle="tab">Información</a></li>
 					

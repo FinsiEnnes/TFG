@@ -165,7 +165,7 @@
 			<div class="col-md-offset-1 col-md-1">
 				<form action="/persons" method="get">
 					<button type="submit" name="page" value="${nextPage}"
-						class="btn btn-default pull-right ${nextActive}">
+						class="btn btn-default pull-right ${nextActive}" disabled>
 						Siguiente <span class="glyphicon glyphicon-chevron-right"></span>
 					</button>
 				</form>

@@ -11,7 +11,7 @@
 <body>
 	<br>
 	<div class="container">
-		<div id="gantt_here" style='width: 1200px; height: 150px;'></div>
+		<div id="gantt_here" style='width: 1200px; height: 500px;'></div>
 	</div>
 	
 	<script type="text/javascript">
@@ -32,12 +32,16 @@
 		var tasks = {
 				 data:[
 				        {id:2, text:"Phase #1", color:"#2eb82e"},
-				        {id:3, text:"Task #1", start_date:"02-11-2016", duration:3, parent:2, progress:"0.2"},
+				        {id:3, text:"Task #1", start_date:"02-11-2016", duration:3, parent:2, progress:"0.2", priority:"High"},
 				        {id:4, text:"Alpha release", duration:0, parent:2, start_date:"06-11-2016", color:"#ff1ac6"},
-				        {id:5, text:"Task #2", start_date:"07-11-2016", duration:3, parent:2}],
+				        {id:5, text:"Task #2", start_date:"07-11-2016", duration:3, parent:2},
+				        {id:6, text:"Task #3", start_date:"12-11-2016", duration:1, parent:2},
+				        {id:7, text:"Task #4", start_date:"14-11-2016", duration:2, parent:2}],
 				links:[
 				               {id:1, source:4, target:5, type:"0"},
-				               {id:2, source:3, target:4, type:"0"}
+				               {id:2, source:3, target:4, type:"0"},
+				               {id:3, source:5, target:6, type:"1"},
+				               {id:4, source:6, target:7, type:"2"}
 				            ]
 		};
 		gantt.init("gantt_here");

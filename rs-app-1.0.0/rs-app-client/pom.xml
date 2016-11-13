@@ -20,29 +20,29 @@
 		<bootstrap.version>3.3.6</bootstrap.version>
 		<jquery.version>1.9.1</jquery.version>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>es.udc.ws</groupId>
 			<artifactId>ws-util</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>es.udc.rs.app</groupId>
 			<artifactId>rs-app-util</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 		</dependency>
-				
-		<!-- Due we need the model Service  -->
+
+		<!-- Due we need the model Service -->
 		<dependency>
-            <groupId>es.udc.rs.app</groupId>
-            <artifactId>rs-app-model</artifactId>
-        </dependency>   
-		
+			<groupId>es.udc.rs.app</groupId>
+			<artifactId>rs-app-model</artifactId>
+		</dependency>
+
 		<!-- Spring Boot dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -55,11 +55,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>org.springframework.boot</groupId>
-		    <artifactId>spring-boot-starter-web</artifactId>
-		    <version>${boot.version}</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<version>${boot.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework.boot</groupId>
@@ -67,42 +67,70 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
-		<!-- Dependencies necessaries to work with JSP and JAR at the same time  -->
+
+		<!-- Dependencies necessaries to work with JSP and JAR at the same time -->
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
 			<version>${tomcat.embed.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>${jstl.version}</version>
-		</dependency>   
-		
-		<!-- Bootstrap dependencies -->
+		</dependency>
+
+		<!-- Bootstrap main dependencies -->
 		<dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>bootstrap</artifactId>
-            <version>${bootstrap.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>jquery</artifactId>
-            <version>${jquery.version}</version>
-        </dependency>      
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap</artifactId>
+			<version>${bootstrap.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jquery</artifactId>
+			<version>${jquery.version}</version>
+		</dependency>
+
+		<!-- Bootstrap datepicker -->
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap-datepicker</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+
+		<!-- Bootstrap validator -->
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>bootstrap-validator</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		
+		<!-- Bootstrap table  -->
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>bootstrap-table</artifactId>
+			<version>1.11.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
 		<plugins>
-			<!-- Spring MVC plugin  -->
+			<!-- Spring MVC plugin -->
 			<plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${boot.plugin.version}</version>
-            </plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${boot.plugin.version}</version>
+			</plugin>
 		</plugins>
 	</build>
 
