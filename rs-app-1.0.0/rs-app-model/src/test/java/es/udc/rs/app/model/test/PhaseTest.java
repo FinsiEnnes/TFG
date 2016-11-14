@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hibernate.exception.GenericJDBCException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,6 @@ public class PhaseTest {
 	private void createAndFindPhase() throws InstanceNotFoundException, InputValidationException, ParseException {
 		
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-		boolean error;
 		
 		log.info("");
 		log.info ("===> Initialize some datas");
@@ -60,41 +58,14 @@ public class PhaseTest {
 		Project project = new Project("Proyecto Zeta", new Date(), false, province, fmt.parse("2016-01-10"));
 		projectService.createProject(project);
 		
-		// ================================================================================
-		log.info("");
-		log.info ("===> Create Phase with a nonexistent project");
-		// ================================================================================
-		Project nonexistentProject = new Project("404", new Date(), false, province, new Date());
-		nonexistentProject.setId(0L);
-		
-		Phase phase1 = new Phase(nonexistentProject,"Fase 1",fmt.parse("2016-01-20"),fmt.parse("2016-03-10"),null);
-		
-		try {
-			error=false;
-			projectService.createPhase(phase1);
-		} catch (InstanceNotFoundException e){
-			log.info ("Error: Project not found");
-			error=true;
-		}
-		assertTrue(error);
-		
-		// ================================================================================
-		log.info("");
-		log.info ("===> Create Phase with wrong dates");
-		// ================================================================================
-		phase1 = new Phase(project,"Fase 1",fmt.parse("2015-01-20"),fmt.parse("2016-03-10"),null);
-		incorrectCreate(phase1);
-		
-		phase1 = new Phase(project,"Fase 1",fmt.parse("2016-01-20"),fmt.parse("2015-03-10"),null);
-		incorrectCreate(phase1);
 
 		// ================================================================================
 		log.info("");
 		log.info ("===> Create a correct Phases");
 		// ================================================================================
-		phase1 = new Phase(project,"Fase 1",fmt.parse("2016-01-20"),fmt.parse("2016-03-10"),null);
-		Phase phase2 = new Phase(project,"Fase 2",fmt.parse("2016-03-20"),fmt.parse("2016-06-25"),null);
-		Phase phase3 = new Phase(project,"Fase 3",fmt.parse("2016-07-01"),fmt.parse("2016-07-10"),null);
+		Phase phase1 = new Phase(project,"Fase 1");
+		Phase phase2 = new Phase(project,"Fase 2");
+		Phase phase3 = new Phase(project,"Fase 3");
 		
 		projectService.createPhase(phase1);
 		projectService.createPhase(phase2);
@@ -117,7 +88,7 @@ public class PhaseTest {
 		log.info("");
 		log.info ("===> Find project Phases");
 		// ================================================================================
-		List<Phase> phases = projectService.findPhaseByProject(project);
+		List<Phase> phases = projectService.findPhaseByProject(project.getId());
 		assertEquals(3, phases.size());
 		assertEquals(phase1, phases.get(0));
 		assertEquals(phase2, phases.get(1));
@@ -125,18 +96,15 @@ public class PhaseTest {
 	}
 	
 	private void updatePhase() throws InstanceNotFoundException, ParseException {
-		
-		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-		
+				
 		// ================================================================================
 		log.info("");
 		log.info ("===> Correct update Phase");
 		// ================================================================================	
 		Project project = projectService.findProjectByName("Proyecto Zeta");
-		Phase phase = projectService.findPhaseByProject(project).get(0);
+		Phase phase = projectService.findPhaseByProject(project.getId()).get(0);
 		
 		phase.setName("Fase 1 modificada");
-		phase.setIniPlan(fmt.parse("2016-02-10"));
 		
 		projectService.updatePhase(phase);
 		
@@ -152,28 +120,16 @@ public class PhaseTest {
 		log.info ("===> Delete all Phases");
 		// ================================================================================	
 		Project project = projectService.findProjectByName("Proyecto Zeta");
-		List<Phase> phases = projectService.findPhaseByProject(project);
+		List<Phase> phases = projectService.findPhaseByProject(project.getId());
 		
 		for (Phase p : phases) {
 			projectService.removePhase(p.getId());
 		}
 		
-		phases = projectService.findPhaseByProject(project);
+		phases = projectService.findPhaseByProject(project.getId());
 		assertEquals(0, phases.size());	
 		
 		projectService.removeProject(project.getId());
-	}
-
-	private void incorrectCreate(Phase phase) throws InstanceNotFoundException {
-		boolean error;
-		
-		try {
-			error=false;
-			projectService.createPhase(phase);
-		} catch (GenericJDBCException e){
-			error=true;
-		}
-		assertTrue(error);
 	}
 
 }

@@ -99,7 +99,7 @@ public interface ProjectService {
 	
 	public Phase findPhase(Long id) throws InstanceNotFoundException;
 		
-	public List<Phase> findPhaseByProject(Project project) throws InstanceNotFoundException;
+	public List<Phase> findPhaseByProject(Long idProject) throws InstanceNotFoundException;
 			
 	public void updatePhase(Phase phase) throws InstanceNotFoundException;
 	
@@ -110,6 +110,8 @@ public interface ProjectService {
 	public Long createMilestone(Milestone milestone) throws InstanceNotFoundException;
 	
 	public Milestone findMilestone(Long id) throws InstanceNotFoundException;
+	
+	public List<Milestone> findMilestonesByProject(Long idProject) throws InstanceNotFoundException;
 					
 	public void updateMilestone(Milestone milestone) throws InstanceNotFoundException;
 	
@@ -159,7 +161,7 @@ public interface ProjectService {
 	
 	public Task findTask(Long id) throws InstanceNotFoundException;
 	
-	public List<Task> findProjectTasks(Project project) throws InstanceNotFoundException;
+	public List<Task> findProjectTasks(Long idProject) throws InstanceNotFoundException;
 					
 	public void updateTask(Task task) throws InputValidationException, InstanceNotFoundException;
 	
@@ -178,6 +180,8 @@ public interface ProjectService {
 	public Predecessor findPredecessor(Long id) throws InstanceNotFoundException;
 	
 	public List<Predecessor> findPredecessorByTask(Task task) throws InstanceNotFoundException;
+	
+	public List<Predecessor> findPredecessorByProject(Long idProject) throws InstanceNotFoundException;
 					
 	public void updatePredecessor(Predecessor predecessor) throws InstanceNotFoundException;
 	

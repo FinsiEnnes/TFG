@@ -41,6 +41,7 @@ public class Project {
 	private Integer costReal;
 	private Integer profitPlan;
 	private Integer profitReal;
+	private Integer progress;
 	
 	public Project() {
 		
@@ -52,7 +53,7 @@ public class Project {
 			Integer daysPlan, Integer daysReal, Date iniPlan, Date iniReal,
 			Date endPlan, Date endReal, Integer hoursPlan, Integer hoursReal,
 			Integer costPlan, Integer costReal, Integer profitPlan,
-			Integer profitReal) {
+			Integer profitReal, Integer progress) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -78,6 +79,7 @@ public class Project {
 		this.costReal = costReal;
 		this.profitPlan = profitPlan;
 		this.profitReal = profitReal;
+		this.progress = progress;
 	}
 
 	public Project(String name, Date stateDate, boolean inner, Province province, Date iniPlan) {
@@ -316,7 +318,16 @@ public class Project {
 	public void setProfitReal(Integer profitReal) {
 		this.profitReal = profitReal;
 	}
-
+	
+	@Column(name = "progressProject")
+	public Integer getProgress() {
+		return progress;
+	}
+	public void setProgress(Integer progress) {
+		this.progress = progress;
+	}
+	
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -356,6 +367,7 @@ public class Project {
 				+ ", hoursPlan=" + hoursPlan + ", hoursReal=" + hoursReal
 				+ ", costPlan=" + costPlan + ", costReal=" + costReal
 				+ ", profitPlan=" + profitPlan + ", profitReal=" + profitReal
+				+ ", progress=" + progress
 				+ "]";
 	}
 

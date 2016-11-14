@@ -202,7 +202,7 @@ public class PredecessorTest {
 		// ================================================================================	
 		Province province = customerService.findProvince(1L);
 		Project otherProject = new Project("Other", new Date(), false, province, fmt.parse("2016-01-06"));		
-		Phase phase = new Phase(otherProject,"Fase 1",fmt.parse("2016-01-20"),fmt.parse("2016-05-10"),null);
+		Phase phase = new Phase(otherProject,"Fase 1");
 
 		projectService.createProject(otherProject);
 		projectService.createPhase(phase);

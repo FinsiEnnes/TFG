@@ -856,13 +856,13 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<Phase> findPhaseByProject(Project project) throws InstanceNotFoundException {
+	public List<Phase> findPhaseByProject(Long idProject) throws InstanceNotFoundException {
 		
 		// Initialize the phase list
 		List<Phase> phases = new ArrayList<Phase>();
 		
-		// Check if the selected project exists
-		findInstanceService.findProject(project);
+		// Check if the Project exists and get it
+		Project project = this.findProject(idProject);
 		
 		// Get the phases of the project
 		try{
@@ -966,6 +966,31 @@ public class ProjectServiceImpl implements ProjectService {
 		// Return the result
 		log.info(ModelConstants.FIND_ID + milestone.toString());
 		return milestone;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<Milestone> findMilestonesByProject(Long idProject) throws InstanceNotFoundException {
+		
+		// Initialize the phase list
+		List<Milestone> milestones = new ArrayList<Milestone>();
+		
+		// Check if the Project exists and get it
+		Project project = this.findProject(idProject);
+		
+		// Get the phases of the project
+		try{
+			milestones = milestoneDAO.findByProject(project);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + milestones.size() + " milestones in the project with idProject[" 
+				 + project.getId() + "]");
+		return milestones;
 	}
 	
 	// ============================================================================
@@ -1402,12 +1427,12 @@ public class ProjectServiceImpl implements ProjectService {
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<Task> findProjectTasks(Project project) throws InstanceNotFoundException {
+	public List<Task> findProjectTasks(Long idProject) throws InstanceNotFoundException {
 		
 		List<Task> tasks = new ArrayList<Task>();
 		
-		// Check if the Project exists
-		findInstanceService.findProject(project);
+		// Check if the Project exists and get it
+		Project project = this.findProject(idProject);
 		
 		// Find the Tasks of the Project
 		try{
@@ -1586,6 +1611,30 @@ public class ProjectServiceImpl implements ProjectService {
 		// Return the result
 		log.info(ModelConstants.FIND_ALL + predecessors.size() + " Predecessors whose main Task has idTask["
 				 + task.getId() + "]");
+		return predecessors;
+	}
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<Predecessor> findPredecessorByProject(Long idProject) throws InstanceNotFoundException {
+	
+		List<Predecessor> predecessors = new ArrayList<Predecessor>();
+		
+		// Check if the Project exists and get it
+		Project project = this.findProject(idProject);
+		
+		// Find the Tasks of the Project
+		try{
+			predecessors = predecessorDAO.findByProject(project);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		log.info(ModelConstants.FIND_ALL + predecessors.size() + " tasks links for the"
+				+ " Project with idProject[" + project.getId() + "]");
 		return predecessors;
 	}
 					

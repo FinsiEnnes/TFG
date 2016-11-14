@@ -56,7 +56,7 @@ public class MilestoneTest {
 		Province province = customerService.findProvince(1L);
 		
 		Project project = new Project("Proyecto Zeta", new Date(), false, province, fmt.parse("2016-01-10"));
-		Phase phase = new Phase(project,"Fase 1",fmt.parse("2016-01-20"),fmt.parse("2016-03-10"),null);
+		Phase phase = new Phase(project,"Fase 1");
 
 		projectService.createProject(project);		
 		projectService.createPhase(phase);

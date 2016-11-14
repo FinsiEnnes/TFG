@@ -134,11 +134,6 @@ public class TaskTest {
 		task = new Task(testUtils.phase1, "Task 1", plan, m, testUtils.hp1, 10);
 		task.setIniPlan(fmt.parse("2016-01-01"));
 		incorrectCreate(task);
-		
-		// Insert a Task with a initial date lower than the phase date
-		task = new Task(testUtils.phase1, "Task 1", plan, m, testUtils.hp1, 10);
-		task.setIniPlan(fmt.parse("2016-01-07"));
-		incorrectCreate(task);
 
 		
 		// ================================================================================

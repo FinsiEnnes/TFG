@@ -35,6 +35,7 @@ public class Task {
 	private Date endReal;
 	private Integer costPlan;
 	private Integer costReal;
+	private Integer progress;
 	
 	// Primary key: id.
 	// Not null attribute: phase, name, state, priority, historyPerson, daysPlan.
@@ -49,7 +50,7 @@ public class Task {
 			Priority priority, HistoryPerson historyPerson, Integer daysPlan,
 			Integer daysReal, Date iniPlan, Date iniReal, Integer hoursPlan,
 			Integer hoursReal, Date endPlan, Date endReal, Integer costPlan,
-			Integer costReal) {
+			Integer costReal, Integer progress) {
 		this.id = id;
 		this.phase = phase;
 		this.name = name;
@@ -67,6 +68,7 @@ public class Task {
 		this.endReal = endReal;
 		this.costPlan = costPlan;
 		this.costReal = costReal;
+		this.progress = progress;
 	}
 
 	public Task(Phase phase, String name, State state, Priority priority,
@@ -239,6 +241,15 @@ public class Task {
 		this.costReal = costReal;
 	}
 
+	@Column(name = "progressTask")
+	public Integer getProgress() {
+		return progress;
+	}
+
+	public void setProgress(Integer progress) {
+		this.progress = progress;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -279,7 +290,7 @@ public class Task {
 				+ ", iniReal=" + iniReal + ", hoursPlan=" + hoursPlan
 				+ ", hoursReal=" + hoursReal + ", endPlan=" + endPlan
 				+ ", endReal=" + endReal + ", costPlan=" + costPlan
-				+ ", costReal=" + costReal + "]";
+				+ ", costReal=" + costReal + ", progress=" + progress + "]";
 	}
 
 }

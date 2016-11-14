@@ -108,7 +108,7 @@ public class TestUtils {
 		projectService.createProject(project);
 		
 		// ============================== Phase ===============================
-		phase1 = new Phase(project,"Fase 1",fmt.parse("2016-01-20"),fmt.parse("2016-05-10"),null);
+		phase1 = new Phase(project,"Fase 1");
 		projectService.createPhase(phase1);
 		
 		// ========================= History Project ==========================

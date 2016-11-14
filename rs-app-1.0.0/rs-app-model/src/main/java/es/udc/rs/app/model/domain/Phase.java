@@ -23,9 +23,6 @@ public class Phase {
 	private Long id;
 	private Project project;
 	private String name;
-	private Date iniPlan;
-	private Date endPlan;
-	private String comment;
 	
 	// Primary key: id.
 	// Not null attribute: project, name.
@@ -36,21 +33,15 @@ public class Phase {
 		
 	}
 	
-	public Phase(Long id, Project project, String name, Date iniPlan, Date endPlan, String comment) {
+	public Phase(Long id, Project project, String name) {
 		this.id = id;
 		this.project = project;
 		this.name = name;
-		this.iniPlan = iniPlan;
-		this.endPlan = endPlan;
-		this.comment = comment;
 	}
 	
-	public Phase(Project project, String name, Date iniPlan, Date endPlan, String comment) {
+	public Phase(Project project, String name) {
 		this.project = project;
 		this.name = name;
-		this.iniPlan = iniPlan;
-		this.endPlan = endPlan;
-		this.comment = comment;
 	}
 
 	@Id
@@ -83,34 +74,6 @@ public class Phase {
 		this.name = name;
 	}
 	
-	@Column(name = "iniPlanPhase", nullable = true)
-	@Type(type = "date")
-	public Date getIniPlan() {
-		return iniPlan;
-	}
-
-	public void setIniPlan(Date iniPlan) {
-		this.iniPlan = iniPlan;
-	}
-
-	@Column(name = "endPlanPhase", nullable = true)
-	@Type(type = "date")
-	public Date getEndPlan() {
-		return endPlan;
-	}
-
-	public void setEndPlan(Date endPlan) {
-		this.endPlan = endPlan;
-	}
-
-	@Column(name = "commentPhase")
-	public String getComment() {
-		return comment;
-	}
-	
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
 
 	@Override
 	public int hashCode() {
@@ -145,8 +108,7 @@ public class Phase {
 
 	@Override
 	public String toString() {
-		return "Phase [id=" + id + ", idProject=" + project.getId() + ", name=" + name
-				+ ", comment=" + comment + "]";
+		return "Phase [id=" + id + ", idProject=" + project.getId() + ", name=" + name + "]";
 	}
 
 }

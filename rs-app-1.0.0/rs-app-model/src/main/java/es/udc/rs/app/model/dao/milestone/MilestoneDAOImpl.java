@@ -1,6 +1,10 @@
 package es.udc.rs.app.model.dao.milestone;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -8,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import es.udc.rs.app.model.domain.Milestone;
+import es.udc.rs.app.model.domain.Phase;
+import es.udc.rs.app.model.domain.Project;
 
 @Repository
 public class MilestoneDAOImpl implements MilestoneDAO {
@@ -32,6 +38,37 @@ public class MilestoneDAOImpl implements MilestoneDAO {
 	public Milestone find(Long id) {
 		Milestone milestone = (Milestone) sessionFactory.getCurrentSession().get(Milestone.class, id);
 		return milestone;
+	}
+	
+	@Override
+	public List<Milestone> findByProject(Project project) {
+		
+		List<Milestone> milestones = new ArrayList<Milestone>();
+		
+		// First, we get the Phases of the Project
+		String queryString = "FROM Phase P WHERE P.project = :project";
+		
+		// Execute the query
+		Query query = sessionFactory.getCurrentSession().createQuery(queryString);
+		query.setParameter("project", project);
+		
+		@SuppressWarnings("unchecked")
+		List<Phase> phases = (List<Phase>) query.list();
+		
+		// For each Phase, we find it Milestones
+		for (Phase p : phases) {
+			queryString = "FROM Milestone M WHERE M.phase = :phase ORDER BY M.datePlan";
+			
+			query = sessionFactory.getCurrentSession().createQuery(queryString);
+			query.setParameter("phase", p);
+			
+			@SuppressWarnings("unchecked")
+			List<Milestone> thisMilestones = (List<Milestone>) query.list();
+			
+			milestones.addAll(thisMilestones);
+		}
+		
+		return milestones;
 	}
 
 	@Override
