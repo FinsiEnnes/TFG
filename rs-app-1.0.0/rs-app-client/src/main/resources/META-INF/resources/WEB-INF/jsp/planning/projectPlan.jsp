@@ -25,6 +25,8 @@ body {
 </head>
 
 <body>
+	<!-- Main navigation bar 
+    ================================================== -->
 	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 		<!-- Brand and toggle get grouped for better mobile display -->
 		<div class="navbar-header">
@@ -52,12 +54,14 @@ body {
 		<!-- /.navbar-collapse -->
 	</nav>
 	
-	
+	<!-- Content of the interface
+    ================================================== -->
 	<div class="container-fluid">
 		<div class="row">
 			<div id="gantt_here" style='width: 1366px; height: 500px;'></div>
 		</div>
 	</div>
+
 
 	<!-- Bootstrap core JavaScript
     ================================================== -->
@@ -68,35 +72,30 @@ body {
 	<!-- Gantt chart configuration
     ================================================== -->
 	<script type="text/javascript">
-		gantt.config.start_date = new Date(2016, 10, 01);
-		gantt.config.end_date = new Date(2016, 10, 29);
+	
+		/* Main configurations */
 		gantt.config.readonly = true;
 		gantt.config.date_grid = "%d-%m-%Y";
 		gantt.config.grid_width = 450;
+		
+		
+		/* Set the start and end date of the diagrma */
+		gantt.config.start_date = new Date(2016, 10, 01);
+		gantt.config.end_date = new Date(2016, 10, 29);
 
-		gantt.config.columns = [ {
-			name : "text",
-			label : "Nombre",
-			tree : true,
-			width : '*'
-		}, {
-			name : "start_date",
-			label : "Comienzo",
-			align : "center",
-			width : 100
-		}, {
-			name : "end_date",
-			label : "Fin",
-			align : "center",
-			width : 100
-		}, {
-			name : "progress",
-			label : "Progreso",
-			align : "center",
-			width : 80
-		}, ];
 
+		/* Specifying Columns for the grid */
+		gantt.config.columns =  [
+			{name:"text",       label:"Nombre",  tree:true, width:'*' },
+			{name:"start_date", label:"Comienzo",   align: "center", width : 100},
+			{name:"duration",   label:"Duración",   align: "center", width : 100},
+			{name:"end_date",   label:"Fin",        align: "center", width : 100}
+		];
+		
+		/* Initialize the Gantt chart */
 		gantt.init("gantt_here");
+		
+		/* Load the data (phases, tasks and milestones) that coming from the controller  */
 		gantt.parse(${tasks});
 	</script>
 
