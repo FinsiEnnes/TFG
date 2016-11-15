@@ -65,7 +65,7 @@ public class TaskIncidentDAOImpl implements TaskIncidentDAO {
 		List<TaskIncident> incidentsOfThisTask = new ArrayList<TaskIncident>();
 		
 		// First, we get the Phases of the Project
-		String queryString = "FROM Phase P WHERE P.project = :project ORDER BY P.id";
+		String queryString = "FROM Phase P WHERE P.project = :project ORDER BY P.id ASC";
 		
 		// Execute the query
 		Query query = sessionFactory.getCurrentSession().createQuery(queryString);
@@ -76,7 +76,7 @@ public class TaskIncidentDAOImpl implements TaskIncidentDAO {
 		
 		// For each Phase, we find it Tasks
 		for (Phase p : phases) {
-			queryString = "FROM Task T WHERE T.phase = :phase ORDER BY T.id";
+			queryString = "FROM Task T WHERE T.phase = :phase ORDER BY T.iniPlan";
 			
 			query = sessionFactory.getCurrentSession().createQuery(queryString);
 			query.setParameter("phase", p);

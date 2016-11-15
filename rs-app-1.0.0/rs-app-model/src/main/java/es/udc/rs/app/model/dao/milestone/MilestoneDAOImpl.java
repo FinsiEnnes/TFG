@@ -46,7 +46,7 @@ public class MilestoneDAOImpl implements MilestoneDAO {
 		List<Milestone> milestones = new ArrayList<Milestone>();
 		
 		// First, we get the Phases of the Project
-		String queryString = "FROM Phase P WHERE P.project = :project";
+		String queryString = "FROM Phase P WHERE P.project = :project ORDER BY P.id ASC";
 		
 		// Execute the query
 		Query query = sessionFactory.getCurrentSession().createQuery(queryString);
