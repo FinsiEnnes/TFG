@@ -21,7 +21,14 @@
 body {
 	padding-top: 50px;
 }
+
+.weekend{ background: #f4f7f4 !important;}
+
+.nested_task .gantt_add{
+   display: none;
+}
 </style>
+
 </head>
 
 <body>
@@ -58,7 +65,7 @@ body {
     ================================================== -->
 	<div class="container-fluid">
 		<div class="row">
-			<div id="gantt_here" style='width: 1366px; height: 500px;'></div>
+			<div id="gantt_here" style='width: 1366px; height: 580px;'></div>
 		</div>
 	</div>
 
@@ -76,27 +83,73 @@ body {
 		/* Main configurations */
 		gantt.config.readonly = true;
 		gantt.config.date_grid = "%d-%m-%Y";
-		gantt.config.grid_width = 450;
+		gantt.config.grid_width = 500;
 		
 		
 		/* Set the start and end date of the diagrma */
-		gantt.config.start_date = new Date(2016, 10, 01);
-		gantt.config.end_date = new Date(2016, 10, 29);
+		gantt.config.start_date = new Date(2016, 04, 30);
+		gantt.config.end_date = new Date(2016, 10, 14);
+		
+		gantt.config.scale_unit = "day"; 
+		gantt.config.date_scale = "%D %d";
+		gantt.config.min_column_width = 50;
+		
+		var weekScaleTemplate = function(date){
+			  var dateToStr = gantt.date.date_to_str("%d %M");
+			  var endDate = gantt.date.add(gantt.date.add(date, 1, "week"), -1, "day");
+			  var year = gantt.date.date_to_str("%Y");
+			  return dateToStr(date) + " - " + dateToStr(endDate) + ", " + year(date) ;
+		};
+			
+		gantt.config.subscales = [
+			{unit:"week", step:1, template:weekScaleTemplate}
+		];
+ 		
+ 		gantt.templates.scale_cell_class = function(date){
+ 		    if(date.getDay()==0||date.getDay()==6||date=="02-06-2016"){
+ 		        return "weekend";
+ 		    }
+ 		};
+ 		
+ 		gantt.templates.task_cell_class = function(item,date){
+ 		    if(date.getDay()==0||date.getDay()==6||date=="02-06-2016"){ 
+ 		        return "weekend" ;
+ 		    }
+ 		};
+ 		
+		gantt.config.scale_height = 55;
 
 
 		/* Specifying Columns for the grid */
 		gantt.config.columns =  [
-			{name:"text",       label:"Nombre",  tree:true, width:'*' },
-			{name:"start_date", label:"Comienzo",   align: "center", width : 100},
-			{name:"duration",   label:"Duración",   align: "center", width : 100},
-			{name:"end_date",   label:"Fin",        align: "center", width : 100}
+			{name:"text",       label:"Nombre",  tree:true, width: '*'},
+			{name:"start_date", label:"Comienzo",   align: "center", width : 90},
+			{name:"duration",   label:"Duración",   align: "center", width : 50},
+			{name:"end_date",   label:"Fin",        align: "center", width : 90},
+		    {name:"add",        label:"",           width:44 }
+
 		];
+		
+		/* ocultacion add */
+		gantt.templates.grid_row_class = function(start, end, task){
+		   if(task.$level > 0){
+		      return "nested_task"
+		   }
+		   return "";
+		};		
 		
 		/* Initialize the Gantt chart */
 		gantt.init("gantt_here");
 		
 		/* Load the data (phases, tasks and milestones) that coming from the controller  */
-		gantt.parse(${tasks});
+		gantt.parse(${dataProject});
+	</script>
+
+	<script type="text/javascript">
+		gantt.attachEvent("onTaskDblClick", function(id,item){
+			alert("ID tarea clickada: " + id);
+			/* window.location.href = "http://localhost:8080/persons"; */
+		});
 	</script>
 
 </body>
