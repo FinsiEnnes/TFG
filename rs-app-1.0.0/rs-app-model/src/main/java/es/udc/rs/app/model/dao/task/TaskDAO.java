@@ -12,7 +12,7 @@ public interface TaskDAO {
 	public Task find(Long id);
 	
 	public List<Task> findByProject(Project project);
-				
+					
 	public boolean TaskExists(Long id);
 	
 	public void update(Task task);

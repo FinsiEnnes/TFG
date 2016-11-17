@@ -65,7 +65,7 @@ public class PredecessorDAOImpl implements PredecessorDAO {
 		List<Predecessor> predecessors = new ArrayList<Predecessor>();
 		
 		// First, we get the Phases of the Project
-		String queryString = "FROM Phase P WHERE P.project = :project";
+		String queryString = "FROM Phase P WHERE P.project = :project ORDER BY P.ini ASC";
 		
 		// Execute the query
 		Query query = sessionFactory.getCurrentSession().createQuery(queryString);

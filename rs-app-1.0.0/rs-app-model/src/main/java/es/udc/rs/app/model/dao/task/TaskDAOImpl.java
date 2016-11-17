@@ -44,7 +44,7 @@ public class TaskDAOImpl implements TaskDAO {
 		List<Task> projectTasks = new ArrayList<Task>();
 		
 		// First, we get the Phases of the Project
-		String queryString = "FROM Phase P WHERE P.project = :project ORDER BY P.id ASC";
+		String queryString = "FROM Phase P WHERE P.project = :project ORDER BY P.ini ASC";
 		
 		// Execute the query
 		Query query = sessionFactory.getCurrentSession().createQuery(queryString);

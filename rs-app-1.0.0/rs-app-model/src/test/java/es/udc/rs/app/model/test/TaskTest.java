@@ -211,7 +211,7 @@ public class TaskTest {
 		// ================================================================================	
 		otherTask = projectService.findTask(task.getId());
 		
-		assertEquals(fmt.parse("2016-01-28"), otherTask.getEndPlan());
+		assertEquals(fmt.parse("2016-01-27"), otherTask.getEndPlan());
 		num = 17;
 		assertEquals(num, otherTask.getHoursPlan());
 		num = 100;
@@ -225,7 +225,7 @@ public class TaskTest {
 		// ================================================================================
 		task.setEndPlan(fmt.parse("2016-01-29"));
 		incorrectUpdate(task);
-		task.setEndPlan(fmt.parse("2016-01-28")); // correct date
+		task.setEndPlan(fmt.parse("2016-01-27")); // correct date
 		
 		task.setCostPlan(20);
 		incorrectUpdate(task);

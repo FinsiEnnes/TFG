@@ -1,5 +1,6 @@
 package es.udc.rs.app.model.domain;
 
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -13,7 +14,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "Phase", 
@@ -23,6 +23,8 @@ public class Phase {
 	private Long id;
 	private Project project;
 	private String name;
+	private Date ini;
+	private Date end;
 	
 	// Primary key: id.
 	// Not null attribute: project, name.
@@ -42,6 +44,13 @@ public class Phase {
 	public Phase(Project project, String name) {
 		this.project = project;
 		this.name = name;
+	}
+	
+	public Phase(Project project, String name, Date ini, Date end) {
+		this.project = project;
+		this.name = name;
+		this.ini = ini;
+		this.end = end;
 	}
 
 	@Id
@@ -69,11 +78,28 @@ public class Phase {
 	public String getName() {
 		return name;
 	}
-	
+		
 	public void setName(String name) {
 		this.name = name;
 	}
 	
+	@Column(name = "iniPhase")
+	public Date getIni() {
+		return ini;
+	}
+
+	public void setIni(Date ini) {
+		this.ini = ini;
+	}
+	
+	@Column(name = "endPhase")
+	public Date getEnd() {
+		return end;
+	}
+
+	public void setEnd(Date end) {
+		this.end = end;
+	}
 
 	@Override
 	public int hashCode() {

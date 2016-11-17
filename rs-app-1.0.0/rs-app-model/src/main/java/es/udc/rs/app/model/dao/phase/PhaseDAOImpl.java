@@ -42,7 +42,7 @@ public class PhaseDAOImpl implements PhaseDAO {
 	public List<Phase> findByProject(Project project) {
 		
 		// Create the query
-		String queryString = "FROM Phase P WHERE P.project = :project ORDER BY P.id ASC";
+		String queryString = "FROM Phase P WHERE P.project = :project ORDER BY P.ini ASC";
 		
 		// Execute the query
 		Query query = sessionFactory.getCurrentSession().createQuery(queryString);
