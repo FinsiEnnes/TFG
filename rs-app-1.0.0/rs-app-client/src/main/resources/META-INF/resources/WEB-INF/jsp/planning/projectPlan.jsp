@@ -9,6 +9,9 @@
 <!-- Bootstrap core CSS -->
 <link href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 
+<!-- Bootstrap datepicker -->
+<link href="/webjars/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.min.css" rel="stylesheet">
+
 <!-- Custom colors for the navigation bar -->
 <link href="/css/navbarColors.css" rel="stylesheet">
 
@@ -16,6 +19,7 @@
 <script src="/dhtmlxGantt/codebase/dhtmlxgantt.js"></script>
 <link href="/dhtmlxGantt/codebase/dhtmlxgantt.css" rel="stylesheet">
 
+<link href="/css/customTabs.css" rel="stylesheet">
 
 <style>
 body {
@@ -26,6 +30,11 @@ body {
 
 .nested_task .gantt_add{
    display: none;
+}
+
+.note {
+    font-weight: normal !important;
+    padding-top: 8px;
 }
 </style>
 
@@ -67,6 +76,213 @@ body {
 		<div class="row">
 			<div id="gantt_here" style='width: 1366px; height: 580px;'></div>
 		</div>
+
+
+		<!-- Modal: Project element creation
+    	================================================== -->
+		<div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+				
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h4 class="modal-title">Creación de un nuevo elemento</h4>
+					</div>
+
+					<div class="modal-body">
+						<div class="container">
+							<div class="col-md-1">
+								<ul class="nav nav-tabs tabs-left sideways">
+									<li class="active"><a data-toggle="tab" href="#createPhase">Fase</a></li>
+									<li><a data-toggle="tab" href="#createTask">Tarea</a></li>
+									<li><a data-toggle="tab" href="#createMilestone">Hito</a></li>
+								</ul>
+							</div>
+							<div class="col-md-10">
+								<div class="tab-content">
+								
+									<!-- Phase creation form
+    								================================================== -->
+									<div id="createPhase" class="tab-pane fade in active">
+										<h4>
+											Fase<br> 
+											<small>
+												Etapa del proyecto que permite aglutinar una serie de tareas
+											</small>
+										</h4>
+										<hr align="left" width="75%">
+										<form:form class="form-horizontal" method="post" modelAttribute="phase"
+												   action='/project/${idProject}/phase' role="form"
+												   data-toggle="validator">
+											<div class="form-group">
+												<div class="row">
+													<label class="col-md-2 control-label">Nombre</label>
+													<div class="form-group col-md-4">
+														<input class="form-control" name="name" id="name" 
+															   type="text" required>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<div class="row">
+													<label class="col-md-2 control-label">Inicio previsto</label>
+													<div class="form-group col-md-2">
+														<input type="text" class="form-control datepicker"
+														data-format="dd/MM/yyyy" name="ini" id="ini"
+														placeholder="dd/mm/aaaa" required>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<div class="row"><div class="col-md-9 center-block">
+													<button type="submit" class="btn btn-primary center-block">
+														Crear
+													</button>
+												</div></div>
+											</div>
+										</form:form>
+									</div>
+									
+									<!-- Task creation form
+    								================================================== -->
+									<div id="createTask" class="tab-pane fade">
+										<h4>
+											Tarea<br> 
+											<small>
+												Unidad de trabajo dentro del proyecto la
+												cual debe realizarse en un tiempo limitado
+											</small>
+										</h4>
+										<hr align="left" width="65%">
+
+										<form:form class="form-horizontal" method="post"
+											modelAttribute="phase" action='/project/${idProject}/task'
+											role="form" data-toggle="validator">
+											
+											<div class="form-group">
+												<div class="row">
+													<label class="col-md-2 control-label">Nombre</label>
+													<div class="form-group col-md-3">
+														<input class="form-control" name="name" id="name"
+															type="text" required>
+													</div>
+													<label class="col-md-1 control-label">Fase</label>
+													<div class="form-group col-md-3">
+														<input class="form-control" name="name" id="name"
+															type="text" required>
+													</div>
+												</div>
+											</div>
+
+											<div class="form-group">
+												<div class="row">
+													<label class="col-md-2 control-label">Duración</label>
+													<div class="form-group has-feedback col-md-2">
+														<input type="text" class="form-control" name="nif" id="nif"
+															   pattern="^[1-9]\d*$" maxlength="3"
+															   placeholder="1-999" required> <span
+															   class="glyphicon form-control-feedback"></span>
+													</div>
+													<label class="col-md-6 note">
+														<font color="grey">
+															Número de días necesarios
+															para llevar a cabo la tarea
+														</font>
+													</label>
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<div class="row">
+													<label class="col-md-2 control-label">Inicio previsto</label>
+													<div class="form-group col-md-2">
+														<input type="text" class="form-control datepicker"
+														data-format="dd/MM/yyyy" name="ini" id="ini"
+														placeholder="dd/mm/aaaa" required>
+													</div>
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<div class="row">
+													<label  class="col-md-2 control-label">Responsable</label> 
+													<div class="form-group col-md-2">
+														<select class="form-control" name="type" id="typeApt">
+															<option>Baja</option>
+															<option>Media</option>
+															<option>Alta</option>
+															<option>Muy alta</option>
+														</select>
+													</div>
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<div class="row">
+													<label  class="col-md-2 control-label">Prioridad</label> 
+													<div class="form-group col-md-2">
+														<select class="form-control" name="type" id="typeApt">
+															<option>Baja</option>
+															<option>Media</option>
+															<option>Alta</option>
+															<option>Muy alta</option>
+														</select>
+													</div>
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<div class="row">
+													<div class="col-md-9 center-block">
+														<button type="submit" class="btn btn-primary center-block">
+															Crear</button>
+													</div>
+												</div>
+											</div>
+										</form:form>
+									</div>
+									<div id="createMilestone" class="tab-pane fade">
+										<h3>Menu 2</h3>
+										<p>Sed ut perspiciatis unde omnis iste natus error sit
+											voluptatem accusantium doloremque laudantium, totam rem
+											aperiam.</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+					
+				</div> <!-- /.modal-content -->
+			</div> <!-- /.modal-dialog -->
+		</div>	<!-- /.modal -->
+
+
+	<!-- Modal: Feedback modal
+    ================================================== -->
+		<div class="modal fade" id="feedbackModal" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Operación exitosa</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-12 center-block">${msg}</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success center-block"
+							data-dismiss="modal">Aceptar</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 
@@ -74,6 +290,38 @@ body {
     ================================================== -->
 	<script src="/webjars/jquery/1.9.1/jquery.min.js"></script>
 	<script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	
+	
+	<!-- Bootstrap Datapicker
+    ================================================== -->
+	<script src="/webjars/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
+	<script	src="/webjars/bootstrap-datepicker/1.6.1/locales/bootstrap-datepicker.es.min.js"></script>
+	
+	
+	<!-- Bootstrap Validator
+    ================================================== -->
+	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.js"></script>
+	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.min.js"></script>
+	
+	<!-- Bootstrap Datapicker initialation
+    ================================================== -->	
+	<script>
+		$(document).ready(function() {
+			$('.datepicker').datepicker({
+				language : 'es'
+			});
+		})
+	</script>
+	
+	<!-- Feedback modal activation
+    ================================================== -->
+	<script type="text/javascript">
+		$(window).load(function() {
+			if ("active" == '${feedback}') {
+				$('#feedbackModal').modal('show');
+			}
+		});
+	</script>
 
 
 	<!-- Gantt chart configuration
@@ -81,14 +329,24 @@ body {
 	<script type="text/javascript">
 	
 		/* Main configurations */
-		gantt.config.readonly = true;
+		//gantt.config.readonly = true;
 		gantt.config.date_grid = "%d-%m-%Y";
-		gantt.config.grid_width = 500;
+		gantt.config.grid_width = 520;
+		gantt.config.scale_height = 55;
+		gantt.config.drag_progress = false;
 		
+		// We disable all
+		gantt.config.drag_move = false; //disables the possibility to move tasks by dnd
+		gantt.config.drag_links = false; //disables the possibility to create links by dnd
+		gantt.config.drag_progress = false; //disables the possibility to change the task //progress by dragging the progress knob
+		gantt.config.drag_resize = false; //disables the possibility to resize tasks by dnd
+				
 		
-		/* Set the start and end date of the diagrma */
+		/* Set the start and end date of the diagrma 
+		var opened_task = gantt.getState().min_date;
+		var opened_task = gantt.getState().max_date;
 		gantt.config.start_date = new Date(2016, 04, 30);
-		gantt.config.end_date = new Date(2016, 10, 14);
+		gantt.config.end_date = new Date(2016, 06, 11);*/
 		
 		gantt.config.scale_unit = "day"; 
 		gantt.config.date_scale = "%D %d";
@@ -117,28 +375,28 @@ body {
  		    }
  		};
  		
-		gantt.config.scale_height = 55;
-
 
 		/* Specifying Columns for the grid */
 		gantt.config.columns =  [
 			{name:"text",       label:"Nombre",  tree:true, width: '*'},
-			{name:"start_date", label:"Comienzo",   align: "center", width : 90},
+			{name:"start_date", label:"Inicio",   align: "center", width : 90},
 			{name:"duration",   label:"Duración",   align: "center", width : 50},
-			{name:"end_date",   label:"Fin",        align: "center", width : 90},
-		    {name:"add",        label:"",           width:44 }
+			{name:"end",   label:"Fin",        align: "center", width : 90},
+		    {name:"add",        label:"",           width:40 }
 
 		];
 		
 		/* ocultacion add */
 		gantt.templates.grid_row_class = function(start, end, task){
-		   if(task.$level > 0){
+		   ///if(task.$level > 0){
 		      return "nested_task"
-		   }
-		   return "";
+		   /*}
+		   return "";*/
 		};		
 		
 		/* Initialize the Gantt chart */
+		gantt.config.order_branch = true;
+		
 		gantt.init("gantt_here");
 		
 		/* Load the data (phases, tasks and milestones) that coming from the controller  */
@@ -147,10 +405,18 @@ body {
 
 	<script type="text/javascript">
 		gantt.attachEvent("onTaskDblClick", function(id,item){
-			alert("ID tarea clickada: " + id);
+			alert("ID tarea doblemente clickada: " + id);
 			/* window.location.href = "http://localhost:8080/persons"; */
 		});
 	</script>
+	
+	<script type="text/javascript">
+		gantt.attachEvent("onTaskCreated", function(id,item){
+			$('#myModal').modal('show');
+		});
+	</script>
+	
+
 
 </body>
 </html>

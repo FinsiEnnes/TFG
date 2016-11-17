@@ -3,16 +3,22 @@ package es.udc.rs.app.client.controllers;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import es.udc.rs.app.client.conversor.PhaseDTOConversor;
+import es.udc.rs.app.client.dto.PhaseDTO;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Milestone;
 import es.udc.rs.app.model.domain.Phase;
@@ -35,11 +41,18 @@ public class PlanningController {
 	private JSONObject getPhaseJSON(Phase phase) {
 		
 		JSONObject jsonObject = new JSONObject();
+		SimpleDateFormat fmt = new SimpleDateFormat("dd-MM-yyyy");
 		String idPhase = "p" + phase.getId();
 		
     	jsonObject.put("id", idPhase);
     	jsonObject.put("text", phase.getName());
+    	
+    	if (phase.getEnd() != null) {
+        	jsonObject.put("end", fmt.format(phase.getEnd()));
+    	}
+    	
     	jsonObject.put("open", true);
+    	jsonObject.put("color", "#2bd615");
     	
     	return jsonObject;
 	}
@@ -59,6 +72,7 @@ public class PlanningController {
     	jsonObject.put("id", idTask);
     	jsonObject.put("text", task.getName());
     	jsonObject.put("start_date", fmt.format(task.getIniPlan()));
+    	jsonObject.put("end", fmt.format(task.getEndPlan()));
     	jsonObject.put("duration", task.getDaysPlan());
     	jsonObject.put("parent", idPhase);
     	
@@ -123,7 +137,6 @@ public class PlanningController {
     	return jsonObject;
 	}
 	
-	
 	//-----------------------------------------------------------------------------------------------------
 	// Here it is formed the JSON with all the data project. This JSON will be processed by the chart  
 	//-----------------------------------------------------------------------------------------------------
@@ -131,13 +144,14 @@ public class PlanningController {
 	private JSONObject getDataProjectAsJSON(List<Phase> phases, List<Task> tasks, 
 											List<Milestone> milestones, List<Predecessor> links) {
 		
+    	// Get the size of each list and initialize the JSON object
 		JSONObject mainObj = new JSONObject();
 		int nPhases = phases.size();
 		int nTasks = tasks.size();
 		int nMiles = milestones.size();
 		int nLinks = links.size();
 		
-		// We use a jsonArray in which we add the data of phases, tasks and milestones as jsonObjects
+		// In this jsonArray we add the data of phases, tasks and milestones as jsonObjects
 		JSONArray jsonArrayData = new JSONArray();
 		
 		// This is for the link task data
@@ -178,13 +192,13 @@ public class PlanningController {
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [GET]-> /project/idProject/planning || Show the project planning.   
+	// [GET]-> /project/id/planning || Show the project planning.   
 	//-----------------------------------------------------------------------------------------------------
 	@RequestMapping(value="/project/{idProject}/planning",  method=RequestMethod.GET)
     public String projectPlanning(@PathVariable String idProject, Model model) throws InstanceNotFoundException {
     	
 
-    	// Get the Person and convert it in PersonDTO
+    	// Convert the string id to long
     	Long id = Long.parseLong(idProject, 10);
     	
     	// Get the Phases, Tasks and Milestones of this Project
@@ -198,9 +212,33 @@ public class PlanningController {
     	
     	log.info(mainObj.toString());
 
+    	// Send the data out to the model
+    	model.addAttribute("idProject", id);
     	model.addAttribute("dataProject", mainObj);
     	
     	return "planning/projectPlan";
     }
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /project/id/planning/phase || Add a new Phase at the project.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/project/{idProject}/phase",  method=RequestMethod.POST)
+    public String createPhase(@Valid @ModelAttribute("phase")PhaseDTO phaseDTO, 
+   		 BindingResult result, @PathVariable String idProject, Model model) throws InstanceNotFoundException {
+		
+		if (result.hasErrors()) {
+            return "error";
+        }
+    	
+    	// Convert the PhaseDTO to Phase
+    	Phase phase = PhaseDTOConversor.toPhase(phaseDTO);
+    	
+    	// Create the new phase
+    	projectService.createPhase(phase);
+    	
+    	// Send the data project	
+		return projectPlanning(idProject, model);
+	}
 
 }
