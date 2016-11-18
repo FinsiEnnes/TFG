@@ -1,6 +1,7 @@
 
 <!DOCTYPE html>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <html>
 <head>
 
@@ -81,7 +82,7 @@ body {
 		<!-- Modal: Project element creation
     	================================================== -->
 		<div id="myModal" class="modal fade" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 				
 					<div class="modal-header">
@@ -113,14 +114,14 @@ body {
 												Etapa del proyecto que permite aglutinar una serie de tareas
 											</small>
 										</h4>
-										<hr align="left" width="75%">
+										<hr align="left" width="48%">
 										<form:form class="form-horizontal" method="post" modelAttribute="phase"
 												   action='/project/${idProject}/phase' role="form"
 												   data-toggle="validator">
 											<div class="form-group">
 												<div class="row">
 													<label class="col-md-2 control-label">Nombre</label>
-													<div class="form-group col-md-4">
+													<div class="form-group col-md-3">
 														<input class="form-control" name="name" id="name" 
 															   type="text" required>
 													</div>
@@ -129,7 +130,7 @@ body {
 											<div class="form-group">
 												<div class="row">
 													<label class="col-md-2 control-label">Inicio previsto</label>
-													<div class="form-group col-md-2">
+													<div class="form-group col-md-3">
 														<input type="text" class="form-control datepicker"
 														data-format="dd/MM/yyyy" name="ini" id="ini"
 														placeholder="dd/mm/aaaa" required>
@@ -137,9 +138,9 @@ body {
 												</div>
 											</div>
 											<div class="form-group">
-												<div class="row"><div class="col-md-9 center-block">
+												<div class="row"><div class="col-md-6 center-block">
 													<button type="submit" class="btn btn-primary center-block">
-														Crear
+														Crear fase
 													</button>
 												</div></div>
 											</div>
@@ -152,11 +153,11 @@ body {
 										<h4>
 											Tarea<br> 
 											<small>
-												Unidad de trabajo dentro del proyecto la
-												cual debe realizarse en un tiempo limitado
+												Unidad de trabajo dentro del proyecto que
+												se realiza en un tiempo limitado
 											</small>
 										</h4>
-										<hr align="left" width="65%">
+										<hr align="left" width="48%">
 
 										<form:form class="form-horizontal" method="post"
 											modelAttribute="phase" action='/project/${idProject}/task'
@@ -169,19 +170,29 @@ body {
 														<input class="form-control" name="name" id="name"
 															type="text" required>
 													</div>
-													<label class="col-md-1 control-label">Fase</label>
-													<div class="form-group col-md-3">
-														<input class="form-control" name="name" id="name"
-															type="text" required>
-													</div>
 												</div>
 											</div>
 
 											<div class="form-group">
 												<div class="row">
+													<label class="col-md-2 control-label">Fase</label>
+													<input type="hidden" name="idPhase" id="idPhase"
+														   value="${phases[0].id}">
+													<div class="form-group col-md-3">
+														<select class="form-control" name="namePhase" id="namePhase">
+															<c:forEach var="phase" items="${phases}">
+																<option id="${phase.id}">${phase.name}</option>
+															</c:forEach>
+														</select>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<div class="row">
 													<label class="col-md-2 control-label">Duración</label>
-													<div class="form-group has-feedback col-md-2">
-														<input type="text" class="form-control" name="nif" id="nif"
+													<div class="form-group has-feedback col-md-3">
+														<input type="text" class="form-control" 
+															   name="daysPlan" id="daysPlan"
 															   pattern="^[1-9]\d*$" maxlength="3"
 															   placeholder="1-999" required> <span
 															   class="glyphicon form-control-feedback"></span>
@@ -198,9 +209,9 @@ body {
 											<div class="form-group">
 												<div class="row">
 													<label class="col-md-2 control-label">Inicio previsto</label>
-													<div class="form-group col-md-2">
+													<div class="form-group col-md-3">
 														<input type="text" class="form-control datepicker"
-														data-format="dd/MM/yyyy" name="ini" id="ini"
+														data-format="dd/MM/yyyy" name="iniPlan" id="iniPlan"
 														placeholder="dd/mm/aaaa" required>
 													</div>
 												</div>
@@ -209,36 +220,48 @@ body {
 											<div class="form-group">
 												<div class="row">
 													<label  class="col-md-2 control-label">Responsable</label> 
-													<div class="form-group col-md-2">
-														<select class="form-control" name="type" id="typeApt">
+													<div class="form-group col-md-3">
+														<select class="form-control" name="nameManager" id="nameManager">
 															<option>Baja</option>
 															<option>Media</option>
 															<option>Alta</option>
 															<option>Muy alta</option>
 														</select>
 													</div>
+													<label class="col-md-6 note">
+														<font color="grey">
+															Responsable de la planificación
+															y ejecución de la tarea
+														</font>
+													</label>
 												</div>
 											</div>
 											
 											<div class="form-group">
 												<div class="row">
 													<label  class="col-md-2 control-label">Prioridad</label> 
-													<div class="form-group col-md-2">
-														<select class="form-control" name="type" id="typeApt">
+													<div class="form-group col-md-3">
+														<select class="form-control" name="priority" id="priority">
 															<option>Baja</option>
 															<option>Media</option>
 															<option>Alta</option>
 															<option>Muy alta</option>
 														</select>
 													</div>
+													<label class="col-md-6 note">
+														<font color="grey">
+															Relevancia de la tarea dentro
+															del proyecto
+														</font>
+													</label>
 												</div>
 											</div>
 											
 											<div class="form-group">
 												<div class="row">
-													<div class="col-md-9 center-block">
+													<div class="col-md-6 center-block">
 														<button type="submit" class="btn btn-primary center-block">
-															Crear</button>
+															Crear tarea</button>
 													</div>
 												</div>
 											</div>
@@ -320,6 +343,17 @@ body {
 			if ("active" == '${feedback}') {
 				$('#feedbackModal').modal('show');
 			}
+		});
+	</script>
+
+
+	<!-- Others scripts
+    ================================================== -->
+	<script type="text/javascript">
+		$("#namePhase").change(function() {
+			  var id = $(this).children(":selected").attr("id");
+			  document.getElementById("idPhase").value = id;
+			  
 		});
 	</script>
 

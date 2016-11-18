@@ -18,11 +18,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import es.udc.rs.app.client.conversor.PhaseDTOConversor;
+import es.udc.rs.app.client.conversor.TaskDTO;
+import es.udc.rs.app.client.conversor.TaskDTOConversor;
 import es.udc.rs.app.client.dto.PhaseDTO;
+import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
+import es.udc.rs.app.model.domain.HistoryProject;
 import es.udc.rs.app.model.domain.Milestone;
 import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Predecessor;
+import es.udc.rs.app.model.domain.Project;
+import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.service.project.ProjectService;
 
@@ -197,7 +203,6 @@ public class PlanningController {
 	@RequestMapping(value="/project/{idProject}/planning",  method=RequestMethod.GET)
     public String projectPlanning(@PathVariable String idProject, Model model) throws InstanceNotFoundException {
     	
-
     	// Convert the string id to long
     	Long id = Long.parseLong(idProject, 10);
     	
@@ -210,11 +215,15 @@ public class PlanningController {
     	// Convert the previous data to JSON format
     	JSONObject mainObj = getDataProjectAsJSON(phases, tasks, milestones, links);
     	
+    	// Convert the list Phase object to PhaseDTO because we need show this info
+    	List<PhaseDTO> phasesDTO = PhaseDTOConversor.toPhaseDTOList(phases);
+    	
     	log.info(mainObj.toString());
 
     	// Send the data out to the model
     	model.addAttribute("idProject", id);
     	model.addAttribute("dataProject", mainObj);
+    	model.addAttribute("phases", phasesDTO);
     	
     	return "planning/projectPlan";
     }
@@ -236,6 +245,37 @@ public class PlanningController {
     	
     	// Create the new phase
     	projectService.createPhase(phase);
+    	
+    	// Send the data project	
+		return projectPlanning(idProject, model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /project/id/planning/task || Add a new Task at the project.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/project/{idProject}/task",  method=RequestMethod.POST)
+    public String createTask(@Valid @ModelAttribute("task")TaskDTO taskDTO, 
+   		 BindingResult result, @PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
+		
+		if (result.hasErrors()) {
+            return "error";
+        }
+    	
+		// Convert the string id to long
+    	Long id = Long.parseLong(idProject, 10);
+		
+		// Get the current project state and set it to the task
+		Project project = projectService.findProject(id);
+		HistoryProject currentHP = projectService.findCurrentHistoryProject(project);
+		String state = currentHP.getState().getId();	
+		taskDTO.setState(state);
+    	
+		// Convert the TaskDTO to Task
+		Task task = TaskDTOConversor.toTask(taskDTO);
+		
+		// Create the task
+		projectService.createTask(task);
     	
     	// Send the data project	
 		return projectPlanning(idProject, model);
