@@ -1,5 +1,6 @@
 package es.udc.rs.app.client.util;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,11 +20,9 @@ public class ClientUtilMethods {
 	public static Date toDate(String dateInString) {
 
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-		Date date = new Date();
+		Date date = null;
 		
-		if (dateInString.equals("")) {
-			date = null;
-		} else {
+		if (dateInString != null && !dateInString.isEmpty()) {
 			try {
 				date = formatter.parse(dateInString);
 			} catch (ParseException e) {
@@ -58,6 +57,21 @@ public class ClientUtilMethods {
     	}
     	
     	return totalPages;
+	}
+	
+	public static Date plusDay(Date date) {
+		
+		Date nextDay = new Date();
+		
+		// Add one day to this date
+		Calendar c = Calendar.getInstance(); 
+		c.setTime(date); 
+		c.add(Calendar.DATE, 1);
+		
+		// Get the next day
+		nextDay = c.getTime();
+		
+		return nextDay;
 	}
 	
 	public static String getFullURL(HttpServletRequest req) {

@@ -43,7 +43,6 @@ public class GlobalControllerExceptionHandler {
 	@ExceptionHandler(InstanceNotFoundException.class)
 	public ModelAndView InstanceNotFound(HttpServletRequest req, InstanceNotFoundException e) {
 
-		String uri = req.getRequestURI();
 		ModelAndView mav = new ModelAndView("exception");
 		mav.addObject("name", e.getClass().getSimpleName());
 		mav.addObject("message", e.getMessage());

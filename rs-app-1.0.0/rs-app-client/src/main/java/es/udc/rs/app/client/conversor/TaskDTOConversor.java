@@ -4,6 +4,7 @@ package es.udc.rs.app.client.conversor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import es.udc.rs.app.client.dto.TaskDTO;
 import es.udc.rs.app.client.util.ClientUtilMethods;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.HistoryPerson;
@@ -31,8 +32,8 @@ public class TaskDTOConversor {
 		// First get the complex object 
 		Phase phase = projectService.findPhase(taskDTO.getIdPhase());
 		HistoryPerson manager = personService.findHistoryPerson(taskDTO.getIdManager());
-		Priority priority = projectService.findPriority(taskDTO.getPriority());
-		State state = projectService.findState(taskDTO.getState());
+		Priority priority = projectService.findPriority(taskDTO.getIdPriority());
+		State state = projectService.findState(taskDTO.getIdState());
 		
 		// Create the Task object
 		Task task = new Task();

@@ -3,6 +3,7 @@ package es.udc.rs.app.client.controllers;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
@@ -17,19 +18,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import es.udc.rs.app.client.conversor.HistoryPersonDTOConversor;
+import es.udc.rs.app.client.conversor.MilestoneDTOConversor;
 import es.udc.rs.app.client.conversor.PhaseDTOConversor;
-import es.udc.rs.app.client.conversor.TaskDTO;
 import es.udc.rs.app.client.conversor.TaskDTOConversor;
+import es.udc.rs.app.client.dto.HistoryPersonDTO;
+import es.udc.rs.app.client.dto.MilestoneDTO;
 import es.udc.rs.app.client.dto.PhaseDTO;
+import es.udc.rs.app.client.dto.TaskDTO;
+import es.udc.rs.app.client.util.ClientUtilMethods;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
+import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.HistoryProject;
 import es.udc.rs.app.model.domain.Milestone;
 import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Predecessor;
 import es.udc.rs.app.model.domain.Project;
-import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
+import es.udc.rs.app.model.service.person.PersonService;
 import es.udc.rs.app.model.service.project.ProjectService;
 
 @Controller
@@ -39,6 +46,9 @@ public class PlanningController {
 	
 	@Autowired 
 	private ProjectService projectService;
+	
+	@Autowired
+	private PersonService personService;
 	
 	//-----------------------------------------------------------------------------------------------------
 	// Create a JSON with the data of Phase. 
@@ -53,6 +63,7 @@ public class PlanningController {
     	jsonObject.put("id", idPhase);
     	jsonObject.put("text", phase.getName());
     	
+    	jsonObject.put("start_date", fmt.format(phase.getIni()));
     	if (phase.getEnd() != null) {
         	jsonObject.put("end", fmt.format(phase.getEnd()));
     	}
@@ -97,10 +108,14 @@ public class PlanningController {
 		String idPhase = "p" + milestone.getPhase().getId();
 		String idMilestone = idPhase + "-m" + milestone.getId();
 		
+		String start = fmt.format(milestone.getDatePlan());
+		String end = fmt.format(ClientUtilMethods.plusDay(milestone.getDatePlan()));
+		
     	jsonObject.put("id", idMilestone);
     	jsonObject.put("text", milestone.getName());
-    	jsonObject.put("start_date", fmt.format(milestone.getDatePlan()));
+    	jsonObject.put("start_date", start);
     	jsonObject.put("duration", 1);
+    	jsonObject.put("end", end);
     	jsonObject.put("parent", idPhase);
     	jsonObject.put("color", "#ff1ac6");
     	
@@ -218,28 +233,38 @@ public class PlanningController {
     	// Convert the list Phase object to PhaseDTO because we need show this info
     	List<PhaseDTO> phasesDTO = PhaseDTOConversor.toPhaseDTOList(phases);
     	
+    	// We also need some historyPerson info
+    	List<HistoryPerson> hps = personService.findCurrentHistoryPersons();
+    	List<HistoryPersonDTO> hpsDTO = HistoryPersonDTOConversor.toHistoryPersonDTOs(hps);
+    	
     	log.info(mainObj.toString());
 
     	// Send the data out to the model
     	model.addAttribute("idProject", id);
     	model.addAttribute("dataProject", mainObj);
     	model.addAttribute("phases", phasesDTO);
+    	model.addAttribute("persons", hpsDTO);
     	
     	return "planning/projectPlan";
     }
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [POST]-> /project/id/planning/phase || Add a new Phase at the project.   
+	// [POST]-> /project/id/phase || Add a new Phase at the project.   
 	//-----------------------------------------------------------------------------------------------------
 	@RequestMapping(value="/project/{idProject}/phase",  method=RequestMethod.POST)
     public String createPhase(@Valid @ModelAttribute("phase")PhaseDTO phaseDTO, 
-   		 BindingResult result, @PathVariable String idProject, Model model) throws InstanceNotFoundException {
+   		 BindingResult result, @PathVariable String idProject, Model model, HttpServletRequest request) 
+   				 throws InstanceNotFoundException {
 		
 		if (result.hasErrors()) {
             return "error";
         }
     	
+		// We need catch the date like this because is a text in the html
+		String iniPhase = request.getParameter("ini");
+		phaseDTO.setIni(ClientUtilMethods.toDate(iniPhase));
+		
     	// Convert the PhaseDTO to Phase
     	Phase phase = PhaseDTOConversor.toPhase(phaseDTO);
     	
@@ -252,10 +277,10 @@ public class PlanningController {
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [POST]-> /project/id/planning/task || Add a new Task at the project.   
+	// [POST]-> /project/id/task || Add a new Task at the project.   
 	//-----------------------------------------------------------------------------------------------------
 	@RequestMapping(value="/project/{idProject}/task",  method=RequestMethod.POST)
-    public String createTask(@Valid @ModelAttribute("task")TaskDTO taskDTO, 
+    public String createTask(@Valid @ModelAttribute("task") TaskDTO taskDTO, 
    		 BindingResult result, @PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
 		
 		if (result.hasErrors()) {
@@ -265,11 +290,13 @@ public class PlanningController {
 		// Convert the string id to long
     	Long id = Long.parseLong(idProject, 10);
 		
-		// Get the current project state and set it to the task
+		// Get the current project state
 		Project project = projectService.findProject(id);
 		HistoryProject currentHP = projectService.findCurrentHistoryProject(project);
-		String state = currentHP.getState().getId();	
-		taskDTO.setState(state);
+		String state = currentHP.getState().getId();
+		
+		// Now set the state to the task
+		taskDTO.setIdState(state);
     	
 		// Convert the TaskDTO to Task
 		Task task = TaskDTOConversor.toTask(taskDTO);
@@ -278,6 +305,28 @@ public class PlanningController {
 		projectService.createTask(task);
     	
     	// Send the data project	
+		return projectPlanning(idProject, model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /project/id/milestone || Add a new Milestone at the project.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/project/{idProject}/milestone",  method=RequestMethod.POST)
+    public String createMilestone(@Valid @ModelAttribute("milestone") MilestoneDTO milestoneDTO, 
+   		 BindingResult result, @PathVariable String idProject, Model model) throws InstanceNotFoundException {
+		
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+		// Convert the MilestoneDTO to Milestone
+		Milestone milestone = MilestoneDTOConversor.toMilestone(milestoneDTO);
+		
+		// Create the milestone
+		projectService.createMilestone(milestone);
+		
+		// Send the data project	
 		return projectPlanning(idProject, model);
 	}
 

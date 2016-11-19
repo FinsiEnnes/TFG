@@ -33,10 +33,6 @@ body {
    display: none;
 }
 
-.note {
-    font-weight: normal !important;
-    padding-top: 8px;
-}
 </style>
 
 </head>
@@ -81,7 +77,7 @@ body {
 
 		<!-- Modal: Project element creation
     	================================================== -->
-		<div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+		<div id="creationModal" class="modal fade" tabindex="-1" role="dialog">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 				
@@ -153,8 +149,7 @@ body {
 										<h4>
 											Tarea<br> 
 											<small>
-												Unidad de trabajo dentro del proyecto que
-												se realiza en un tiempo limitado
+												Unidad de trabajo realizada en un tiempo limitado
 											</small>
 										</h4>
 										<hr align="left" width="48%">
@@ -194,15 +189,9 @@ body {
 														<input type="text" class="form-control" 
 															   name="daysPlan" id="daysPlan"
 															   pattern="^[1-9]\d*$" maxlength="3"
-															   placeholder="1-999" required> <span
+															   placeholder="Entre 1 y 999 días" required> <span
 															   class="glyphicon form-control-feedback"></span>
 													</div>
-													<label class="col-md-6 note">
-														<font color="grey">
-															Número de días necesarios
-															para llevar a cabo la tarea
-														</font>
-													</label>
 												</div>
 											</div>
 											
@@ -220,40 +209,31 @@ body {
 											<div class="form-group">
 												<div class="row">
 													<label  class="col-md-2 control-label">Responsable</label> 
+													<input type="hidden" name="idManager" id="idManager"
+														   value="${persons[0].id}">
 													<div class="form-group col-md-3">
 														<select class="form-control" name="nameManager" id="nameManager">
-															<option>Baja</option>
-															<option>Media</option>
-															<option>Alta</option>
-															<option>Muy alta</option>
+															<c:forEach var="person" items="${persons}">
+																<option id="${person.id}">${person.namePerson}</option>
+															</c:forEach>
 														</select>
 													</div>
-													<label class="col-md-6 note">
-														<font color="grey">
-															Responsable de la planificación
-															y ejecución de la tarea
-														</font>
-													</label>
 												</div>
 											</div>
 											
 											<div class="form-group">
 												<div class="row">
 													<label  class="col-md-2 control-label">Prioridad</label> 
+													<input type="hidden" name="idPriority" id="idPriority"
+														   value="B">
 													<div class="form-group col-md-3">
 														<select class="form-control" name="priority" id="priority">
-															<option>Baja</option>
-															<option>Media</option>
-															<option>Alta</option>
-															<option>Muy alta</option>
+															<option id="B">Baja</option>
+															<option id="M">Media</option>
+															<option id="A">Alta</option>
+															<option id="MA">Muy alta</option>
 														</select>
 													</div>
-													<label class="col-md-6 note">
-														<font color="grey">
-															Relevancia de la tarea dentro
-															del proyecto
-														</font>
-													</label>
 												</div>
 											</div>
 											
@@ -267,11 +247,64 @@ body {
 											</div>
 										</form:form>
 									</div>
+									
+									<!-- Milestone creation form
+    								================================================== -->
 									<div id="createMilestone" class="tab-pane fade">
-										<h3>Menu 2</h3>
-										<p>Sed ut perspiciatis unde omnis iste natus error sit
-											voluptatem accusantium doloremque laudantium, totam rem
-											aperiam.</p>
+										<h4>
+											Hito<br> 
+											<small> 
+												Punto de referencia para marcar eventos importantes
+												del proyecto
+											</small>
+										</h4>
+										<hr align="left" width="48%">
+										<form:form class="form-horizontal" method="post"
+											modelAttribute="phase" action='/project/${idProject}/milestone'
+											role="form" data-toggle="validator">
+											<div class="form-group">
+												<div class="row">
+													<label class="col-md-2 control-label">Nombre</label>
+													<div class="form-group col-md-3">
+														<input class="form-control" name="name" id="name"
+															type="text" required>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<div class="row">
+													<label class="col-md-2 control-label">Fase</label> <input
+														type="hidden" name="idPhase" id="idPhase"
+														value="${phases[0].id}">
+													<div class="form-group col-md-3">
+														<select class="form-control" name="namePhase"
+															id="namePhase">
+															<c:forEach var="phase" items="${phases}">
+																<option id="${phase.id}">${phase.name}</option>
+															</c:forEach>
+														</select>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<div class="row">
+													<label class="col-md-2 control-label">Fecha prevista</label>
+													<div class="form-group col-md-3">
+														<input type="text" class="form-control datepicker"
+															data-format="dd/MM/yyyy" name="datePlan" id="datePlan"
+															placeholder="dd/mm/aaaa" required>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<div class="row">
+													<div class="col-md-6 center-block">
+														<button type="submit" class="btn btn-primary center-block">
+															Crear hito</button>
+													</div>
+												</div>
+											</div>
+										</form:form>
 									</div>
 								</div>
 							</div>
@@ -284,7 +317,36 @@ body {
 		</div>	<!-- /.modal -->
 
 
-	<!-- Modal: Feedback modal
+	<!-- Modal: Select task
+    ================================================== -->
+		<div class="modal fade" id="selectTaskModal" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Operación exitosa</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-10 center-block">
+								<div class="form-group">
+									<label for="comment">Comment:</label>
+									<textarea class="form-control" rows="5" id="json"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success center-block"
+							data-dismiss="modal">Aceptar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Modal: Feedback modal
     ================================================== -->
 		<div class="modal fade" id="feedbackModal" role="dialog">
 			<div class="modal-dialog">
@@ -347,7 +409,7 @@ body {
 	</script>
 
 
-	<!-- Others scripts
+	<!-- Scripts neccesaries to get the id in selects
     ================================================== -->
 	<script type="text/javascript">
 		$("#namePhase").change(function() {
@@ -356,6 +418,25 @@ body {
 			  
 		});
 	</script>
+	
+	<script type="text/javascript">
+		$("#nameManager").change(function() {
+			  var id = $(this).children(":selected").attr("id");
+			  document.getElementById("idManager").value = id;
+			  
+		});
+	</script>
+	
+	<script type="text/javascript">
+		$("#priority").change(function() {
+			  var id = $(this).children(":selected").attr("id");
+			  document.getElementById("idPriority").value = id;
+			  
+		});
+	</script>
+
+
+
 
 
 	<!-- Gantt chart configuration
@@ -437,16 +518,26 @@ body {
 		gantt.parse(${dataProject});
 	</script>
 
-	<script type="text/javascript">
+	<script type="text/javascript">	
 		gantt.attachEvent("onTaskDblClick", function(id,item){
-			alert("ID tarea doblemente clickada: " + id);
+			var ids = id.split("-");
+			
+			if (ids.length > 1) {
+				document.getElementById("json").value = ${dataProject}['links'][0].source;
+				$('#selectTaskModal').modal('show');
+			}
+			
+			
+
+			
+			/*alert("ID tarea doblemente clickada: " + id);*/
 			/* window.location.href = "http://localhost:8080/persons"; */
 		});
 	</script>
 	
 	<script type="text/javascript">
 		gantt.attachEvent("onTaskCreated", function(id,item){
-			$('#myModal').modal('show');
+			$('#creationModal').modal('show');
 		});
 	</script>
 	
