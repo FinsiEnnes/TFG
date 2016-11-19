@@ -897,6 +897,25 @@ public class PersonServiceImpl implements PersonService{
 	
 	// ============================================================================
 	@Override
+	@Transactional(value="myTransactionManager")
+	public List<HistoryPerson> findCurrentHistoryPersons() {
+		
+		List<HistoryPerson> hps = new ArrayList<HistoryPerson>();
+		
+		// Find all person histories.
+		try{
+			hps = historyPersonDAO.findCurrents();
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		log.info(ModelConstants.FIND_ALL + hps.size()+ " registred person histories that currently work.");
+		return hps;		
+	}
+	
+	// ============================================================================
+	@Override
 	@Transactional(value="myTransactionManager") 
 	public List<HistoryPerson> findHistoryPersonByPerson(Person person) throws InstanceNotFoundException {
 		

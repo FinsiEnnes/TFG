@@ -46,6 +46,17 @@ public class HistoryPersonDAOImpl implements HistoryPersonDAO {
 
 		return hps;
 	}
+	
+	@Override
+	public List<HistoryPerson> findCurrents() {
+		
+		String query = "FROM HistoryPerson H WHERE H.end IS NULL ORDER BY H.id ASC";
+
+		@SuppressWarnings("unchecked")
+		List<HistoryPerson> hps = (List<HistoryPerson>) sessionFactory.getCurrentSession().createQuery(query).list();
+
+		return hps;
+	}
 
 	@Override
 	public List<HistoryPerson> findByPerson(Person person) {

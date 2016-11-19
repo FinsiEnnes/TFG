@@ -14,6 +14,8 @@ public interface HistoryPersonDAO {
 	
 	public List<HistoryPerson> findAll();
 	
+	public List<HistoryPerson> findCurrents();
+	
 	public List<HistoryPerson> findByPerson(Person person);
 	
 	public List<HistoryPerson> findByProfCatg(ProfessionalCategory profcatg);

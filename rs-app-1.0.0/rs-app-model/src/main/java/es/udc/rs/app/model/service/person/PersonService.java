@@ -101,6 +101,8 @@ public interface PersonService {
 	
 	public List<HistoryPerson> findAllHistoryPerson();
 	
+	public List<HistoryPerson> findCurrentHistoryPersons();
+	
 	public List<HistoryPerson> findHistoryPersonByPerson(Person person) throws InstanceNotFoundException;
 	
 	public List<HistoryPerson> findHistoryPersonByProfCatg(ProfessionalCategory profcatg) throws InstanceNotFoundException;
