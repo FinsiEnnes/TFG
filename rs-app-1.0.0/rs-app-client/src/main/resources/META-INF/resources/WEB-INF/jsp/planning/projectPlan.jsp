@@ -10,7 +10,7 @@
 <!-- Bootstrap core CSS -->
 <link href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Bootstrap datepicker -->
+<!-- Bootstrap Datepicker -->
 <link href="/webjars/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.min.css" rel="stylesheet">
 
 <!-- Custom colors for the navigation bar -->
@@ -20,6 +20,7 @@
 <script src="/dhtmlxGantt/codebase/dhtmlxgantt.js"></script>
 <link href="/dhtmlxGantt/codebase/dhtmlxgantt.css" rel="stylesheet">
 
+<!-- Custom tabs for the add operationes -->
 <link href="/css/customTabs.css" rel="stylesheet">
 
 <style>
@@ -550,7 +551,7 @@ body {
 	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.js"></script>
 	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.min.js"></script>
 	
-	<!-- Bootstrap Datapicker initialation
+	<!-- Bootstrap Datapicker instialation
     ================================================== -->	
 	<script>
 		$(document).ready(function() {
