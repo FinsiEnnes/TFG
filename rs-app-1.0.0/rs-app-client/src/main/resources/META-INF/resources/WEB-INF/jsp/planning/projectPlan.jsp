@@ -118,7 +118,7 @@ body {
 												<div class="row">
 													<label class="col-md-2 control-label">Nombre</label>
 													<div class="form-group col-md-3">
-														<input class="form-control" name="name" id="name" 
+														<input class="form-control" name="name" id="namePhase" 
 															   type="text" required>
 													</div>
 												</div>
@@ -128,7 +128,7 @@ body {
 													<label class="col-md-2 control-label">Inicio previsto</label>
 													<div class="form-group col-md-3">
 														<input type="text" class="form-control datepicker"
-														data-format="dd/MM/yyyy" name="ini" id="ini"
+														data-format="dd/MM/yyyy" name="ini" id="iniPhase"
 														placeholder="dd/mm/aaaa" required>
 													</div>
 												</div>
@@ -162,7 +162,7 @@ body {
 												<div class="row">
 													<label class="col-md-2 control-label">Nombre</label>
 													<div class="form-group col-md-3">
-														<input class="form-control" name="name" id="name"
+														<input class="form-control" name="name" id="nameNewTask"
 															type="text" required>
 													</div>
 												</div>
@@ -174,7 +174,8 @@ body {
 													<input type="hidden" name="idPhase" id="idPhase"
 														   value="${phases[0].id}">
 													<div class="form-group col-md-3">
-														<select class="form-control" name="namePhase" id="namePhase">
+														<select class="form-control" name="namePhase" 
+																id="namePhaseNewTask">
 															<c:forEach var="phase" items="${phases}">
 																<option id="${phase.id}">${phase.name}</option>
 															</c:forEach>
@@ -187,7 +188,7 @@ body {
 													<label class="col-md-2 control-label">Duración</label>
 													<div class="form-group has-feedback col-md-3">
 														<input type="text" class="form-control" 
-															   name="daysPlan" id="daysPlan"
+															   name="daysPlan" id="daysPlanNewTask"
 															   pattern="^[1-9]\d*$" maxlength="3"
 															   placeholder="Entre 1 y 999 días" required> <span
 															   class="glyphicon form-control-feedback"></span>
@@ -200,7 +201,7 @@ body {
 													<label class="col-md-2 control-label">Inicio previsto</label>
 													<div class="form-group col-md-3">
 														<input type="text" class="form-control datepicker"
-														data-format="dd/MM/yyyy" name="iniPlan" id="iniPlan"
+														data-format="dd/MM/yyyy" name="iniPlan" id="iniPlanNewTask"
 														placeholder="dd/mm/aaaa" required>
 													</div>
 												</div>
@@ -212,7 +213,8 @@ body {
 													<input type="hidden" name="idManager" id="idManager"
 														   value="${persons[0].id}">
 													<div class="form-group col-md-3">
-														<select class="form-control" name="nameManager" id="nameManager">
+														<select class="form-control" name="nameManager" 
+																id="nameManagerNewTask">
 															<c:forEach var="person" items="${persons}">
 																<option id="${person.id}">${person.namePerson}</option>
 															</c:forEach>
@@ -224,7 +226,7 @@ body {
 											<div class="form-group">
 												<div class="row">
 													<label  class="col-md-2 control-label">Prioridad</label> 
-													<input type="hidden" name="idPriority" id="idPriority"
+													<input type="hidden" name="idPriority" id="idPriorityNewTask"
 														   value="B">
 													<div class="form-group col-md-3">
 														<select class="form-control" name="priority" id="priority">
@@ -266,7 +268,7 @@ body {
 												<div class="row">
 													<label class="col-md-2 control-label">Nombre</label>
 													<div class="form-group col-md-3">
-														<input class="form-control" name="name" id="name"
+														<input class="form-control" name="name" id="nameNewMS"
 															type="text" required>
 													</div>
 												</div>
@@ -278,7 +280,7 @@ body {
 														value="${phases[0].id}">
 													<div class="form-group col-md-3">
 														<select class="form-control" name="namePhase"
-															id="namePhase">
+															id="namePhaseNewMS">
 															<c:forEach var="phase" items="${phases}">
 																<option id="${phase.id}">${phase.name}</option>
 															</c:forEach>
@@ -291,7 +293,7 @@ body {
 													<label class="col-md-2 control-label">Fecha prevista</label>
 													<div class="form-group col-md-3">
 														<input type="text" class="form-control datepicker"
-															data-format="dd/MM/yyyy" name="datePlan" id="datePlan"
+															data-format="dd/MM/yyyy" name="datePlan" id="datePlanNewMS"
 															placeholder="dd/mm/aaaa" required>
 													</div>
 												</div>
@@ -320,34 +322,194 @@ body {
 	<!-- Modal: Select task
     ================================================== -->
 		<div class="modal fade" id="selectTaskModal" role="dialog">
-			<div class="modal-dialog">
+			<div class="modal-dialog modal-lg">
 				<!-- Modal content-->
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Operación exitosa</h4>
+						<h4 class="modal-title">Actualizar tarea</h4>
 					</div>
 					<div class="modal-body">
-						<div class="row">
-							<div class="col-md-10 center-block">
-								<div class="form-group">
-									<label for="comment">Comment:</label>
-									<textarea class="form-control" rows="5" id="json"></textarea>
+						<form:form id="formSelectTask" class="form" method="post" action='url'
+							modelAttribute="task" role="form" data-toggle="validator">
+
+							<!-- First row -->
+							<div class="form-group">
+								<div class="row">
+									<div class="form-group col-md-offset-1 col-md-4">
+										<label for="inputName" class="control-label">Nombre</label> <input
+											type="text" class="form-control" name="name" id="nameSelectTask"
+											required>
+									</div>
+
+									<div class="form-group col-md-2">
+										<label for="inputSurname1" class="control-label">Estado
+										</label> <input type="text" class="form-control" name="state"
+											id="stateSelectTask" required readOnly>
+									</div>
+
+									<div class="form-group col-md-2">
+										<label for="inputSurname2" class="control-label">Progreso
+										</label> <input type="text" class="form-control" name="progress"
+											id="progressSelectTask" required>
+									</div>
+									
+									<div class="form-group col-md-2">
+										<label for="inputSurname2" class="control-label">Prioridad </label>
+										<input type="hidden" name="idPriority" id="idPrioritySelectTask" value="B">
+										<select class="form-control" name="priority" id="prioritySelectTask">
+															<option id="B">Baja</option>
+															<option id="M">Media</option>
+															<option id="A">Alta</option>
+															<option id="MA">Muy alta</option>
+										</select>
+									</div>
+									<div class="form-group col-md-1">
+									</div>
 								</div>
+							</div>
+
+							<!-- Second row -->
+							<div class="form-group">
+								<div class="row">
+									<div class="form-group col-md-offset-1 col-md-5">
+										<h4>
+											Previsto
+										</h4>
+										<div class="well">
+											<div class="row">
+												<div class="form-group col-md-6">
+													<label for="inputName" class="control-label">Inicio</label>
+													<input type="text" class="form-control datepicker"
+															data-format="dd/MM/yyyy" name="iniPlan" 
+															id="iniPlanSelectTask" placeholder="dd/mm/aaaa" required>
+												</div>
+
+												<div class="form-group col-md-6">
+													<label for="inputSurname1" class="control-label">Duración
+													</label> <input type="text" class="form-control" name="daysPlan"
+														id="daysPlanSelectTask" required>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="form-group col-md-5">
+										<h4>
+											Real
+										</h4>
+										<div class="well">
+											<div class="row">
+												<div class="form-group col-md-6">
+													<label for="inputName" class="control-label">Inicio</label>
+													<input type="text" class="form-control" name="iniReal"
+														id="iniRealSelectTask">
+												</div>
+
+												<div class="form-group col-md-6">
+													<label for="inputSurname1" class="control-label">Duración
+													</label> <input type="text" class="form-control" name="daysReal"
+														id="daysRealSelectTask">
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="form-group col-md-1">
+									</div>
+								</div>
+							</div>
+
+							<div class="row">
+								<button type="submit" class="btn btn-primary center-block">Guardar cambios</button>
+							</div>
+						</form:form>
+
+						<div class="row">
+							<div class="form-group col-md-offset-1">
+								<h4>
+									Información completa<br> 
+									<small>
+										Pulsa el botón "Información" si deseas obtener todos los datos relativos a
+										esta tarea y acceder a operaciones avanzadas.  
+									</small>
+								</h4>
+								<hr align="left" width="70%">
+							</div>
+							<div class="row">
+								<button type="submit" class="btn btn-info center-block">Información</button>
 							</div>
 						</div>
 					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-success center-block"
-							data-dismiss="modal">Aceptar</button>
-					</div>
+
 				</div>
 			</div>
 		</div>
 
 
+		<!-- Modal: Select milestone
+    	================================================== -->
+		<div class="modal fade" id="selectMilestoneModal" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Actualizar hito</h4>
+					</div>
+					<div class="modal-body">
+						<form:form id="formSelectMS" class="form" method="post" action='url'
+							modelAttribute="milestone" role="form" data-toggle="validator">
+							
+							<div class="form-group">
+								<div class="row">
+									<div class="form-group col-md-offset-2 col-md-8">
+										<label for="inputName" class="control-label">Nombre</label> <input
+											type="text" class="form-control" name="name" id="nameSelectMS"
+											required>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="row">
+									<div class="form-group col-md-offset-2 col-md-4">
+										<label for="inputName" class="control-label">Fecha prevista</label> 
+										<input type="text" class="form-control datepicker"
+											   data-format="dd/MM/yyyy" name="datePlan" 
+											   id="datePlanSelectMS" placeholder="dd/mm/aaaa" required>
+															
+									</div>
+									<div class="form-group col-md-4">
+										<label for="inputName" class="control-label">Fecha prevista</label> 
+										<input type="text" class="form-control datepicker"
+											   data-format="dd/MM/yyyy" name="dateReal" 
+											   id="dateRealSelectMS" placeholder="dd/mm/aaaa" required>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="row">
+									<div class="form-group col-md-offset-2 col-md-8">
+										<label>Cometarios</label>
+										<textarea class="form-control" rows="3" id="commentSelectMS"
+											name="comment" placeholder="Detalles a destacar..."></textarea>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="row">
+									<button type="submit" class="btn btn-primary center-block">Guardar cambios</button>
+								</div>
+							</div>
+						</form:form>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- Modal: Feedback modal
-    ================================================== -->
+    	================================================== -->
 		<div class="modal fade" id="feedbackModal" role="dialog">
 			<div class="modal-dialog">
 				<!-- Modal content-->
@@ -434,8 +596,14 @@ body {
 			  
 		});
 	</script>
-
-
+	
+	<script type="text/javascript">
+		$("#prioritySelectTask").change(function() {
+			  var id = $(this).children(":selected").attr("id");
+			  document.getElementById("idPrioritySelectTask").value = id;
+			  
+		});
+	</script>
 
 
 
@@ -445,7 +613,7 @@ body {
 	
 		/* Main configurations */
 		//gantt.config.readonly = true;
-		gantt.config.date_grid = "%d-%m-%Y";
+		gantt.config.date_grid = "%d/%m/%Y";
 		gantt.config.grid_width = 520;
 		gantt.config.scale_height = 55;
 		gantt.config.drag_progress = false;
@@ -518,17 +686,72 @@ body {
 		gantt.parse(${dataProject});
 	</script>
 
+
+	<!-- Select item in Gantt chart
+    ================================================== -->
 	<script type="text/javascript">	
 		gantt.attachEvent("onTaskDblClick", function(id,item){
-			var ids = id.split("-");
+			var type = id.substring(0, 1);
+			var idDB = id.substring(1);
 			
-			if (ids.length > 1) {
-				document.getElementById("json").value = ${dataProject}['links'][0].source;
+			// Check the type of the object
+			if (type == "p") {
+				alert("Es una fase");
+			} 
+			else if (type == "t") {
+				
+				var state = ${taskDetails}[id].state;
+				
+				if (state=="Planificacion") {
+					document.getElementById("progressSelectTask").readOnly = true;
+					document.getElementById("iniRealSelectTask").readOnly = true;
+					document.getElementById("daysRealSelectTask").readOnly = true;
+				}
+				
+				var urlUpdate = "/project/" + ${idProject} + "/task/" + idDB + "/update";
+				
+				document.getElementById("formSelectTask").action = urlUpdate;
+				document.getElementById("nameSelectTask").value = ${taskDetails}[id].name;
+				document.getElementById("stateSelectTask").value = state;
+				document.getElementById("progressSelectTask").value = ${taskDetails}[id].progress;
+				document.getElementById("idPrioritySelectTask").value = ${taskDetails}[id].idPriority;
+				document.getElementById("prioritySelectTask").value = ${taskDetails}[id].priority;
+				document.getElementById("iniPlanSelectTask").value = ${taskDetails}[id].iniPlan;
+				document.getElementById("daysPlanSelectTask").value = ${taskDetails}[id].daysPlan;
+				document.getElementById("iniRealSelectTask").value = ${taskDetails}[id].iniReal;
+				document.getElementById("daysRealSelectTask").value = ${taskDetails}[id].daysReal;
+				
 				$('#selectTaskModal').modal('show');
+			} 
+			else {
+				
+				var urlUpdate = "/project/" + ${idProject} + "/task/" + idDB + "/update";
+				
+				document.getElementById("formSelectMS").action = urlUpdate;
+				document.getElementById("nameSelectMS").value = ${msDetails}[id].name;
+				document.getElementById("datePlanSelectMS").value = ${msDetails}[id].datePlan;
+				document.getElementById("dateRealSelectMS").value = ${msDetails}[id].dateReal;
+				document.getElementById("commentSelectMS").value = ${msDetails}[id].comment;
+				
+				$('#selectMilestoneModal').modal('show');
 			}
 			
+			/*var ids = id.split("-");
 			
-
+			if (ids.length > 1) {
+				
+				var type = ids[1].substring(0, 1);
+				
+				if (type == "t") {
+					alert("Es una tarea");
+				}
+				else {
+					alert("Es un hito");
+				}
+				alert(ids[1]);
+				/*document.getElementById("json").value = ${dataProject}['links'][0].source;
+				$('#selectTaskModal').modal('show');
+			}*/
 			
 			/*alert("ID tarea doblemente clickada: " + id);*/
 			/* window.location.href = "http://localhost:8080/persons"; */
