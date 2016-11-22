@@ -58,7 +58,7 @@ body {
 			id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
 				<li class="active"><a href="#"><font size="3">Planificación</font></a></li>
-				<li><a href="#"><font size="3">Proyecto</font></a></li>
+				<li><a href="/projects/${idProject}"><font size="3">Proyecto</font></a></li>
 				<li><a href="#"><font size="3">Tarea</font></a></li>
 				<li><a href="#"><font size="3">Hito</font></a></li>
 				<li><a href="#"><font size="3">Personas</font></a></li>

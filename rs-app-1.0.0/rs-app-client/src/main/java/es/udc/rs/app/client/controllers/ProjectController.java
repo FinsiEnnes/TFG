@@ -122,16 +122,37 @@ public class ProjectController {
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [POST]-> /project/id/update || Update only the basic project information.   
+	// [POST]-> /project/id/delete || Delete the project.   
 	//-----------------------------------------------------------------------------------------------------
 	@RequestMapping(value="/projects/{idProject}/delete",  method=RequestMethod.POST)
-    public String updateProject(@PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
+    public String deleteProject(@PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
 
     	// Convert the string id to long
     	Long id = Long.parseLong(idProject, 10);
 
+    	// Now delete the project
 		projectService.removeProject(id);
 		
 		return "myGantt";
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /project/id/delete || Delete the project.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/statics",  method=RequestMethod.GET)
+    public String showProjectStatics(@PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
+
+    	// Convert the string id to long
+    	Long id = Long.parseLong(idProject, 10);
+
+    	// Find this Project and convert it to DTO
+    	Project project = projectService.findProject(id);
+    	ProjectDTO projectDTO = ProjectDTOConversor.toProjectDTO(project);
+    	
+    	// Create the model
+    	model.addAttribute("project", projectDTO);
+		
+		return "project/statics";
 	}
 }

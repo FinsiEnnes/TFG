@@ -49,6 +49,12 @@ small {
     margin-left: 15px;
 }
 
+.container dt,.container dd {
+  width:auto !important;
+  margin-left:auto !important;
+  display:inline-block !important;
+}
+
 /* el latoooooooo */
 .container {
 	width: 800px;
@@ -180,7 +186,7 @@ small {
 							<li class="menu">
 								<ul>
 								<li>
-									<a href="#" class="active"> Información 
+									<a href="/projects/${project.id}"> Información 
 										<span class="glyphicon glyphicon-info-sign pull-right"></span>
 									</a>
 								</li>
@@ -190,7 +196,7 @@ small {
 									</a>
 								</li>
 								<li>
-									<a href="/projects/${project.id}/statics"> Estadísticas
+									<a href="#" class="active"> Estadísticas
 										<span class="glyphicon glyphicon-stats pull-right"></span>
 									</a>
 								</li>
@@ -239,172 +245,193 @@ small {
 			<div class="col-md-9">
 
 				<h3>
-					Información del proyecto<br> <small>Cambia la
-						configuración básica del proyecto</small>
+					Estadísticas<br> 
+					<small>Recopilación de los diversos datos procedentes de las tareas</small>
 				</h3>
 				<hr width="110%">
 				<br>
 
-				<form:form id="projectInfoUpdateForm" class="form-horizontal"
-					method="post" action="/projects/${project.id}/update"
-					modelAttribute="project" role="form" data-toggle="validator">
-
-					<div class="form-group">
-						<div class="row">
-							<label class="col-md-2 control-label">Nombre</label>
-							<div class="form-group col-md-9">
-								<input class="form-control" name="name" id="name" type="text"
-									value="${project.name}" required>
-							</div>
-						</div>
-					</div>
-					
-					
-					<div class="form-group">
-						<div class="row">
-							<label class="col-md-2 control-label">Tipo</label>
-							<div class="form-group col-md-2">
-								<input class="form-control" name="type" id="type" type="text"
-									value="${project.type}" required>
-							</div>
-							<label class="col-md-7 note"> 
-								<font color="grey"> 
-									Indica si el proyecto pertenece a la empresa (Interno) 
-									o es para un cliente (Externo).
-								</font> 
-							</label>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<div class="row">
-							<label class="col-md-2 control-label">Inicio</label>
-							<div class="form-group col-md-2">
-								<input type="text" class="form-control datepicker"
-									   data-format="dd/MM/yyyy" name="iniPlan" id="iniPlan"
-									   placeholder="dd/mm/aaaa" value="${iniProject}" required>
-							</div>
-							<label class="col-md-4 note"> 
-								<font color="grey"> 
-									Comienzo de la ejecución del proyecto.
-								</font> 
-							</label>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<div class="row">
-							<label class="col-md-2 control-label">País</label> 
-							<div class="form-group col-md-3">
-								<select class="form-control" name="country" id="country">
-									<option id="1">${project.country}</option>
-									<c:forEach var="country" items="${countries}">
-										<option id="${country.id}">${country.name}</option>
-									</c:forEach>
-								</select>
-							</div>
-							
-							<label class="col-md-2 control-label">Provincia/Estado</label> 
-							<input type="hidden" name="idProvince" id="idProvince" value="${project.idProvince}">
-							<div class="form-group col-md-3">
-								<select class="form-control" name="province" id="province">
-									<option id="1">${project.province}</option>
-									<c:forEach var="province" items="${provinces}">
-										<option id="${province.id}">${province.name}</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<div class="row">
-							<label class="col-md-2 control-label">Fecha estado</label>
-							<div class="form-group col-md-2">
-								<input type="text" class="form-control datepicker"
-									   data-format="dd/MM/yyyy" name="stateDate" id="stateDate"
-									   placeholder="dd/mm/aaaa" value="${project.stateDate}" required>
-							</div>
-							<label class="col-md-4 note"> 
-								<font color="grey"> 
-									Fecha de la última modificación del proyecto.
-								</font> 
-							</label>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<div class="row">
-							<label class="col-md-2 control-label">Presupuesto</label>
-							<div class="form-group col-md-2 has-feedback">
-								<input type="text" class="form-control" name="budget"
-									   id="budget"  value="${project.budget}"> 
-								<i class="glyphicon form-control-feedback"></i>
-							</div>
-							<div class="col-md-1 note">
-								<i class="glyphicon glyphicon-eur"></i>
-							</div>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<div class="row">
-							<label class="col-md-2 control-label" for="comment">
-								Descripción del proyecto
-							</label>
-							<div class="form-group col-md-9">
-								<textarea class="form-control pull-right" rows="6" name="description"
-									id="description">${project.description}
-								</textarea>
-							</div>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<div class="row">
-							<label class="col-md-2 control-label" for="comment">Comentarios</label>
-							<div class="form-group col-md-9">
-								<textarea class="form-control pull-right" rows="6" name="comment"
-									id="comment">${project.comment}
-								</textarea>
-							</div>
-						</div>
-					</div>
-					
-					<div class="row">
-						<button type="submit" class="btn btn-primary center-block">Guardar cambios</button>
-					</div>
-				</form:form>
-				
-				<br><br>
-				
-				<h3>
-					Operaciones disponibles<br> 
-				</h3>
-				<hr width="110%">
 				<div class="row">
 					<div class="form-group col-md-9">
-				<h4>
-					Borrado del proyecto<br> 
-					<small>
-						Borrado completo del proyecto y todos los datos vinculados a él. Esta acción supone un 
-						borrado en cascada de las
-					</small>
-					<small>
-					fases, tareas, recursos humanos y materiales relacionados con el proyecto. 
-					</small>
-				</h4>
+						<h4>
+							Inicio y fin<br> 
+							<small> 
+								Período abarcado desde la fecha marcada como inicio de 
+								proyecto hasta la finalización de la última tarea. 
+							</small>
+						</h4>
 					</div>
 				</div>
+
 				<div class="row">
-					<form action="/projects/${project.id}/delete" method="post">
-						<button type="submit" name="page" class="btn btn-danger center-block">
-						<span class="glyphicon glyphicon-remove"></span> Eliminar proyecto
-					</button>
-				</form>
+					<div class="form-group col-md-offset-3 col-md-6">
+					<table id="person_table" class="table table-bordered"
+						data-toggle="table">
+						<thead>
+							<tr>
+								<th class="col-md-1"></th>
+								<th class="col-md-1">Inicio</th>
+								<th class="col-md-1">Fin</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="text-info">Previsto</td>
+								<td></td>
+								<td></td>
+							</tr>
+							
+							<tr>
+								<td class="text-info">Real</td>
+								<td></td>
+								<td></td>
+							</tr>
+							
+							<tr>
+								<td class="text-info">Variación</td>
+								<td></td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+					</div>
+				</div>
+				
+				<br>
+				<div class="row">
+					<div class="form-group col-md-9">
+						<h4>
+							Duración, horas y coste<br> 
+							<small> 
+								Suma total de días, horas invertidas y coste de las tareas del proyecto.
+							</small>
+						</h4>
+					</div>
 				</div>
 
-				<br><br>
+				<div class="row">
+					<div class="form-group col-md-offset-2 col-md-9">
+					<table id="person_table" class="table table-bordered"
+						data-toggle="table">
+						<thead>
+							<tr>
+								<th class="col-md-1"></th>
+								<th class="col-md-1">Duración</th>
+								<th class="col-md-1">Horas</th>
+								<th class="col-md-1">Coste</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="text-info">Previsto</td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+							
+							<tr>
+								<td class="text-info">Real</td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+							
+							<tr>
+								<td class="text-info">Variación</td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+					</div>
+				</div>
+
+				<br>
+				<div class="row">
+					<div class="form-group col-md-8">
+						<h4>
+							Ganancias y pérdidas<br> 
+							<small> 
+								Beneficios obtenidos en función del presupuesto y los costes del proyecto.
+								Además también se tienen
+							</small>
+							<small>
+								en cuenta las pérdidas producidas por incidencias.
+							</small>
+						</h4>
+					</div>
+				</div>
+			
+				<br>
+				<div class="row">
+					<div class="form-group col-md-offset-1 col-md-6">
+					<table id="person_table" class="table table-bordered"
+						data-toggle="table">
+						<thead>
+							<tr>
+								<th class="col-md-1"></th>
+								<th class="col-md-1">Beneficios</th>
+								<th class="col-md-1">Pérdidas</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="text-info">Previsto</td>
+								<td></td>
+								<td></td>
+							</tr>
+							
+							<tr>
+								<td class="text-info">Real</td>
+								<td></td>
+								<td></td>
+							</tr>
+							
+							<tr>
+								<td class="text-info">Variación</td>
+								<td></td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+					</div>
+					
+					<div class="form-group col-md-offset-1 col-md-4">
+						<div class="well">
+							<strong>Cálculo de beneficios</strong>
+							<dl class="dl-horizontal">
+							  <dt>Previsto</dt>
+							  <dd>Presupuesto - Costes</dd>
+							  <dt>Real</dt>
+							  <dd>Presupuesto - (Costes + Pérdidas)</dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				
+				<br>
+				<div class="row">
+					<div class="form-group col-md-8">
+						<h4>
+							Progreso<br> 
+							<small> 
+								Porcentaje del proyecto en ejecución completado
+							</small>
+						</h4>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="form-group col-md-offset-2 col-md-8">
+						<div class="progress">
+							<div class="progress-bar" role="progressbar" aria-valuenow="35"
+								aria-valuemin="0" aria-valuemax="100" style="width: 35%">
+								35%</div>
+						</div>
+					</div>
+				</div>
+
 			</div>
 		</div>
 	</div>
