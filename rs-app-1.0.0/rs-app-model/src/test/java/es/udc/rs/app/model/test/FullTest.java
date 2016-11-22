@@ -70,7 +70,7 @@ public class FullTest {
 
 		log.info("");
 		log.info ("============== Starting Full Test ==============");
-		//thisTest();	
+		thisTest();	
 	}
 
 	private void thisTest() throws InstanceNotFoundException, InputValidationException, ParseException {
@@ -86,17 +86,12 @@ public class FullTest {
 		Date thisDate;
 		
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-		Date iniPlanProject = fmt.parse("2016-01-01");
+		Date iniPlanProject = fmt.parse("2016-08-29");
 		
 		Date iniPlanHistoryProject = fmt.parse("2016-08-15");
 		Date endPlanHistoryProject = fmt.parse("2016-08-28");
 		Date iniEjecHistoryProject = fmt.parse("2016-09-01");
 		Date endEjecHistoryProject = fmt.parse("2016-09-15");
-		
-		Date iniPhase1 = fmt.parse("2016-09-01");
-		Date endPhase1 = fmt.parse("2016-09-05");
-		Date iniPhase2 = fmt.parse("2016-09-05");
-		Date endPhase2 = fmt.parse("2016-09-12");
 		
 		Date iniPlanTask1 = fmt.parse("2016-09-01");
 		Date iniPlanTask2 = fmt.parse("2016-09-04");
@@ -122,7 +117,6 @@ public class FullTest {
 		
 		Priority m = projectService.findPriority("M");
 		
-		LevelProfCatg junior = personService.findLevelProfCatg("JUN");
 		LevelProfCatg senior = personService.findLevelProfCatg("SEN");
 		
 		
@@ -355,7 +349,7 @@ public class FullTest {
 		num = 1231;
 		assertEquals(num, thisProject.getCostPlan());
 		thisDate = fmt.parse("2016-09-11");
-		//assertEquals(thisDate, thisProject.getEndPlan());
+		assertEquals(thisDate, thisProject.getEndPlan());
 		
 		
 		// ================================================================================

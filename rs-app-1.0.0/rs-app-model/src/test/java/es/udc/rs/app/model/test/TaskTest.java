@@ -172,9 +172,9 @@ public class TaskTest {
 		log.info("");
 		log.info("===> We cannot update other attributes when the task State is PLAN");
 		// ================================================================================	
-		task.setEndPlan(fmt.parse("2016-01-29"));
+		task.setCostPlan(2);
 		incorrectUpdate(task);
-		task.setEndPlan(null);
+		task.setCostPlan(null);
 		
 		
 		// ================================================================================

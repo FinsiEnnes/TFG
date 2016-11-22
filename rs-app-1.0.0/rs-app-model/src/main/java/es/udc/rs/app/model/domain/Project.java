@@ -41,6 +41,7 @@ public class Project {
 	private Integer costReal;
 	private Integer profitPlan;
 	private Integer profitReal;
+	private Integer loss;
 	private Integer progress;
 	
 	public Project() {
@@ -53,7 +54,7 @@ public class Project {
 			Integer daysPlan, Integer daysReal, Date iniPlan, Date iniReal,
 			Date endPlan, Date endReal, Integer hoursPlan, Integer hoursReal,
 			Integer costPlan, Integer costReal, Integer profitPlan,
-			Integer profitReal, Integer progress) {
+			Integer profitReal, Integer loss, Integer progress) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -79,6 +80,7 @@ public class Project {
 		this.costReal = costReal;
 		this.profitPlan = profitPlan;
 		this.profitReal = profitReal;
+		this.loss = loss;
 		this.progress = progress;
 	}
 
@@ -317,6 +319,15 @@ public class Project {
 
 	public void setProfitReal(Integer profitReal) {
 		this.profitReal = profitReal;
+	}
+
+	@Column(name = "lossProject")
+	public Integer getLoss() {
+		return loss;
+	}
+	
+	public void setLoss(Integer loss) {
+		this.loss = loss;
 	}
 	
 	@Column(name = "progressProject")
