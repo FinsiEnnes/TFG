@@ -5,16 +5,21 @@
 <html>
 <head>
 
-<title>Dashboard Template for Bootstrap</title>
+<title>Project statics</title>
 
-<!-- Bootstrap core CSS -->
+<!-- Bootstrap core CSS
+========================================================== -->
 <link href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Bootstrap Datepicker -->
+<!-- Bootstrap Datepicker
+========================================================== -->
 <link href="/webjars/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.min.css" rel="stylesheet">
 
-<!-- Custom colors for the navigation bar -->
+
+<!-- Custom colors for the navigation and subsection bar 
+========================================================== -->
 <link href="/css/navbarColors.css" rel="stylesheet">
+<link href="/css/subsectionColors.css" rel="stylesheet">
 
 <style>
 body {
@@ -49,11 +54,6 @@ small {
     margin-left: 15px;
 }
 
-.container dt,.container dd {
-  width:auto !important;
-  margin-left:auto !important;
-  display:inline-block !important;
-}
 
 /* el latoooooooo */
 .container {
@@ -191,7 +191,7 @@ small {
 									</a>
 								</li>
 								<li>
-									<a href="#"> Estado 
+									<a href="/projects/${project.id}/states"> Estado 
 										<span class="glyphicon glyphicon-check pull-right"></span>
 									</a>
 								</li>
@@ -215,7 +215,7 @@ small {
 							<li class="menu">
 								<ul>
 								<li>
-									<a href="#">Jefes de proyecto 
+									<a href="/projects/${project.id}/managers">Jefes de proyecto 
 										<span class="glyphicon glyphicon-briefcase pull-right"></span>
 									</a>
 								</li>
@@ -277,20 +277,20 @@ small {
 						<tbody>
 							<tr>
 								<td class="text-info">Previsto</td>
-								<td></td>
-								<td></td>
+								<td>${project.iniPlan}</td>
+								<td>${project.endPlan}</td>
 							</tr>
 							
 							<tr>
 								<td class="text-info">Real</td>
-								<td></td>
-								<td></td>
+								<td>${project.iniReal}</td>
+								<td>${project.endReal}</td>
 							</tr>
 							
 							<tr>
 								<td class="text-info">Variación</td>
-								<td></td>
-								<td></td>
+								<td>${project.iniVar}</td>
+								<td>${project.endVar}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -324,23 +324,23 @@ small {
 						<tbody>
 							<tr>
 								<td class="text-info">Previsto</td>
-								<td></td>
-								<td></td>
-								<td></td>
+								<td>${project.daysPlan}</td>
+								<td>${project.hoursPlan}</td>
+								<td>${project.costPlan}</td>
 							</tr>
 							
 							<tr>
 								<td class="text-info">Real</td>
-								<td></td>
-								<td></td>
-								<td></td>
+								<td>${project.daysReal}</td>
+								<td>${project.hoursReal}</td>
+								<td>${project.costReal}</td>
 							</tr>
 							
 							<tr>
 								<td class="text-info">Variación</td>
-								<td></td>
-								<td></td>
-								<td></td>
+								<td>${project.daysVar}</td>
+								<td>${project.hoursVar}</td>
+								<td>${project.costVar}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -365,48 +365,69 @@ small {
 			
 				<br>
 				<div class="row">
-					<div class="form-group col-md-offset-1 col-md-6">
+					<div class="form-group col-md-offset-1 col-md-4">
 					<table id="person_table" class="table table-bordered"
 						data-toggle="table">
 						<thead>
 							<tr>
-								<th class="col-md-1"></th>
-								<th class="col-md-1">Beneficios</th>
-								<th class="col-md-1">Pérdidas</th>
+								<th class="col-md-2"></th>
+								<th class="col-md-8">Beneficios</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
 								<td class="text-info">Previsto</td>
-								<td></td>
-								<td></td>
+								<td>${project.profitPlan}</td>
 							</tr>
 							
 							<tr>
 								<td class="text-info">Real</td>
-								<td></td>
-								<td></td>
+								<td>${project.profitReal}</td>
 							</tr>
 							
 							<tr>
 								<td class="text-info">Variación</td>
-								<td></td>
-								<td></td>
+								<td>${project.profitVar}</td>
 							</tr>
 						</tbody>
 					</table>
 					</div>
 					
-					<div class="form-group col-md-offset-1 col-md-4">
-						<div class="well">
-							<strong>Cálculo de beneficios</strong>
-							<dl class="dl-horizontal">
-							  <dt>Previsto</dt>
-							  <dd>Presupuesto - Costes</dd>
-							  <dt>Real</dt>
-							  <dd>Presupuesto - (Costes + Pérdidas)</dd>
-							</dl>
-						</div>
+					<div class="form-group col-md-3">
+						<table id="person_table" class="table table-bordered" data-toggle="table">
+							<thead>
+								<tr>
+									<th>Pérdidas</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>${project.loss}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="form-group col-md-4">
+						<table id="person_table" class="table table-bordered" data-toggle="table">
+							<thead>
+								<tr>
+									<th class="col-md-1"></th>
+									<th class="col-md-9">Cálculo de beneficios</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="text-info">Previsto</td>
+									<td>Presupuesto - Costes</td>
+								</tr>
+								
+								<tr>
+									<td class="text-info">Real</td>
+									<td>Presupuesto - (Costes + Pérdidas)</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
 				
@@ -425,9 +446,9 @@ small {
 				<div class="row">
 					<div class="form-group col-md-offset-2 col-md-8">
 						<div class="progress">
-							<div class="progress-bar" role="progressbar" aria-valuenow="35"
-								aria-valuemin="0" aria-valuemax="100" style="width: 35%">
-								35%</div>
+							<div class="progress-bar" role="progressbar" aria-valuenow="${project.progress}"
+								aria-valuemin="0" aria-valuemax="100" style="width: ${project.progress}%">
+								${project.progress}%</div>
 						</div>
 					</div>
 				</div>

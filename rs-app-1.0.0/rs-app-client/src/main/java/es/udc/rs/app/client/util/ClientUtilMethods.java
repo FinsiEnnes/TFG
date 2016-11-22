@@ -36,7 +36,7 @@ public class ClientUtilMethods {
 	
 	public static String convertDateToString(Date indate) {
 
-		String dateString = null;
+		String dateString = ClientConstants.NOT_AVAILABLE;
 		SimpleDateFormat sdfr = new SimpleDateFormat("dd/MM/yyyy");
 
 		try{

@@ -13,14 +13,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import es.udc.rs.app.client.conversor.HistoryProjectDTOConversor;
 import es.udc.rs.app.client.conversor.ProjectDTOConversor;
+import es.udc.rs.app.client.conversor.ProjectMgmtDTOConversor;
 import es.udc.rs.app.client.conversor.ProvinceDTOConversor;
+import es.udc.rs.app.client.dto.HistoryProjectDTO;
 import es.udc.rs.app.client.dto.ProjectDTO;
+import es.udc.rs.app.client.dto.ProjectMgmtDTO;
 import es.udc.rs.app.client.dto.ProvinceDTO;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.HistoryProject;
 import es.udc.rs.app.model.domain.Project;
+import es.udc.rs.app.model.domain.ProjectMgmt;
 import es.udc.rs.app.model.domain.Province;
 import es.udc.rs.app.model.service.customer.CustomerService;
 import es.udc.rs.app.model.service.project.ProjectService;
@@ -60,7 +65,7 @@ public class ProjectController {
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [GET]-> /project/id || Getting of the principal project information.   
+	// [GET]-> /projects/id || Getting of the principal project information.   
 	//-----------------------------------------------------------------------------------------------------
 	@RequestMapping(value="/projects/{idProject}",  method=RequestMethod.GET)
     public String showProject(@PathVariable String idProject, Model model) throws InstanceNotFoundException {
@@ -96,7 +101,7 @@ public class ProjectController {
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [POST]-> /project/id/update || Update only the basic project information.   
+	// [POST]-> /projects/id/update || Update only the basic project information.   
 	//-----------------------------------------------------------------------------------------------------
 	@RequestMapping(value="/projects/{idProject}/update",  method=RequestMethod.POST)
     public String updateProject(@Valid @ModelAttribute("project") ProjectDTO projectDTO, BindingResult result,
@@ -122,7 +127,7 @@ public class ProjectController {
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [POST]-> /project/id/delete || Delete the project.   
+	// [POST]-> /projects/id/delete || Delete the project.   
 	//-----------------------------------------------------------------------------------------------------
 	@RequestMapping(value="/projects/{idProject}/delete",  method=RequestMethod.POST)
     public String deleteProject(@PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
@@ -138,7 +143,53 @@ public class ProjectController {
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [POST]-> /project/id/delete || Delete the project.   
+	// [GET]-> /projects/id/states || Show info about project states and it allows several operations.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/states",  method=RequestMethod.GET)
+    public String showHistoryProject(@PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
+
+    	// Convert the string id to long
+    	Long id = Long.parseLong(idProject, 10);
+    	Project project = projectService.findProject(id);
+
+    	// Get the current state
+    	HistoryProject hp = projectService.findCurrentHistoryProject(project);
+    	HistoryProjectDTO currentState = HistoryProjectDTOConversor.toHistoryProjectDTO(hp);
+    	String stateDesc = hp.getState().getDescription();
+    	
+    	// Now find the project history states and convert it to DTO
+    	List<HistoryProject> hps = projectService.findHistoryProjectByProject(project);
+    	List<HistoryProjectDTO> hpsDTO = HistoryProjectDTOConversor.toHistoryProjectDTOList(hps);
+    	
+    	// Create the model
+    	model.addAttribute("idProject", id);
+    	model.addAttribute("currentState", currentState);
+    	model.addAttribute("stateDescription", stateDesc);
+    	model.addAttribute("historyProject", hpsDTO);
+		
+		return "project/states";
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/states/id/update || Update a history project   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/states/{idState}/update",  method=RequestMethod.POST)
+    public String updateHistoryProject(@Valid @ModelAttribute("historyProject") HistoryProjectDTO historyProjectDTO, 
+    		BindingResult result, @PathVariable String idProject, @PathVariable String idState, Model model) throws InstanceNotFoundException, InputValidationException {
+    	
+    	// Convert the object DTO to HistoryProject
+    	HistoryProject hp = HistoryProjectDTOConversor.toHistoryProject(historyProjectDTO);
+    	
+    	// Update the data
+    	projectService.updateHistoryProject(hp);
+		
+		return showHistoryProject(idProject, model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [GET]-> /projects/id/statics || Get all the statics of the project.   
 	//-----------------------------------------------------------------------------------------------------
 	@RequestMapping(value="/projects/{idProject}/statics",  method=RequestMethod.GET)
     public String showProjectStatics(@PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
@@ -154,5 +205,27 @@ public class ProjectController {
     	model.addAttribute("project", projectDTO);
 		
 		return "project/statics";
+	}
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [GET]-> /projects/id/managers || Get the project managers.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/managers",  method=RequestMethod.GET)
+    public String showProjectManagers(@PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
+
+    	// // Find this Project
+		Long id = Long.parseLong(idProject, 10);
+    	Project project = projectService.findProject(id);
+    	
+		// Find the managers of this Project
+		List<ProjectMgmt> managers = projectService.findProjectMgmtByProject(project);
+		
+		// Convert the object to DTO
+		List<ProjectMgmtDTO> managersDTO = ProjectMgmtDTOConversor.toProjectMgmtDTOList(managers);
+    	
+    	// Create the model
+    	model.addAttribute("managers", managersDTO);
+		
+		return "project/managers";
 	}
 }

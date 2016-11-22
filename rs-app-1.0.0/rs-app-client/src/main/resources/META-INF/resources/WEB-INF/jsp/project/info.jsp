@@ -5,16 +5,21 @@
 <html>
 <head>
 
-<title>Dashboard Template for Bootstrap</title>
+<title>Project information</title>
 
-<!-- Bootstrap core CSS -->
+<!-- Bootstrap core CSS
+========================================================== -->
 <link href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Bootstrap Datepicker -->
+<!-- Bootstrap Datepicker
+========================================================== -->
 <link href="/webjars/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.min.css" rel="stylesheet">
 
-<!-- Custom colors for the navigation bar -->
+
+<!-- Custom colors for the navigation and subsection bar 
+========================================================== -->
 <link href="/css/navbarColors.css" rel="stylesheet">
+<link href="/css/subsectionColors.css" rel="stylesheet">
 
 <style>
 body {
@@ -49,93 +54,6 @@ small {
     margin-left: 15px;
 }
 
-/* el latoooooooo */
-.container {
-	width: 800px;
-	overflow: hidden;
-	display: inline-block;
-}
-
-.side-bar {
-	background: #74AFAD;
-	position: absolute;
-	height: 100%;
-	width: 200px;
-	color: #fff;
-	transition: margin-left 0.5s;
-}
-
-.side-bar ul {
-	list-style: none;
-	padding: 0px;
-}
-
-.side-bar ul li.menu-head {
-	font-family: 'Lato', sans-serif;
-	padding: 20px;
-}
-
-.side-bar ul li.menu-head a {
-	color: #fff;
-	text-decoration: none;
-	height: 50px;
-}
-
-.side-bar ul .menu-head  a {
-	color: #fff;
-	text-decoration: none;
-	height: 50px;
-}
-
-.side-bar ul .menu li  a {
-	color: #fff;
-	text-decoration: none;
-	display: inline-table;
-	width: 100%;
-	padding-left: 20px;
-	padding-right: 20px;
-	padding-top: 10px;
-	padding-bottom: 10px;
-}
-
-.side-bar ul .menu li  a:hover {
-	border-left: 3px solid #ECECEA;
-	padding-left: 17px;
-	background: #fb9d4b;
-}
-
-.side-bar ul .menu li  a.active {
-	padding-left: 17px;
-	background: #D9853B;
-	border-left: 3px solid #ECECEA;
-}
-
-.side-bar ul .menu li  a.active:before {
-	content: "";
-	position: absolute;
-	width: 0;
-	height: 0;
-	border-top: 20px solid transparent;
-	border-bottom: 20px solid transparent;
-	border-left: 7px solid #D9853B;
-	margin-top: -10px;
-	margin-left: 180px;
-}
-
-.content {
-	padding-left: 200px;
-	transition: padding-left 0.5s;
-}
-
-.active>.side-bar {
-	margin-left: -150px;
-	transition: margin-left 0.5s;
-}
-
-.active>.content {
-	padding-left: 50px;
-	transition: padding-left 0.5s;
-}
 </style>
 </head>
 
@@ -185,7 +103,7 @@ small {
 									</a>
 								</li>
 								<li>
-									<a href="#"> Estado 
+									<a href="/projects/${project.id}/states"> Estado 
 										<span class="glyphicon glyphicon-check pull-right"></span>
 									</a>
 								</li>
@@ -209,7 +127,7 @@ small {
 							<li class="menu">
 								<ul>
 								<li>
-									<a href="#">Jefes de proyecto 
+									<a href="/projects/${project.id}/managers">Jefes de proyecto 
 										<span class="glyphicon glyphicon-briefcase pull-right"></span>
 									</a>
 								</li>
