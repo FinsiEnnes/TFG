@@ -110,12 +110,12 @@ small {
 									</a>
 								</li>
 								<li>
-									<a href="/projects/${idProject}/statics" class="active"> Estadísticas
+									<a href="/projects/${idProject}/statics"> Estadísticas
 										<span class="glyphicon glyphicon-stats pull-right"></span>
 									</a>
 								</li>
 								<li>
-									<a href="/projects/${idProject}/customer">Cliente
+									<a href="#" class="active">Cliente
 										<span class="glyphicon glyphicon-user pull-right"></span>
 									</a>
 								</li>
@@ -157,7 +157,17 @@ small {
 			<!-- Interface Project information
     		================================================== -->
 			<div class="col-md-9">
-
+			
+				<br><br>
+				<div class="row">
+					<div class="form-group col-md-7">
+						<div class="well">
+							<h4>
+								Atención<br>
+							</h4>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

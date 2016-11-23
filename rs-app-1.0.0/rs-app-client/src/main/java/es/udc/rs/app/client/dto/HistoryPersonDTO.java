@@ -6,7 +6,9 @@ public class HistoryPersonDTO {
 	private Long id;
 	private Long idPerson;
 	private String namePerson;
-	private Long idProfcatg;
+	private Long idProfCatg;
+	private String nameProfCatg;
+	private String levelProfCatg;
 	private String ini;
 	private String end;
 	private Integer sal;
@@ -19,12 +21,14 @@ public class HistoryPersonDTO {
 	}
 
 	public HistoryPersonDTO(Long id, Long idPerson, String namePerson,
-			Long idProfcatg, String ini, String end, Integer sal,
+			Long idProfCatg, String nameProfCatg, String levelProfCatg, String ini, String end, Integer sal,
 			Integer salExtra, String comment) {
 		this.id = id;
 		this.idPerson = idPerson;
 		this.namePerson = namePerson;
-		this.idProfcatg = idProfcatg;
+		this.idProfCatg = idProfCatg;
+		this.nameProfCatg = nameProfCatg;
+		this.levelProfCatg = levelProfCatg;
 		this.ini = ini;
 		this.end = end;
 		this.sal = sal;
@@ -54,13 +58,30 @@ public class HistoryPersonDTO {
 		this.namePerson = namePerson;
 	}
 	
-	public Long getIdProfcatg() {
-		return idProfcatg;
-	}
-	public void setIdProfcatg(Long idProfcatg) {
-		this.idProfcatg = idProfcatg;
+	public Long getIdProfCatg() {
+		return idProfCatg;
 	}
 	
+	public void setIdProfCatg(Long idProfCatg) {
+		this.idProfCatg = idProfCatg;
+	}
+	
+	public String getNameProfCatg() {
+		return nameProfCatg;
+	}
+
+	public void setNameProfCatg(String nameProfCatg) {
+		this.nameProfCatg = nameProfCatg;
+	}
+
+	public String getLevelProfCatg() {
+		return levelProfCatg;
+	}
+
+	public void setLevelProfCatg(String levelProfCatg) {
+		this.levelProfCatg = levelProfCatg;
+	}
+
 	public String getIni() {
 		return ini;
 	}
@@ -100,18 +121,11 @@ public class HistoryPersonDTO {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((comment == null) ? 0 : comment.hashCode());
-		result = prime * result + ((end == null) ? 0 : end.hashCode());
 		result = prime * result
 				+ ((idPerson == null) ? 0 : idPerson.hashCode());
 		result = prime * result
-				+ ((idProfcatg == null) ? 0 : idProfcatg.hashCode());
+				+ ((idProfCatg == null) ? 0 : idProfCatg.hashCode());
 		result = prime * result + ((ini == null) ? 0 : ini.hashCode());
-		result = prime * result
-				+ ((namePerson == null) ? 0 : namePerson.hashCode());
-		result = prime * result + ((sal == null) ? 0 : sal.hashCode());
-		result = prime * result
-				+ ((salExtra == null) ? 0 : salExtra.hashCode());
 		return result;
 	}
 
@@ -124,45 +138,20 @@ public class HistoryPersonDTO {
 		if (getClass() != obj.getClass())
 			return false;
 		HistoryPersonDTO other = (HistoryPersonDTO) obj;
-		if (comment == null) {
-			if (other.comment != null)
-				return false;
-		} else if (!comment.equals(other.comment))
-			return false;
-		if (end == null) {
-			if (other.end != null)
-				return false;
-		} else if (!end.equals(other.end))
-			return false;
 		if (idPerson == null) {
 			if (other.idPerson != null)
 				return false;
 		} else if (!idPerson.equals(other.idPerson))
 			return false;
-		if (idProfcatg == null) {
-			if (other.idProfcatg != null)
+		if (idProfCatg == null) {
+			if (other.idProfCatg != null)
 				return false;
-		} else if (!idProfcatg.equals(other.idProfcatg))
+		} else if (!idProfCatg.equals(other.idProfCatg))
 			return false;
 		if (ini == null) {
 			if (other.ini != null)
 				return false;
 		} else if (!ini.equals(other.ini))
-			return false;
-		if (namePerson == null) {
-			if (other.namePerson != null)
-				return false;
-		} else if (!namePerson.equals(other.namePerson))
-			return false;
-		if (sal == null) {
-			if (other.sal != null)
-				return false;
-		} else if (!sal.equals(other.sal))
-			return false;
-		if (salExtra == null) {
-			if (other.salExtra != null)
-				return false;
-		} else if (!salExtra.equals(other.salExtra))
 			return false;
 		return true;
 	}

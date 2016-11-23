@@ -28,12 +28,21 @@ public class HistoryPersonDTOConversor {
 		hpDTO.setId(hp.getId());
 		hpDTO.setIdPerson(hp.getPerson().getId());
 		hpDTO.setNamePerson(fullName);
-		hpDTO.setIdProfcatg(hp.getProfcatg().getId());
+		hpDTO.setIdProfCatg(hp.getProfcatg().getId());
+		hpDTO.setNameProfCatg(hp.getProfcatg().getName());
+		hpDTO.setLevelProfCatg(hp.getProfcatg().getLevel().getName());
 		hpDTO.setIni(ClientUtilMethods.convertDateToString(hp.getIni()));
-		hpDTO.setEnd(ClientUtilMethods.convertDateToString(hp.getEnd()));
 		hpDTO.setSal(hp.getSal());
 		hpDTO.setSalExtra(hp.getSalExtra());
 		hpDTO.setComment(hp.getComment());
+		
+		// If the end date is null, then this person has currently this professional category
+		if (hp.getEnd() == null) {
+			hpDTO.setEnd("Actualidad");
+		} else {
+			hpDTO.setEnd(ClientUtilMethods.convertDateToString(hp.getEnd()));
+		}
+		
 		
 		return hpDTO;
 	}

@@ -13,21 +13,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import es.udc.rs.app.client.conversor.HistoryPersonDTOConversor;
 import es.udc.rs.app.client.conversor.HistoryProjectDTOConversor;
 import es.udc.rs.app.client.conversor.ProjectDTOConversor;
 import es.udc.rs.app.client.conversor.ProjectMgmtDTOConversor;
 import es.udc.rs.app.client.conversor.ProvinceDTOConversor;
+import es.udc.rs.app.client.dto.HistoryPersonDTO;
 import es.udc.rs.app.client.dto.HistoryProjectDTO;
 import es.udc.rs.app.client.dto.ProjectDTO;
 import es.udc.rs.app.client.dto.ProjectMgmtDTO;
 import es.udc.rs.app.client.dto.ProvinceDTO;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
+import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.HistoryProject;
 import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.ProjectMgmt;
 import es.udc.rs.app.model.domain.Province;
 import es.udc.rs.app.model.service.customer.CustomerService;
+import es.udc.rs.app.model.service.person.PersonService;
 import es.udc.rs.app.model.service.project.ProjectService;
 
 @Controller
@@ -35,6 +39,9 @@ public class ProjectController {
 
 	@Autowired 
 	private ProjectService projectService;
+	
+	@Autowired 
+	private PersonService personService;
 	
 	@Autowired
 	private CustomerService customerService;
@@ -213,19 +220,102 @@ public class ProjectController {
 	@RequestMapping(value="/projects/{idProject}/managers",  method=RequestMethod.GET)
     public String showProjectManagers(@PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
 
-    	// // Find this Project
+    	// Find this Project
 		Long id = Long.parseLong(idProject, 10);
     	Project project = projectService.findProject(id);
     	
-		// Find the managers of this Project
+		// Find the managers of this Project and the current workers
 		List<ProjectMgmt> managers = projectService.findProjectMgmtByProject(project);
+		List<HistoryPerson> persons = personService.findCurrentHistoryPersons();
 		
-		// Convert the object to DTO
+		// Convert the objects to DTO
 		List<ProjectMgmtDTO> managersDTO = ProjectMgmtDTOConversor.toProjectMgmtDTOList(managers);
-    	
+		List<HistoryPersonDTO> personsDTO = HistoryPersonDTOConversor.toHistoryPersonDTOs(persons);
+		
     	// Create the model
+		model.addAttribute("idProject", id);
     	model.addAttribute("managers", managersDTO);
+    	model.addAttribute("persons", personsDTO);
 		
 		return "project/managers";
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/managers || Add a new manager to the project.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/managers",  method=RequestMethod.POST)
+    public String addProjectManagers(@Valid @ModelAttribute("projectMgmt") ProjectMgmtDTO projectMgmtDTO, 
+    		BindingResult result,@PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
+
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+    	// Convert the DTO to object
+		ProjectMgmt projectMgmt = ProjectMgmtDTOConversor.toProjectMgmt(projectMgmtDTO);
+		
+		// Create the new register of this manager
+		projectService.createProjectMgmt(projectMgmt);
+		
+		// Show the managers project again
+		return showProjectManagers(idProject, model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/managers/id/update || Update a manager to the project.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/managers/{idManager}/update",  method=RequestMethod.POST)
+    public String updateProjectManagers(@Valid @ModelAttribute("projectMgmt") ProjectMgmtDTO projectMgmtDTO, 
+    		BindingResult result,@PathVariable String idProject,  @PathVariable String idManager, Model model) throws InstanceNotFoundException, InputValidationException {
+
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+    	// Convert the DTO to object
+		ProjectMgmt projectMgmt = ProjectMgmtDTOConversor.toProjectMgmt(projectMgmtDTO);
+		
+		// Create the new register of this manager
+		projectService.updateProjectMgmt(projectMgmt);
+		
+		// Show the managers project again
+		return showProjectManagers(idProject, model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/managers/id/delete || Delete a new manager to the project.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/managers/{idManager}/delete",  method=RequestMethod.POST)
+    public String deleteProjectManager(@PathVariable String idProject, @PathVariable String idManager, Model model) 
+    		throws InstanceNotFoundException, InputValidationException {
+		
+    	// String to Long
+		Long id = Long.parseLong(idManager, 10);
+		
+		// Delete this manager
+		projectService.removeProjectMgmt(id);
+		
+		// Show the managers project again
+		return showProjectManagers(idProject, model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [GET]-> /projects/id/customer || Get the information of the project customer.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/customer",  method=RequestMethod.GET)
+    public String showCustomer(@PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
+
+    	// Find this Project
+		Long id = Long.parseLong(idProject, 10);
+    	Project project = projectService.findProject(id);
+		
+    	// Create the model
+		model.addAttribute("idProject", id);
+		
+		return "project/customerEmpty";
 	}
 }

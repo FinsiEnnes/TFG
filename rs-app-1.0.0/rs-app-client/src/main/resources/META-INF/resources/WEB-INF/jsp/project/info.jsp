@@ -113,7 +113,7 @@ small {
 									</a>
 								</li>
 								<li>
-									<a href="#">Cliente
+									<a href="/projects/${project.id}/customer">Cliente
 										<span class="glyphicon glyphicon-user pull-right"></span>
 									</a>
 								</li>

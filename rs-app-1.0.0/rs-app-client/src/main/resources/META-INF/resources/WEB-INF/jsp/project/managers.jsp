@@ -5,7 +5,7 @@
 <html>
 <head>
 
-<title>Dashboard Template for Bootstrap</title>
+<title>Project Managers</title>
 
 <!-- Bootstrap core CSS
 ========================================================== -->
@@ -57,6 +57,12 @@ small {
 }
 
 
+.table-responsive {
+    max-height:150px;
+    padding: 0px;
+}
+
+
 
 </style>
 </head>
@@ -77,7 +83,7 @@ small {
 		<!-- ========= MENU ========= -->
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
-				<li><a href="/project/${project.id}/planning"><font size="3">Planificación</font></a></li>
+				<li><a href="/project/${idProject}/planning"><font size="3">Planificación</font></a></li>
 				<li class="active"><a href="#"><font size="3">Proyecto</font></a></li>
 				<li><a href="#"><font size="3">Tarea</font></a></li>
 				<li><a href="#"><font size="3">Hito</font></a></li>
@@ -117,7 +123,7 @@ small {
 									</a>
 								</li>
 								<li>
-									<a href="#">Cliente
+									<a href="/projects/${idProject}/customer">Cliente
 										<span class="glyphicon glyphicon-user pull-right"></span>
 									</a>
 								</li>
@@ -168,14 +174,26 @@ small {
 				<hr width="110%">
 				<br>
 
+				<div class="row">
+					<div class="col-md-offset-10 col-md-2">
+						<button type="button" class="btn btn-success pull-right"
+							data-toggle="modal" data-target="#formManagerCreation">
+							<span class="glyphicon glyphicon-plus"></span> 
+							Nuevo jefe de proyecto
+						</button>
+					</div>
+				</div>
 
+				<br>
+				<div class="row">
+					<div class="form-group col-md-offset-1 col-md-11">
 					<table id="managers_table" class="table table-bordered"	data-toggle="table">
 						<thead>
 							<tr>
-								<th class="col-md-1">Nombre</th>
-								<th class="col-md-1">Categoría profesional</th>
-								<th class="col-md-1">Nivel</th>
-								<th class="col-md-1">Período como director</th>
+								<th class="col-md-3">Nombre</th>
+								<th class="col-md-3">Categoría profesional</th>
+								<th class="col-md-2">Nivel</th>
+								<th class="col-md-3">Período como director</th>
 								<th class="col-md-1">Acción</th>
 							</tr>
 						</thead>
@@ -197,20 +215,21 @@ small {
 									<table>
 										<tr>
 											<td>
-												<form action="/persons/${person.id}" method="get">
-													<button type="submit"
-														class="btn btn-info btn-xs center-block">
-														<span class="glyphicon glyphicon-info-sign"></span>
-													</button>
-												</form>
+												<button id="editManager" type="button"
+													class="btn btn-primary btn-xs center-block"
+													data-toggle="modal" data-target="#updateManager"
+													data-id="${manager.id}" data-name="${manager.nameManager}"
+													data-idproject="${idProject}" data-ini="${manager.ini}" 
+													data-end="${manager.end}"  data-idhp="${manager.idHistoryPerson}">
+													<span class="glyphicon glyphicon-edit"></span>
+												</button>
 											</td>
 											<td>
-												<button id="deletePerson" type="button"
+												<button id="deleteManager" type="button"
 													class="btn btn-danger btn-xs center-block"
 													data-toggle="modal" data-target="#confirmDelete"
-													data-id="${person.id}" data-name="${person.name}"
-													data-surname1="${person.surname1}"
-													data-surname2="${person.surname2}">
+													data-id="${manager.id}" data-name="${manager.nameManager}"
+													data-idproject="${idProject}">
 													<span class="glyphicon glyphicon-remove"></span>
 												</button>
 											</td>
@@ -221,6 +240,218 @@ small {
 							</c:forEach>
 						</tbody>
 					</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<!-- Modal: Creation of a new project manager
+    	================================================== -->
+		<div class="modal fade modal" id="formManagerCreation" role="dialog">
+			<div class="modal-dialog modal-lg">
+
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Creación de nuevo Jefe de Proyecto</h4>
+					</div>
+
+					<div class="modal-body">
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+								<h4>
+									Selección de persona<br> 
+									<small>
+										Asigna a una persona para el cargo de director de proyecto
+									</small>
+								</h4>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+							<div class="panel panel-default">
+                        	<div class="panel-body table-responsive">
+							<table id="personsTable" class="table table-bordered table-responsive" 
+								   data-toggle="table" data-click-to-select="true" data-single-select="true">
+								<thead>
+									<tr>
+										<th class="col-md-1" data-field="state" data-checkbox="true"></th>
+										<th class="col-md-1">ID</th>
+										<th class="col-md-4">Nombre</th>
+										<th class="col-md-3">Categoría profesional</th>
+										<th class="col-md-3">Nivel</th>
+									</tr>
+								</thead>
+								<tbody>
+									<c:forEach var="persons" items="${persons}">
+									<tr>
+										<td></td>
+										<td  class="text-info">${persons.id}</td>
+										<td>${persons.namePerson}</td>
+										<td>${persons.nameProfCatg}</td>
+										<td>${persons.levelProfCatg}</td>
+									</tr>
+									</c:forEach>
+								</tbody>
+							</table>
+							</div>
+							</div>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+								<h4>
+									Período como director<br> 
+									<small>
+										Período en el que esta persona ejercerá este cargo. No definir la fecha Fin
+										supone un período indefinido.
+									</small>
+								</h4>
+							</div>
+						</div>
+					
+						<form:form class="form" method="post" action='/projects/${idProject}/managers'
+							modelAttribute="projectMgmt" role="form" data-toggle="validator">
+
+							<!-- First row -->
+							<div class="form-group">
+								<div class="row">
+									<input type="hidden" name="idHistoryPerson" id="idHistoryPerson" required>
+								
+									<div class="form-group col-md-offset-3 col-md-3">
+										<label for="inputName" class="control-label">Inicio</label> 
+										<input type="text" class="form-control datepicker"
+									   		   data-format="dd/MM/yyyy" name="ini" id="ini"
+									   		   placeholder="dd/mm/aaaa" required>
+									</div>
+
+									<div class="form-group col-md-3">
+										<label for="inputSurname1" class="control-label">Fin </label> 
+										<input type="text" class="form-control datepicker"
+									   		   data-format="dd/MM/yyyy" name="end" id="end"
+									   		   placeholder="dd/mm/aaaa">
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<div class="row">
+								<button id="addButton" type="submit" class="btn btn-primary center-block" disabled >
+									Añadir
+								</button>
+								</div>
+							</div>
+						</form:form>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		
+		
+		<!-- Modal: Update manager
+    	================================================== -->
+		<div class="modal fade" id="updateManager" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Actualización de director</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+								<h4>
+									Período como director<br> 
+									<small>
+										Cambia las fechas durante las que esta persona ha dirigido el proyecto
+									</small>
+								</h4>
+							</div>
+						</div>
+					
+						<div class="row">
+							<div class="col-md-12">
+								<form:form class="form" method="post" id="updateManagerForm"
+									action='url'
+									modelAttribute="projectMgmt" role="form"
+									data-toggle="validator">
+
+									<!-- First row -->
+									<div class="form-group">
+										<div class="row">
+											<input type="hidden" name="id" id="idUpdate" required>
+												
+											<input type="hidden" name="idHistoryPerson"
+												id="idHistoryPersonUpdate" required>
+
+											<div class="form-group col-md-offset-3 col-md-3">
+												<label for="inputName" class="control-label">Inicio</label>
+												<input type="text" class="form-control datepicker"
+													data-format="dd/MM/yyyy" name="ini" id="iniUpdate"
+													placeholder="dd/mm/aaaa" required>
+											</div>
+
+											<div class="form-group col-md-3">
+												<label for="inputSurname1" class="control-label">Fin
+												</label> <input type="text" class="form-control datepicker"
+													data-format="dd/MM/yyyy" name="end" id="endUpdate"
+													placeholder="dd/mm/aaaa">
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<div class="row">
+											<button id="addButton" type="submit"
+												class="btn btn-primary center-block">
+												Guardar cambios
+											</button>
+										</div>
+									</div>
+								</form:form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Modal: Confirmation of project manager delete
+    	================================================== -->
+		<div class="modal fade" id="confirmDelete" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Confirmación de borrado</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-12">
+								<p id="confirmMsg" align="center"></p>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="row center-block">
+							<div class="col-md-offset-3 col-md-3">
+								<form id="confirmDeleteButton" name="confirmDeleteButton" action='' method="post">
+									<button type="submit" class="btn btn-primary btn-block">Si</button>
+								</form>
+							</div>
+							<div class="col-md-3">
+								<button type="button" class="btn btn-default btn-block"
+									data-dismiss="modal">No</button>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -244,6 +475,7 @@ small {
     ================================================== -->
 	<script src="/webjars/bootstrap-table/1.11.0/src/bootstrap-table.js"></script>
 	
+	
 	<!-- Bootstrap Datapicker initialation
     ================================================== -->	
 	<script>
@@ -252,6 +484,92 @@ small {
 				language : 'es'
 			});
 		})
+	</script>
+	
+	
+	<!-- Enable in the modal, the add button when the 
+		 user selects a Person to add. 
+    ================================================== -->	
+	<script type="text/javascript">
+		$(document).ready(function() { 
+		   $('#personsTable').change(function() { 
+			   
+			   // Get info of the table
+			   var json = JSON.parse(JSON.stringify($('#personsTable').bootstrapTable('getSelections')));
+			   var size = json.length;
+			   
+			   // If a option is selected then we can add a Person as manager
+			   if (size > 0) {
+				   var idPerson = json['0']['1'];
+				   document.getElementById("idHistoryPerson").value = idPerson;
+				   document.getElementById("addButton").disabled = false;
+			   } 
+			   else {
+				   document.getElementById("addButton").disabled = true;
+			   }		        
+		   }); 
+		});
+	</script>
+	
+	
+	<!-- Data transfer to the modal updateManager
+    ================================================== -->	
+	<script type='text/javascript'>
+		$(function() {
+			$('#updateManager').on('show.bs.modal', function(event) {
+				
+				// Button that triggered the modal
+				var button = $(event.relatedTarget)
+				var b = event.relatedTarget;
+				
+				// Only set the modal data if the event comes from the main edit botton
+				if (b != null)
+			    {		     	
+			        // Extract info from data attributes
+					var id = button.data('id');
+					var idproject = button.data('idproject');
+					var idhp = button.data('idhp');
+					var ini = button.data('ini');
+					var end = button.data('end');
+					
+					// Create the url 
+					var url = "/projects/" + idproject + "/managers/" + id + "/update";
+							
+					// Set the values at the modal components
+					document.getElementById('updateManagerForm').action = url;
+					document.getElementById('idUpdate').value = id;
+					document.getElementById('idHistoryPersonUpdate').value = idhp;
+					document.getElementById('iniUpdate').value = ini;
+					document.getElementById('endUpdate').value = end;
+			    } 
+
+			})
+		});
+	</script>
+	
+	
+	<!-- Data transfer to the modal confirmDelete
+    ================================================== -->	
+	<script type='text/javascript'>
+		$(function() {
+			$('#confirmDelete').on('show.bs.modal', function(event) {
+				
+				// Button that triggered the modal
+				var button = $(event.relatedTarget) 
+				
+				// Extract info from data attributes
+				var modal = $(this)
+				var id = button.data('id');
+				var idproject = button.data('idproject');
+				var name = button.data('name');
+				var url = "/projects/" + idproject + "/managers/" + id + "/delete";
+				var msg = "¿Seguro que desea eliminar el cargo de director a " + name + "?";
+						
+				// Set the values at the modal components
+				document.getElementById('confirmMsg').innerHTML = msg;
+				$('#confirmDeleteButton').get(0).setAttribute('action', url);
+			})
+		});
 	</script>
 
 </body>
