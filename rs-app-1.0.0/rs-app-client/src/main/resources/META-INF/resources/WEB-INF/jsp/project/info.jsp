@@ -317,9 +317,9 @@ small {
 				<div class="row">
 					<form action="/projects/${project.id}/delete" method="post">
 						<button type="submit" name="page" class="btn btn-danger center-block">
-						<span class="glyphicon glyphicon-remove"></span> Eliminar proyecto
-					</button>
-				</form>
+							<span class="glyphicon glyphicon-remove"></span> Eliminar proyecto
+						</button>
+					</form>
 				</div>
 
 				<br><br>

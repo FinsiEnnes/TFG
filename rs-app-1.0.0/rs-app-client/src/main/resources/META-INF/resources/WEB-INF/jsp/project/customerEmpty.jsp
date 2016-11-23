@@ -46,6 +46,10 @@ body {
     padding-top: 8px;
 }
 
+.subtitle {
+    padding-left: 12px;
+}
+
 /* poner color a los hr */
 hr { border-color: grey }
 
@@ -54,7 +58,14 @@ small {
     margin-left: 15px;
 }
 
+/* Increase size icons */
+.gi-8x{font-size: 8em;}
 
+/* Table on modal */
+.table-responsive {
+    max-height:150px;
+    padding: 0px;
+}
 
 </style>
 </head>
@@ -159,12 +170,114 @@ small {
 			<div class="col-md-9">
 			
 				<br><br>
+				
+				<!-- Warning of that project doesnt have customer 
+    			================================================== -->
 				<div class="row">
-					<div class="form-group col-md-7">
+					<div class="form-group col-md-offset-2 col-md-8">
 						<div class="well">
-							<h4>
-								Atención<br>
+							<div class="row">
+								<div class="form-group col-md-3">
+									<span class="glyphicon glyphicon-exclamation-sign gi-8x" aria-hidden="true"></span>
+								</div>
+
+								<div class="form-group col-md-9">
+									<h3>
+										Atención!<br>
+										<small>
+											Este proyecto todavía no cuenta con un cliente. Se trata de un
+										</small>
+										<small>
+										 	proyecto propio de la empresa, es decir es interno. 
+										</small>
+									</h3>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<!-- Available operations
+    			================================================== -->
+				<div class="row">
+					<h3>
+						Operaciones disponibles<br>
+					</h3>
+					<hr width="110%">
+					<div class="row">
+						<div class="form-group col-md-9">
+							<h4 class="subtitle">
+								Agregar cliente<br> 
+								<small> 
+									Al asignar a un nuevo cliente a este proyecto, este dejará de ser propio
+									de la empresa para cambiar su tipo a externo.
+								</small> 
 							</h4>
+						</div>
+					</div>
+					<div class="row">
+						<button type="submit" name="page" class="btn btn-success center-block"
+								data-toggle="modal" data-target="#addCustomer">
+								<span class="glyphicon glyphicon-plus"></span>
+								Añadir cliente
+						</button>
+					</div>
+				</div>
+				
+				<!-- Add new client
+    			================================================== -->
+    			<div class="modal fade" id="addCustomer" role="dialog">
+					<div class="modal-dialog modal-lg">
+						<!-- Modal content-->
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title">Añadir cliente</h4>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+									<div class="form-group col-md-offset-1 col-md-10">
+										<h4>
+											Selección de cliente<br> 
+											<small>
+												Asigna a una de las siguientes empresas como cliente de tu proyecto
+											</small>
+										</h4>
+									</div>
+								</div>
+								
+								<div class="row">
+									<div class="form-group col-md-offset-1 col-md-10">
+									<div class="panel panel-default">
+		                        	<div class="panel-body table-responsive">
+									<table id="personsTable" class="table table-bordered table-responsive" 
+										   data-toggle="table" data-click-to-select="true" data-single-select="true">
+										<thead>
+											<tr>
+												<th class="col-md-1" data-field="state" data-checkbox="true"></th>
+												<th class="col-md-1">ID</th>
+												<th class="col-md-4">Nombre</th>
+												<th class="col-md-3">Categoría profesional</th>
+												<th class="col-md-3">Nivel</th>
+											</tr>
+										</thead>
+										<tbody>
+											<c:forEach var="persons" items="${persons}">
+											<tr>
+												<td></td>
+												<td  class="text-info">${persons.id}</td>
+												<td>${persons.namePerson}</td>
+												<td>${persons.nameProfCatg}</td>
+												<td>${persons.levelProfCatg}</td>
+											</tr>
+											</c:forEach>
+										</tbody>
+									</table>
+									</div>
+									</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
