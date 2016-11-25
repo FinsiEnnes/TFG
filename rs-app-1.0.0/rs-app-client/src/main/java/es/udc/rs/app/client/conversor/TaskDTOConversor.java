@@ -8,6 +8,7 @@ import es.udc.rs.app.client.dto.TaskDTO;
 import es.udc.rs.app.client.util.ClientUtilMethods;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.HistoryPerson;
+import es.udc.rs.app.model.domain.Person;
 import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Priority;
 import es.udc.rs.app.model.domain.State;
@@ -27,11 +28,35 @@ public class TaskDTOConversor {
 		TaskDTOConversor.personService = personService;
     }
 	
+	public static TaskDTO toTaskDTO(Task task) {
+		
+		TaskDTO taskDTO = new TaskDTO();
+		
+		// Create the name of the task responsible
+		Person person = task.getHistoryPerson().getPerson();
+		String nameResponsible = person.getName() + " " + person.getSurname1() + " " + person.getSurname2();
+		
+		// Set the basic task information
+		taskDTO.setId(task.getId());
+		taskDTO.setIdPhase(task.getPhase().getId());
+		taskDTO.setNamePhase(task.getPhase().getName());
+		taskDTO.setName(task.getName());
+		taskDTO.setComment(task.getComment());
+		taskDTO.setIdState(task.getState().getId());
+		taskDTO.setState(task.getState().getName());
+		taskDTO.setIdPriority(task.getPriority().getId());
+		taskDTO.setPriority(task.getPriority().getName());
+		taskDTO.setIdResponsible(task.getHistoryPerson().getId());
+		taskDTO.setNameResponsible(nameResponsible);
+		
+		return taskDTO;
+	}
+	
 	public static Task toTask(TaskDTO taskDTO) throws InstanceNotFoundException {
 		
 		// First get the complex object 
 		Phase phase = projectService.findPhase(taskDTO.getIdPhase());
-		HistoryPerson manager = personService.findHistoryPerson(taskDTO.getIdManager());
+		HistoryPerson manager = personService.findHistoryPerson(taskDTO.getIdResponsible());
 		Priority priority = projectService.findPriority(taskDTO.getIdPriority());
 		State state = projectService.findState(taskDTO.getIdState());
 		

@@ -12,8 +12,8 @@ public class TaskDTO {
 	private String state;
 	private String idPriority;
 	private String priority;
-	private Long idManager;
-	private String nameManager;
+	private Long idResponsible;
+	private String nameResponsible;
 	private Integer daysPlan;
 	private Integer daysReal;
 	private String iniPlan;
@@ -90,18 +90,18 @@ public class TaskDTO {
 		this.priority = priority;
 	}
 	
-	public Long getIdManager() {
-		return idManager;
+	public Long getIdResponsible() {
+		return idResponsible;
 	}
-	public void setIdManager(Long idManager) {
-		this.idManager = idManager;
+	public void setIdResponsible(Long idResponsible) {
+		this.idResponsible = idResponsible;
 	}
 	
-	public String getNameManager() {
-		return nameManager;
+	public String getNameResponsible() {
+		return nameResponsible;
 	}
-	public void setNameManager(String nameManager) {
-		this.nameManager = nameManager;
+	public void setNameResponsible(String nameResponsible) {
+		this.nameResponsible = nameResponsible;
 	}
 	
 	public Integer getDaysPlan() {

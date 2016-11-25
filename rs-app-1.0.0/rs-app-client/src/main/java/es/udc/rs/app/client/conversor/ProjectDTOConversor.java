@@ -54,29 +54,7 @@ public class ProjectDTOConversor {
 		projectDTO.setCountry(project.getProvince().getCountry().getName());
 		projectDTO.setBudget(project.getBudget());
 		
-		// Statics of the project
-		projectDTO.setIniPlan(ClientUtilMethods.convertDateToString(project.getIniPlan()));
-		projectDTO.setIniReal(ClientUtilMethods.convertDateToString(project.getIniReal()));
-		projectDTO.setIniVar(betweenDates(project.getIniPlan(),project.getIniReal()));
-		projectDTO.setEndPlan(ClientUtilMethods.convertDateToString(project.getEndPlan()));
-		projectDTO.setEndReal(ClientUtilMethods.convertDateToString(project.getEndReal()));
-		projectDTO.setEndVar(betweenDates(project.getEndPlan(), project.getEndReal()));
-		projectDTO.setDaysPlan(project.getDaysPlan());
-		projectDTO.setDaysReal(project.getDaysReal());
-		projectDTO.setDaysVar(Math.abs(project.getDaysPlan() - project.getDaysReal()));
-		projectDTO.setHoursPlan(project.getHoursPlan());
-		projectDTO.setHoursReal(project.getHoursReal());
-		projectDTO.setHoursVar(Math.abs(project.getHoursPlan() - project.getHoursReal()));
-		projectDTO.setCostPlan(project.getCostPlan());
-		projectDTO.setCostReal(project.getCostReal());
-		projectDTO.setCostVar(Math.abs(project.getCostPlan() - project.getCostReal()));
-		projectDTO.setProfitPlan(project.getProfitPlan());
-		projectDTO.setProfitReal(project.getProfitReal());
-		projectDTO.setProfitVar(Math.abs(project.getProfitPlan() - project.getProfitReal()));
-		projectDTO.setLoss(project.getLoss());
-		projectDTO.setProgress(project.getProgress());
-		
-		// Customer contact
+		// We set the customer attributes if there is a project customer
 		if (project.getCustomer() != null) {
 			projectDTO.setIdCustomer(project.getCustomer().getId());
 			projectDTO.setNameContact(project.getNameContact());
@@ -85,6 +63,53 @@ public class ProjectDTOConversor {
 			projectDTO.setEmailContact(project.getEmailContact());
 		}
 		
+		// Statics of the project. Calculate the variation only if the statics aren't null
+		// Days
+		projectDTO.setDaysPlan(project.getDaysPlan());
+		projectDTO.setDaysReal(project.getDaysReal());
+		if (project.getDaysPlan()!=null && project.getDaysReal()!=null) {
+			projectDTO.setDaysVar(Math.abs(project.getDaysPlan() - project.getDaysReal()));
+		}
+		
+		// Initial date project
+		projectDTO.setIniPlan(ClientUtilMethods.convertDateToString(project.getIniPlan()));
+		projectDTO.setIniReal(ClientUtilMethods.convertDateToString(project.getIniReal()));
+		if (project.getIniPlan()!=null && project.getIniReal()!=null) {
+			projectDTO.setIniVar(betweenDates(project.getIniPlan(),project.getIniReal()));
+		}
+		
+		// End date project
+		projectDTO.setEndPlan(ClientUtilMethods.convertDateToString(project.getEndPlan()));
+		projectDTO.setEndReal(ClientUtilMethods.convertDateToString(project.getEndReal()));
+		if (project.getEndPlan()!=null && project.getEndReal()!=null) {
+			projectDTO.setEndVar(betweenDates(project.getEndPlan(), project.getEndReal()));
+		}
+
+		// Hours 
+		projectDTO.setHoursPlan(project.getHoursPlan());
+		projectDTO.setHoursReal(project.getHoursReal());
+		if (project.getHoursPlan()!=null && project.getHoursReal()!=null) {
+			projectDTO.setHoursVar(Math.abs(project.getHoursPlan() - project.getHoursReal()));
+		}
+		
+		// Cost
+		projectDTO.setCostPlan(project.getCostPlan());
+		projectDTO.setCostReal(project.getCostReal());
+		if (project.getCostPlan()!=null && project.getCostReal()!=null) {
+			projectDTO.setCostVar(Math.abs(project.getCostPlan() - project.getCostReal()));
+		}
+		
+		// Profit
+		projectDTO.setProfitPlan(project.getProfitPlan());
+		projectDTO.setProfitReal(project.getProfitReal());
+		if (project.getProfitPlan()!=null && project.getProfitReal()!=null) {
+			projectDTO.setProfitVar(Math.abs(project.getProfitPlan() - project.getProfitReal()));
+		}
+		
+		// Losses project and progress
+		projectDTO.setLoss(project.getLoss());
+		projectDTO.setProgress(project.getProgress());
+
 		// Return the converted object
 		return projectDTO;
 	}
