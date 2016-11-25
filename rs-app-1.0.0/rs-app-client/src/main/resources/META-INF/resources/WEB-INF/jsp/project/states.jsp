@@ -170,8 +170,8 @@ small {
 					<dl class="dl-horizontal">
 						<dt><font size="3">Estado</font></dt>
 						<dd><font size="3">${currentState.nameState}</font></dd>
-
 					</dl>
+					
 					<dl class="dl-horizontal">
 						<dt><font size="3">Descripción</font></dt>
 						<dd><font size="3">${stateDescription}</font></dd>

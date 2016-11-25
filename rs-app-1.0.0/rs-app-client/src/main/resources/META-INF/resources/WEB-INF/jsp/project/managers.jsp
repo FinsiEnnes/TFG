@@ -15,6 +15,8 @@
 ========================================================== -->
 <link href="/webjars/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.min.css" rel="stylesheet">
 
+<!-- Bootstrap Table
+========================================================== -->
 <link href="/webjars/bootstrap-table/1.11.0/src/bootstrap-table.css" rel="stylesheet">
 
 
@@ -56,7 +58,7 @@ small {
     margin-left: 15px;
 }
 
-
+/* Neccesar to adapt a table in the modal */
 .table-responsive {
     max-height:150px;
     padding: 0px;
@@ -187,7 +189,7 @@ small {
 				<br>
 				<div class="row">
 					<div class="form-group col-md-offset-1 col-md-11">
-					<table id="managers_table" class="table table-bordered"	data-toggle="table">
+					<table id="managers_table" class="table table-bordered"	data-toggle="table" data-height="280">
 						<thead>
 							<tr>
 								<th class="col-md-3">Nombre</th>
@@ -377,8 +379,7 @@ small {
 						<div class="row">
 							<div class="col-md-12">
 								<form:form class="form" method="post" id="updateManagerForm"
-									action='url'
-									modelAttribute="projectMgmt" role="form"
+									action='url' modelAttribute="projectMgmt" role="form"
 									data-toggle="validator">
 
 									<!-- First row -->
@@ -420,6 +421,7 @@ small {
 				</div>
 			</div>
 		</div>
+		
 		
 		<!-- Modal: Confirmation of project manager delete
     	================================================== -->

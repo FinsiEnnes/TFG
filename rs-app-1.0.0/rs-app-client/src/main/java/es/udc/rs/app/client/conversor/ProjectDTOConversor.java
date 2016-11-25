@@ -76,6 +76,15 @@ public class ProjectDTOConversor {
 		projectDTO.setLoss(project.getLoss());
 		projectDTO.setProgress(project.getProgress());
 		
+		// Customer contact
+		if (project.getCustomer() != null) {
+			projectDTO.setIdCustomer(project.getCustomer().getId());
+			projectDTO.setNameContact(project.getNameContact());
+			projectDTO.setSurnameContact(project.getSurnameContact());
+			projectDTO.setNifContact(project.getNifContact());
+			projectDTO.setEmailContact(project.getEmailContact());
+		}
+		
 		// Return the converted object
 		return projectDTO;
 	}

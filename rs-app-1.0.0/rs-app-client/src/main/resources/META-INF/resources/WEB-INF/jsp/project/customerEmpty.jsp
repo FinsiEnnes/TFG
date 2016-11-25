@@ -15,6 +15,9 @@
 ========================================================== -->
 <link href="/webjars/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.min.css" rel="stylesheet">
 
+<!-- Bootstrap Table
+========================================================== -->
+<link href="/webjars/bootstrap-table/1.11.0/src/bootstrap-table.css" rel="stylesheet">
 
 <!-- Custom colors for the navigation and subsection bar 
 ========================================================== -->
@@ -46,25 +49,48 @@ body {
     padding-top: 8px;
 }
 
+/* Left padding for subtitles */
 .subtitle {
     padding-left: 12px;
+}
+
+/* Left padding in the small attribute */
+small {
+    margin-left: 15px;
 }
 
 /* poner color a los hr */
 hr { border-color: grey }
 
-/* sangria de los small */
-small {
-    margin-left: 15px;
-}
 
 /* Increase size icons */
 .gi-8x{font-size: 8em;}
 
 /* Table on modal */
 .table-responsive {
-    max-height:150px;
+    max-height:154px;
     padding: 0px;
+}
+
+/* Add scrolls in the popup */
+.modal .modal-body {
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+/* Necessary to put the icons inside the inputs */
+.right-inner-addon {
+	position: relative;
+}
+
+.right-inner-addon input {
+	padding-right: 30px;
+}
+
+.right-inner-addon i {
+	position: absolute;
+	right: 0px;
+	padding: 10px 12px;
 }
 
 </style>
@@ -188,7 +214,7 @@ small {
 											Este proyecto todavía no cuenta con un cliente. Se trata de un
 										</small>
 										<small>
-										 	proyecto propio de la empresa, es decir es interno. 
+										 	proyecto propio, por lo que el proyecto es de tipo interno. 
 										</small>
 									</h3>
 								</div>
@@ -210,7 +236,7 @@ small {
 								Agregar cliente<br> 
 								<small> 
 									Al asignar a un nuevo cliente a este proyecto, este dejará de ser propio
-									de la empresa para cambiar su tipo a externo.
+									para cambiar su tipo a externo.
 								</small> 
 							</h4>
 						</div>
@@ -250,25 +276,31 @@ small {
 									<div class="form-group col-md-offset-1 col-md-10">
 									<div class="panel panel-default">
 		                        	<div class="panel-body table-responsive">
-									<table id="personsTable" class="table table-bordered table-responsive" 
+									<table id="customerTable" class="table table-bordered table-responsive" 
 										   data-toggle="table" data-click-to-select="true" data-single-select="true">
 										<thead>
 											<tr>
 												<th class="col-md-1" data-field="state" data-checkbox="true"></th>
 												<th class="col-md-1">ID</th>
-												<th class="col-md-4">Nombre</th>
-												<th class="col-md-3">Categoría profesional</th>
-												<th class="col-md-3">Nivel</th>
+												<th class="col-md-2">Nombre</th>
+												<th class="col-md-2">País</th>
+												<th class="col-md-2">Provincia/Estado</th>
+												<th class="col-md-2">Tipo negocio</th>
+												<th class="col-md-1">Categoría</th>
+												<th class="col-md-1">Tamaño</th>
 											</tr>
 										</thead>
 										<tbody>
-											<c:forEach var="persons" items="${persons}">
+											<c:forEach var="customer" items="${customers}">
 											<tr>
 												<td></td>
-												<td  class="text-info">${persons.id}</td>
-												<td>${persons.namePerson}</td>
-												<td>${persons.nameProfCatg}</td>
-												<td>${persons.levelProfCatg}</td>
+												<td  class="text-info">${customer.id}</td>
+												<td>${customer.name}</td>
+												<td>${customer.country}</td>
+												<td>${customer.province}</td>
+												<td>${customer.type}</td>
+												<td>${customer.category}</td>
+												<td>${customer.size}</td>
 											</tr>
 											</c:forEach>
 										</tbody>
@@ -276,6 +308,67 @@ small {
 									</div>
 									</div>
 									</div>
+								</div>
+								
+								<div class="row">
+									<div class="form-group col-md-offset-1 col-md-10">
+										<h4>
+											Datos de contacto<br> 
+											<small>
+												Datos de la persona que hablará en nombre de la empresa cliente
+											</small>
+										</h4>
+									</div>
+								</div>
+								
+								<div class="row">
+									<div class="col-md-11">
+									<form:form action='/projects/${idProject}/customer' method="post" 
+											   modelAttribute="project" role="form" data-toggle="validator">
+										<input type="hidden" name="idCustomer" id="idCustomer">
+										
+										<div class="row">
+											<div class="form-group col-md-offset-2 col-md-4">
+												<label class="control-label">Nombre</label>
+												<input type="text" class="form-control"
+													name="nameContact" id="nameContact" required>
+											</div>
+
+											<div class="form-group col-md-4">
+												<label class="control-label">Apellidos</label>
+												<input type="text" class="form-control"
+													   name="surnameContact" id="surnameContact" required>
+											</div>
+										</div>
+										
+										<div class="row">
+											<div class="form-group col-md-offset-2 col-md-4 has-feedback">
+												<label class="control-label">DNI</label>
+												<div class="right-inner-addon">
+													<input type="text" class="form-control" name="nifContact" 
+														    id="nifContact" pattern="^(\d{8})([A-Z]{1})$" 
+														    maxlength="9" placeholder="12345678A" required> 
+													<span class="glyphicon form-control-feedback"></span>
+												</div>
+											</div>
+
+											<div class="form-group col-md-4 has-feedback">
+												<label class="control-label">Email</label>
+												<div class="right-inner-addon">
+													<input type="email" class="form-control" name="emailContact"
+														   id="emailContact" placeholder="ejemplo@dominio.com"
+														   required>
+													<span class="glyphicon form-control-feedback"></span>
+												</div>
+											</div>
+										</div>
+										
+										<button id="addButton" type="submit" disabled
+											class="btn btn-primary center-block">
+											Añadir
+										</button>
+									</form:form>
+									</div>	
 								</div>
 							</div>
 						</div>
@@ -290,24 +383,37 @@ small {
 	<script src="/webjars/jquery/1.9.1/jquery.min.js"></script>
 	<script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 	
-	<!-- Bootstrap Datapicker
-    ================================================== -->
-	<script src="/webjars/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
-	<script	src="/webjars/bootstrap-datepicker/1.6.1/locales/bootstrap-datepicker.es.min.js"></script>
-	
 	<!-- Bootstrap Validator
     ================================================== -->
 	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.js"></script>
 	<script src="/webjars/bootstrap-validator/0.11.5/dist/validator.min.js"></script>
 	
-	<!-- Bootstrap Datapicker initialation
+	<!-- Bootstrap Table
+    ================================================== -->
+	<script src="/webjars/bootstrap-table/1.11.0/src/bootstrap-table.js"></script>
+	
+	
+	<!-- Enable the add button when a customer is selected 
     ================================================== -->	
-	<script>
-		$(document).ready(function() {
-			$('.datepicker').datepicker({
-				language : 'es'
-			});
-		})
+	<script type="text/javascript">
+		$(document).ready(function() { 
+		   $('#customerTable').change(function() { 
+			   
+			   // Get info of the table
+			   var json = JSON.parse(JSON.stringify($('#customerTable').bootstrapTable('getSelections')));
+			   var size = json.length;
+			   
+			   // If a option is selected then we can add a Person as manager
+			   if (size > 0) {
+				   var idPerson = json['0']['1'];
+				   document.getElementById("idCustomer").value = idPerson;
+				   document.getElementById("addButton").disabled = false;
+			   } 
+			   else {
+				   document.getElementById("addButton").disabled = true;
+			   }		        
+		   }); 
+		});
 	</script>
 
 </body>
