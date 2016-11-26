@@ -49,6 +49,22 @@ public class TaskDTOConversor {
 		taskDTO.setIdResponsible(task.getHistoryPerson().getId());
 		taskDTO.setNameResponsible(nameResponsible);
 		
+		// Set the statics info
+		taskDTO.setIniPlan(ClientUtilMethods.convertDateToString(task.getIniPlan()));
+		taskDTO.setIniReal(ClientUtilMethods.convertDateToString(task.getIniReal()));
+		
+		taskDTO.setEndPlan(ClientUtilMethods.convertDateToString(task.getEndPlan()));
+		taskDTO.setEndReal(ClientUtilMethods.convertDateToString(task.getEndReal()));
+		
+		taskDTO.setDaysPlan(task.getDaysPlan());
+		taskDTO.setDaysReal(task.getDaysReal());
+		
+		taskDTO.setCostPlan(task.getCostPlan());
+		taskDTO.setCostReal(task.getCostReal());
+		
+		taskDTO.setHoursPlan(task.getHoursPlan());
+		taskDTO.setHoursReal(task.getHoursReal());
+		
 		return taskDTO;
 	}
 	

@@ -19,7 +19,6 @@
 ========================================================== -->
 <link href="/webjars/bootstrap-table/1.11.0/src/bootstrap-table.css" rel="stylesheet">
 
-
 <!-- Custom colors for the navigation and subsection bar 
 ========================================================== -->
 <link href="/css/navbarColors.css" rel="stylesheet">
