@@ -457,6 +457,31 @@ public class ProjectServiceImpl implements ProjectService {
 		return freeDays;
 	}
 	
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public List<FreeDay> findFreeDayDistinctThisProject(Project project) throws InstanceNotFoundException {
+		
+		List<FreeDay> freeDays = new ArrayList<FreeDay>();
+		
+		// First find the Project
+		findInstanceService.findProject(project);
+		
+		// Find projectFreeDays by the idProject
+		try{
+			freeDays = projectFreeDayDAO.findDistinctThisProject(project);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the results
+		log.info(ModelConstants.FIND_ALL + freeDays.size() + " registred FreeDays distinct of the "
+				 + " Project with idProject[" + project.getId() + "]");
+		return freeDays;
+	}
+	
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")

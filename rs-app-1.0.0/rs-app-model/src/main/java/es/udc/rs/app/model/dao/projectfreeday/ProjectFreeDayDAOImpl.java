@@ -88,6 +88,26 @@ public class ProjectFreeDayDAOImpl implements ProjectFreeDayDAO {
 		
 		return freeDays;
 	}
+	
+	@Override
+	public List<FreeDay> findDistinctThisProject(Project project) {
+		// Create the string query
+		String queryString = "FROM FreeDay F "
+						   + "WHERE F.id NOT IN (SELECT P.freeDay "
+						   					  + "FROM ProjectFreeDay P "
+						   					  + "WHERE P.project = :project)";
+		
+		// Execute the query
+		Query query = sessionFactory.getCurrentSession().createQuery(queryString);
+		query.setParameter("project", project);
+		
+		// Get and return the result
+		@SuppressWarnings("unchecked")
+		List<FreeDay> freeDays = (List<FreeDay>) query.list();
+		
+		// Return the result
+		return freeDays;
+	}
 
 	@Override
 	public boolean ProjectFreeDayExists(Long id) {

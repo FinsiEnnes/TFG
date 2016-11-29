@@ -15,6 +15,8 @@ public interface ProjectFreeDayDAO {
 	public List<ProjectFreeDay> findAll();
 	
 	public List<FreeDay> findByProject(Project project);
+	
+	public List<FreeDay> findDistinctThisProject(Project project);
 			
 	public boolean ProjectFreeDayExists(Long id);
 	

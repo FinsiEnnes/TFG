@@ -115,9 +115,9 @@ public class PredecessorTest {
 		log.info("");
 		log.info("===> Correct links between Task");
 		// ================================================================================	
-		Predecessor p1 = new Predecessor(task1, task2, fc, 0);
-		Predecessor p2 = new Predecessor(task1, task3, fc, 3);
-		Predecessor p3 = new Predecessor(task3, task2, ff, 1);
+		Predecessor p1 = new Predecessor(task1, task2, fc);
+		Predecessor p2 = new Predecessor(task1, task3, fc);
+		Predecessor p3 = new Predecessor(task3, task2, ff);
 		
 		projectService.createPredecessor(p1);
 		projectService.createPredecessor(p2);
@@ -150,19 +150,6 @@ public class PredecessorTest {
 		predecessors = projectService.findPredecessorByTask(task3);
 		assertEquals(1, predecessors.size());
 		assertEquals(p3, predecessors.get(0));
-		
-		
-		// ================================================================================
-		log.info("");
-		log.info("===> Correct update of Predecessor");
-		// ================================================================================	
-		p1.setPostposition(2);
-		projectService.updatePredecessor(p1);
-		
-		otherPred = projectService.findPredecessor(p1.getId());
-		assertEquals(p1, otherPred);
-		Integer num = 2;
-		assertEquals(num, otherPred.getPostposition());
 		
 		
 		// ================================================================================
@@ -214,7 +201,7 @@ public class PredecessorTest {
 		Task task5 = new Task(phase, "Task 5", plan, m, testUtils.hp1, 8);
 		projectService.createTask(task5);
 		
-		Predecessor p5 = new Predecessor(task5, task2, ff, 1);
+		Predecessor p5 = new Predecessor(task5, task2, ff);
 		incorrectCreate(p5);
 		
 		projectService.removeProject(otherProject.getId());
@@ -226,7 +213,7 @@ public class PredecessorTest {
 		task2.setState(canc);
 		projectService.updateTask(task2);
 		
-		Predecessor p6 = new Predecessor(task2, task3, ff, 1);
+		Predecessor p6 = new Predecessor(task2, task3, ff);
 		incorrectCreate(p6);
 		
 	}

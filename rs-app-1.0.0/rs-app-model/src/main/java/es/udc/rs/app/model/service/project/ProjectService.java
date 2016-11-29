@@ -55,6 +55,8 @@ public interface ProjectService {
 	
 	public List<FreeDay> findProjectFreeDayByProject(Project project) throws InstanceNotFoundException;
 	
+	public List<FreeDay> findFreeDayDistinctThisProject(Project project) throws InstanceNotFoundException;
+	
 	public void updateProjectFreeDay(ProjectFreeDay projectFreeDay) throws InstanceNotFoundException;
 	
 	public void removeProjectFreeDay(Long id) throws InstanceNotFoundException;

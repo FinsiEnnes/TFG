@@ -20,10 +20,9 @@ public class Predecessor {
 	private Task task;
 	private Task taskPred;
 	private TaskLinkType linkType;
-	private Integer postposition;
 	
 	// Primary key: id.
-	// Not null attribute: task, taskPred, linkType, postposition.
+	// Not null attribute: task, taskPred, linkType.
 	// Unique attribute: (task, taskPred).
 	// Business key: task, taskPred.
 	
@@ -31,19 +30,17 @@ public class Predecessor {
 		
 	}
 	
-	public Predecessor(Long id, Task task, Task taskPred, TaskLinkType linkType, Integer postposition) {
+	public Predecessor(Long id, Task task, Task taskPred, TaskLinkType linkType) {
 		this.id = id;
 		this.task = task;
 		this.taskPred = taskPred;
 		this.linkType = linkType;
-		this.postposition = postposition;
 	}
 	
-	public Predecessor(Task task, Task taskPred, TaskLinkType linkType, Integer postposition) {
+	public Predecessor(Task task, Task taskPred, TaskLinkType linkType) {
 		this.task = task;
 		this.taskPred = taskPred;
 		this.linkType = linkType;
-		this.postposition = postposition;
 	}
 
 	@Id
@@ -87,15 +84,6 @@ public class Predecessor {
 		this.linkType = linkType;
 	}
 
-	@Column(name = "postposition", nullable = true)
-	public Integer getPostposition() {
-		return postposition;
-	}
-
-	public void setPostposition(Integer postposition) {
-		this.postposition = postposition;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -131,8 +119,7 @@ public class Predecessor {
 	@Override
 	public String toString() {
 		return "Predecessor [id=" + id + ", idTask=" + task.getId() + ", idTaskPred="
-				+ taskPred.getId() + ", idTaskLinkType=" + linkType.getId() + ", postposition="
-				+ postposition + "]";
+				+ taskPred.getId() + ", idTaskLinkType=" + linkType.getId() + "]";
 	}
 
 }
