@@ -6,6 +6,7 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import es.udc.rs.app.model.domain.AssignmentProfile;
 import es.udc.rs.app.model.domain.Milestone;
 import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Predecessor;
@@ -265,4 +266,88 @@ public class JsonConversor {
     	
     	return mainObj;
     }
+    
+	//-----------------------------------------------------------------------------------------------------
+	// Create a JSON with the data of Task to show it in Tables. 
+	//-----------------------------------------------------------------------------------------------------
+	@SuppressWarnings("unchecked")
+	private static JSONObject getTaskJSONForTables(Task task) {
+		
+		JSONObject jsonObject = new JSONObject();
+    	SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
+
+    	jsonObject.put("id", task.getId());
+    	jsonObject.put("phase", task.getPhase().getId());
+    	jsonObject.put("name", task.getName());
+    	
+    	// The start and duration can be planned or real data
+    	String ini = ((task.getIniReal()!=null) ? fmt.format(task.getIniReal()) : fmt.format(task.getIniPlan()));
+    	Integer days = ((task.getDaysReal()!=null) ?  task.getDaysReal() :  task.getDaysPlan());
+    	
+    	jsonObject.put("ini", ini);
+    	jsonObject.put("days", days);
+    	
+    	return jsonObject;
+	}
+	
+	
+    @SuppressWarnings("unchecked")
+ 	public static JSONArray getTaskAsJSONForTables(List<Task> tasks) {
+    	
+    	int nTasks = tasks.size();
+		
+		// The jsonObject each element of the previous arrays
+		JSONObject jsonObject;
+		
+		// In this jsonArray we add the data of phases, tasks and milestones as jsonObjects
+		JSONArray jsonArrayData = new JSONArray();
+		
+		// Convert the Tasks info
+		for(int i=0; i<nTasks; i++){			
+			jsonObject = getTaskJSONForTables(tasks.get(i));
+			jsonArrayData.add(jsonObject);
+		}
+    	
+    	return jsonArrayData;
+    }
+    
+    
+	//-----------------------------------------------------------------------------------------------------
+	// Create a JSON with the data of AssignmentProfiles to show it in Tables. 
+	//-----------------------------------------------------------------------------------------------------
+	@SuppressWarnings("unchecked")
+	private static JSONObject getAssignmentProfileJSONForTables(AssignmentProfile ap) {
+		
+		JSONObject jsonObject = new JSONObject();
+    	Integer totalHours = ap.getUnits() * ap.getHoursPerPerson();
+
+    	jsonObject.put("id", ap.getId());
+    	jsonObject.put("idProfCatg", ap.getProfCatg().getId());
+    	jsonObject.put("units", ap.getUnits());
+    	jsonObject.put("personhours", ap.getHoursPerPerson());
+    	jsonObject.put("totalhours", totalHours);
+    	jsonObject.put("cost", ap.getCost());
+    	
+    	return jsonObject;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static JSONArray getAssignmentProfileAsJSON(List<AssignmentProfile> aps) {
+
+		int nAssignmts = aps.size();
+
+		// The jsonObject each element of the previous arrays
+		JSONObject jsonObject;
+
+		// In this jsonArray we add the data of phases, tasks and milestones as jsonObjects
+		JSONArray jsonArrayData = new JSONArray();
+
+		// Convert the Tasks info
+		for(int i=0; i<nAssignmts; i++){			
+			jsonObject = getAssignmentProfileJSONForTables(aps.get(i));
+			jsonArrayData.add(jsonObject);
+		}
+
+		return jsonArrayData;
+	}
 }

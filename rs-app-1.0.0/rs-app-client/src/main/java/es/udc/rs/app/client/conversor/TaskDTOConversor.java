@@ -28,6 +28,7 @@ public class TaskDTOConversor {
 		TaskDTOConversor.personService = personService;
     }
 	
+	//public static List<TaskDTO>
 	public static TaskDTO toTaskDTO(Task task) {
 		
 		TaskDTO taskDTO = new TaskDTO();
@@ -64,6 +65,9 @@ public class TaskDTOConversor {
 		
 		taskDTO.setHoursPlan(task.getHoursPlan());
 		taskDTO.setHoursReal(task.getHoursReal());
+		
+		taskDTO.setProgress(task.getProgress());
+		
 		
 		return taskDTO;
 	}

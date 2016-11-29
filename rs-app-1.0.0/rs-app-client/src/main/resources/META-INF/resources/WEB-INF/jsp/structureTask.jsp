@@ -75,7 +75,7 @@ small {
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
 				<li><a href="/project/${idProject}/planning"><font size="3">Planificación</font></a></li>
-				<li><a href="/project/${idProject}"><font size="3">Proyecto</font></a></li>
+				<li><a href="/projects/${idProject}"><font size="3">Proyecto</font></a></li>
 				<li class="active"><a href="#"><font size="3">Tarea</font></a></li>
 				<li><a href="#"><font size="3">Hito</font></a></li>
 				<li><a href="#"><font size="3">Personas</font></a></li>
@@ -99,7 +99,9 @@ small {
 							<li class="menu">
 								<ul>
 								<li>
-									<a href="#"  class="active"> Información 
+									<a href="/projects/${idProject}/phases/${task.idPhase}/tasks/${task.id}"  
+									   class="active">
+										Información 
 										<span class="glyphicon glyphicon-info-sign pull-right"></span>
 									</a>
 								</li>
@@ -107,7 +109,8 @@ small {
 								
 								<ul>
 								<li>
-									<a href="#">Predecesoras
+									<a href="/projects/${idProject}/phases/${task.idPhase}/tasks/${task.id}/predecessors">
+										Predecesoras
 										<span class="glyphicon glyphicon-indent-right pull-right"></span>
 									</a>
 								</li>

@@ -83,6 +83,21 @@ textarea {
 .progress-bar-custom {
 	background: rgba(66, 139, 202, 1);
 }
+
+/* Necessary to put the icons inside the inputs */
+.right-inner-addon {
+	position: relative;
+}
+
+.right-inner-addon input {
+	padding-right: 30px;
+}
+
+.right-inner-addon i {
+	position: absolute;
+	right: 0px;
+	padding: 10px 12px;
+}
 </style>
 </head>
 
@@ -135,7 +150,8 @@ textarea {
 								
 								<ul>
 								<li>
-									<a href="#">Predecesoras
+									<a href="/projects/${idProject}/phases/${task.idPhase}/tasks/${task.id}/predecessors">
+										Predecesoras
 										<span class="glyphicon glyphicon-indent-right pull-right"></span>
 									</a>
 								</li>
@@ -148,7 +164,8 @@ textarea {
 							<li class="menu">
 								<ul>
 								<li>
-									<a href="#">Perfiles y personas 
+									<a href="/projects/${idProject}/phases/${task.idPhase}/tasks/${task.id}/persons">
+										Perfiles y personas 
 										<span class="glyphicon glyphicon-user pull-right"></span>
 									</a>
 								</li>
@@ -225,12 +242,8 @@ textarea {
 									<label class="col-md-offset-1 col-md-3 control-label">Fase</label> 
 									<input type="hidden" name="idPhase" id="idPhase" value="${task.idPhase}">
 									<div class="form-group col-md-8">
-										<select class="form-control" name="namePhase" id="namePhase">
-											<option id="${task.idPhase}">${task.namePhase}</option>
-											<c:forEach var="phase" items="${phases}">
-												<option id="${phase.id}">${phase.name}</option>
-											</c:forEach>
-										</select>
+										<input class="form-control" name="namePhase" id="namePhase" type="text"
+											value="${task.namePhase}" readOnly>
 									</div>
 								</div>
 							</div>
@@ -302,7 +315,7 @@ textarea {
 							<br><br><br><br><br><br>
 							<div class="row">
 								<div class="col-md-offset-3 col-md-9">
-								<button id="saveChanges" type="submit" 
+								<button id="saveBasicChangesButton" type="submit" 
 										class="btn btn-primary center-block" disabled>
 									<span class="glyphicon glyphicon-save"></span>
 									 Guardar cambios
@@ -348,7 +361,7 @@ textarea {
 							</small>
 						</h4>
 						<div class="row">
-							<button id="deleteCustomer" type="button"
+							<button id="cancelTaskButton" type="button"
 								class="btn btn-warning center-block"
 								data-toggle="modal" data-target="#confirmCancel">
 								<span class="glyphicon glyphicon-pause"></span> Cancelar tarea
@@ -375,7 +388,7 @@ textarea {
 							</small>
 						</h4>
 						<div class="row">
-							<button id="deleteCustomer" type="button"
+							<button id="deleteTaskButton" type="button"
 								class="btn btn-danger center-block"
 								data-toggle="modal" data-target="#confirmDelete">
 								<span class="glyphicon glyphicon-remove"></span> Borrar tarea
@@ -400,7 +413,8 @@ textarea {
 					<div class="form-group col-md-3">
 						<div class="alert alert-info">
 							<span class="glyphicon glyphicon-info-sign"></span>
-							Solo el inicio y la duración son editables. El resto derivan de la actividad de la tarea.
+							Solo el inicio y la duración previstos son editables. 
+							El resto derivan de la actividad de la tarea.
 						</div>
 					</div>
 					<div class="form-group col-md-offset-1 col-md-4">
@@ -477,13 +491,12 @@ textarea {
 				
 				<div class="row">
 					<div class="form-group col-md-offset-3 col-md-6">
-						<form action="#" method="get">
-							<button type="submit"
-									class="btn btn-primary center-block">
-									<span class="glyphicon glyphicon-edit"></span>
-									 Editar
-							</button>
-						</form>
+						<button id="editStaticsButton" type="button"
+							class="btn btn-primary center-block"
+							data-toggle="modal" data-target="#updateStatics">
+							<span class="glyphicon glyphicon-edit"></span>
+							Editar
+						</button>
 					</div>
 				</div>
 				
@@ -509,13 +522,12 @@ textarea {
 				</div>
 				<div class="row">
 					<div class="form-group col-md-offset-2 col-md-8">
-						<form action="#" method="get">
-							<button id="updateProgressButton" type="submit"
-									class="btn btn-info center-block">
-									<span class="glyphicon glyphicon-refresh"></span>
-									 Actualizar
-							</button>
-						</form>
+						<button id="updateProgressButton" type="button"
+								class="btn btn-info center-block" disabled
+								data-toggle="modal" data-target="#updateProgress">
+								<span class="glyphicon glyphicon-refresh"></span>
+								 Actualizar
+						</button>
 					</div>
 				</div>
 				<br>
@@ -632,7 +644,7 @@ textarea {
 						<div class="row">
 							<div class="col-md-offset-4 col-md-4">
 								<form method="post"
-								action='/projects/${idProject}/phases/${task.idPhase}/tasks/${task.id}/prepare'>
+								action='/projects/${idProject}/phases/${task.idPhase}/tasks/${task.id}/state/PRPD'>
 									<button type="submit" class="btn btn-primary btn-block">
 										Cambiar estado
 									</button>
@@ -657,15 +669,14 @@ textarea {
 					</div>
 					<div class="modal-body">
 						<div class="row">
-							<div class="form-group col-md-offset-1 col-md-10">
+							<div class="form-group col-md-offset-1 col-md-9">
 								<h4>
-									Nuevo estado: <em>Preparado</em><br> 
+									Nuevo estado: <em>Ejecución</em><br> 
 									<small>
-										La tarea está lista para ser ejecutada. Se calcula el total
-										de días, horas y 
+										Momento en el que la tarea comienza su ejecución real. Es 
 									</small>
 									<small>
-										coste previstos. Realizado el cambio, esos datos ya no serán editables.
+										necesario establecer la fecha del inicio de la tarea.
 									</small>
 								</h4>
 							</div>
@@ -674,21 +685,16 @@ textarea {
 						<div class="row">
 							<div class="col-md-12">
 								<form:form class="form" method="post" id="updateManagerForm"
-									action='url' modelAttribute="projectMgmt" role="form"
-									data-toggle="validator">
+								action='/projects/${idProject}/phases/${task.idPhase}/tasks/${task.id}/state/EJEC'
+								modelAttribute="task" role="form" data-toggle="validator">
 
 									<!-- First row -->
 									<div class="form-group">
 										<div class="row">
-											<input type="hidden" name="id" id="idUpdate" required>
-												
-											<input type="hidden" name="idHistoryPerson"
-												id="idHistoryPersonUpdate" required>
-
 											<div class="form-group col-md-offset-4 col-md-4">
 												<label for="inputName" class="control-label">Inicio real</label>
 												<input type="text" class="form-control datepicker"
-													data-format="dd/MM/yyyy" name="ini" id="iniUpdate"
+													data-format="dd/MM/yyyy" name="iniReal" id="iniReal"
 													placeholder="dd/mm/aaaa" required>
 											</div>
 										</div>
@@ -696,13 +702,58 @@ textarea {
 
 									<div class="form-group">
 										<div class="row">
-											<button id="addButton" type="submit"
-												class="btn btn-primary center-block">
+											<button type="submit" class="btn btn-primary center-block">
 												Cambiar estado
 											</button>
 										</div>
 									</div>
 								</form:form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<!-- Modal: Change state to Terminate
+    	================================================== -->
+		<div class="modal fade" id="changeToTerm" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Cambio de estado</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+								<h4>
+									Nuevo estado: <em>Terminado</em><br> 
+									<small>
+										Finalización de la ejecución de la tarea. Se establece el fin de la
+										tarea a  
+									</small>
+									<small>
+										partir del inicio y duración reales. Además se calcula el total
+										de días, horas y
+									</small>
+									<small>
+										coste reales en base a la ejecución de la tarea. 
+									</small>
+								</h4>
+							</div>
+						</div>
+					
+						<div class="row">
+							<div class="col-md-offset-4 col-md-4">
+								<form method="post"
+								action='/projects/${idProject}/phases/${task.idPhase}/tasks/${task.id}/state/TERM'>
+									<button type="submit" class="btn btn-primary btn-block">
+										Cambiar estado
+									</button>
+								</form>
 							</div>
 						</div>
 					</div>
@@ -732,7 +783,7 @@ textarea {
 						<div class="row center-block">
 							<div class="col-md-offset-3 col-md-3">
 								<form method="post"
-								action='/projects/${idProject}/phases/${task.idPhase}/tasks/${task.id}/cancel'>
+								action='/projects/${idProject}/phases/${task.idPhase}/tasks/${task.id}/state/CANC'>
 									<button type="submit" class="btn btn-primary btn-block">Si</button>
 								</form>
 							</div>
@@ -745,6 +796,7 @@ textarea {
 				</div>
 			</div>
 		</div>
+		
 		
 		<!-- Modal: Confirmation of task delete
     	================================================== -->
@@ -780,6 +832,136 @@ textarea {
 				</div>
 			</div>
 		</div>
+		
+		
+		<!-- Modal: Change task statics
+    	================================================== -->
+		<div class="modal fade" id="updateStatics" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Actualización de estadísticas</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-9">
+								<h4>
+									Datos previstos<br> 
+									<small>
+										Modifica el inicio y duración previstos para esta tarea.
+									</small>
+								</h4>
+							</div>
+						</div>
+					
+						<div class="row">
+							<div class="col-md-12">
+								<form:form class="form" method="post" id="updateManagerForm"
+								action='/projects/${idProject}/phases/${task.idPhase}/tasks/${task.id}/update/statics'
+								modelAttribute="task" role="form" data-toggle="validator">
+
+									<!-- First row -->
+									<div class="form-group">
+										<div class="row">
+											<div class="form-group col-md-offset-3 col-md-3">
+												<label for="inputName" class="control-label">Inicio</label>
+												<input type="text" class="form-control datepicker"
+													data-format="dd/MM/yyyy" name="iniPlan" id="iniPlan"
+													placeholder="dd/mm/aaaa" value="${task.iniPlan}" required>
+											</div>
+											
+											<div class="form-group col-md-3">
+												<label for="inputName" class="control-label">Duración</label>
+												<input type="text" class="form-control"
+													name="daysPlan" id="daysPlan"
+													value="${task.daysPlan}" required>
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<div class="row">
+											<button type="submit" class="btn btn-primary center-block">
+												Guardar cambios
+											</button>
+										</div>
+									</div>
+								</form:form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+		
+		<!-- Modal: Update progress Task
+    	================================================== -->
+		<div class="modal fade" id="updateProgress" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Actualización de progreso</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-9">
+								<h4>
+									Progreso<br> 
+									<small>
+										Cambio el porcentaje de trabajo realizado en la tarea. El nuevo
+									</small>
+									<small>
+										porcentaje debe ser mayor al actual. Si se alcanza el 100% esto
+									</small>
+									<small>
+										supondrá la terminación de la tarea.
+									</small>
+								</h4>
+							</div>
+						</div>
+					
+						<div class="row">
+							<div class="col-md-12">
+								<form:form class="form" method="post" id="updateManagerForm"
+								action='/projects/${idProject}/phases/${task.idPhase}/tasks/${task.id}/update/progress'
+								modelAttribute="task" role="form" data-toggle="validator">
+
+									<!-- First row -->
+									<div class="form-group">
+										<div class="row">
+											<div class="form-group has-feedback col-md-offset-4 col-md-4">
+												<label for="inputName" class="control-label">Progreso</label>
+												<div class="right-inner-addon">
+													<input type="text" class="form-control"
+														pattern="^(?:100|[1-9]?[0-9])$" maxlength="3"
+														name="progress" id="progress"
+														value="${task.progress}" required>
+													<span class="glyphicon form-control-feedback"></span>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<div class="row">
+											<button type="submit" class="btn btn-primary center-block">
+												Guardar cambios
+											</button>
+										</div>
+									</div>
+								</form:form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
 		
 		<!-- Modal: Feedback modal
     	================================================== -->
@@ -840,13 +1022,27 @@ textarea {
 	<script type="text/javascript">
 		$(window).load(function() {
 			
-			if ('${task.state}' == "Planificacion") {
+			if ('${task.idState}' == "PLAN") {
 				document.getElementById("updateProgressButton").disabled = true;	
 			}
 			
-			if ('${task.state}' == "Preparado") {
+			if ('${task.idState}' == "PRPD") {
 				$('#changeStateButton').attr('data-target','#changeToEjec');
-				document.getElementById("updateProgressButton").disabled = true;	
+				document.getElementById("editStaticsButton").disabled = true;	
+			}
+			
+			if ('${task.idState}' == "EJEC") {
+				$('#changeStateButton').attr('data-target','#changeToTerm');
+				document.getElementById("editStaticsButton").disabled = true;
+				document.getElementById("updateProgressButton").disabled = false;
+			}
+			
+			if ('${task.idState}' == "CANC" || '${task.idState}' == "TERM") {
+				document.getElementById("saveBasicChangesButton").disabled = true;
+				document.getElementById("changeStateButton").disabled = true;
+				document.getElementById("cancelTaskButton").disabled = true;
+				document.getElementById("editStaticsButton").disabled = true;
+				document.getElementById("updateProgressButton").disabled = true;
 			}
 			
 			if ('${feedback}' == "active") {
@@ -879,7 +1075,7 @@ textarea {
 	<script type="text/javascript">
 		$(document).ready(function() { 
 		   $('#updateTaskBasic').change(function() { 
-				document.getElementById("saveChanges").disabled = false;
+				document.getElementById("saveBasicChangesButton").disabled = false;
 	        
 		   }); 
 		});

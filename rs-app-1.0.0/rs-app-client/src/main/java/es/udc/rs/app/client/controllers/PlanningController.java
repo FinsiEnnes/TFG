@@ -80,7 +80,7 @@ public class PlanningController {
     	List<HistoryPerson> hps = personService.findCurrentHistoryPersons();
     	List<HistoryPersonDTO> hpsDTO = HistoryPersonDTOConversor.toHistoryPersonDTOs(hps);
     	
-    	log.info(taskObj.toString());
+    	log.info(mainObj.toString());
 
     	// Send the data out to the model
     	model.addAttribute("idProject", id);
