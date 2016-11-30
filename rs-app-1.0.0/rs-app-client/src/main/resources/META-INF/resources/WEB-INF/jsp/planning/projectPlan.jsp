@@ -211,7 +211,7 @@ body {
 											<div class="form-group">
 												<div class="row">
 													<label  class="col-md-2 control-label">Responsable</label> 
-													<input type="hidden" name="idManager" id="idManager"
+													<input type="hidden" name="idResponsible" id="idResponsible"
 														   value="${persons[0].id}">
 													<div class="form-group col-md-3">
 														<select class="form-control" name="nameManager" 
@@ -585,7 +585,7 @@ body {
 	<script type="text/javascript">
 		$("#nameManager").change(function() {
 			  var id = $(this).children(":selected").attr("id");
-			  document.getElementById("idManager").value = id;
+			  document.getElementById("idResponsible").value = id;
 			  
 		});
 	</script>

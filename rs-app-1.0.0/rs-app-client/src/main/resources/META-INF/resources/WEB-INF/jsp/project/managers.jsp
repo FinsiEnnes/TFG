@@ -57,7 +57,7 @@ small {
     margin-left: 15px;
 }
 
-/* Neccesar to adapt a table in the modal */
+/* Neccesary to adapt a table in the modal */
 .table-responsive {
     max-height:150px;
     padding: 0px;
@@ -289,7 +289,7 @@ small {
 									<c:forEach var="persons" items="${persons}">
 									<tr>
 										<td></td>
-										<td  class="text-info">${persons.id}</td>
+										<td class="text-info">${persons.id}</td>
 										<td>${persons.namePerson}</td>
 										<td>${persons.nameProfCatg}</td>
 										<td>${persons.levelProfCatg}</td>

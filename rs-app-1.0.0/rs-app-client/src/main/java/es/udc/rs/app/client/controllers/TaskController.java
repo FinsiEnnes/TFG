@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import es.udc.rs.app.client.conversor.AssignmentProfileDTOConversor;
 import es.udc.rs.app.client.conversor.HistoryPersonDTOConversor;
 import es.udc.rs.app.client.conversor.PhaseDTOConversor;
 import es.udc.rs.app.client.conversor.PredecessorDTOConversor;
@@ -32,6 +33,7 @@ import es.udc.rs.app.client.util.ClientUtilMethods;
 import es.udc.rs.app.client.util.JsonConversor;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
+import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
 import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.Milestone;
@@ -446,7 +448,8 @@ public class TaskController {
 	//-----------------------------------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------------------------
 	
-	private List<ProfessionalCategoryDTO> getProfCatgDTO(List<AssignmentProfile> aps) throws InstanceNotFoundException {
+	private List<ProfessionalCategoryDTO> getProfCatgOfThisAssignment(List<AssignmentProfile> aps) 
+			throws InstanceNotFoundException {
 		
 		List<ProfessionalCategory> profCatgs = new ArrayList<ProfessionalCategory>();
     	ProfessionalCategory pc;
@@ -460,6 +463,18 @@ public class TaskController {
     	return	ProfessionalCategoryDTOConversor.toProfessionalCategoryDTOList(profCatgs);	 
 	}
 	
+	private List<HistoryPersonDTO> getHPersonOfThisAssignment(List<AssignmentPerson> aps) 
+			throws InstanceNotFoundException {
+		
+		List<HistoryPerson> hPersons = new ArrayList<HistoryPerson>();
+		
+		for (AssignmentPerson ap : aps) {
+			hPersons.add(personService.findHistoryPerson(ap.getHistoryPerson().getId()));
+		}
+		
+		return HistoryPersonDTOConversor.toHistoryPersonDTOs(hPersons);
+	}
+	
 	//-----------------------------------------------------------------------------------------------------
 	// [GET]-> /projects/id/phases/id/tasks/id/persons || Get the profiles and persons linked with this task.   
 	//-----------------------------------------------------------------------------------------------------
@@ -468,26 +483,44 @@ public class TaskController {
     public String showPersons(@PathVariable String idProject, @PathVariable String idPhase,
     					   @PathVariable String idTask, Model model) throws InstanceNotFoundException {
 		
-    	// Convert the string id to long
-    	Long longIdProject = Long.parseLong(idProject, 10);
+    	// Find the Task
     	Long longIdTask = Long.parseLong(idTask, 10);
- 
-    	// Get the assigned profiles at this task
     	Task task = projectService.findTask(longIdTask);
-    	List<AssignmentProfile> aps = assignmentService.findAssignmentProfileByTask(task);
+ 
+    	// PROFILES
+    	//------------------------------------------------	
+    	List<AssignmentProfile> assigProfs = assignmentService.findAssignmentProfileByTask(task);
     	
     	// Convert the previous list to JSON
-    	JSONArray asignmtProfJson = JsonConversor.getAssignmentProfileAsJSON(aps);
+    	JSONArray assignmtProfJson = JsonConversor.getAssignmentProfileAsJSON(assigProfs);
     	
     	// Get the ProfessionalCategoryDTO of each assignment profile
-    	List<ProfessionalCategoryDTO> pcsDTO = getProfCatgDTO(aps); 
+    	List<ProfessionalCategoryDTO> profCatgsAssignedDTO = getProfCatgOfThisAssignment(assigProfs); 
+    	
+    	// Also get all the ProfessionalCategories
+    	List<ProfessionalCategory> profCatgs = personService.findAllProfessionalCategories();
+    	List<ProfessionalCategoryDTO> profCatgsDTO = ProfessionalCategoryDTOConversor.toProfessionalCategoryDTOList(profCatgs);
+    	
+    	
+    	// PERSONS
+    	//------------------------------------------------
+    	List<AssignmentPerson> assigPersons = assignmentService.findAssignmentPersonByTask(task);
+    	
+    	// Convert the list of AssignmentPerson in JSON
+    	JSONArray assignmtPersonJson = JsonConversor.getAssignmentPersonAsJSON(assigPersons);
+    	
+    	// Get the HistoryPersonDTO of each assignment person
+    	List<HistoryPersonDTO> hPersonsAssignedDTO = getHPersonOfThisAssignment(assigPersons);
     	
     	// Create the model
 		model.addAttribute("idProject", idProject);
 		model.addAttribute("idPhase", idPhase);
 		model.addAttribute("idTask", idTask);
-    	model.addAttribute("profcatgs", pcsDTO);
-    	model.addAttribute("assignmtProfJson", asignmtProfJson);
+    	model.addAttribute("profcatgs", profCatgsDTO);
+    	model.addAttribute("hPersonsAssigned", hPersonsAssignedDTO);
+    	model.addAttribute("profcatgsAssigned", profCatgsAssignedDTO);
+    	model.addAttribute("assignmtProfJson", assignmtProfJson);
+    	model.addAttribute("assignmtPersonJson", assignmtPersonJson);
     	
 		return "task/persons";
 	}
@@ -496,12 +529,21 @@ public class TaskController {
 	//-----------------------------------------------------------------------------------------------------
 	// [POST]-> /projects/id/phases/id/tasks/id/profiles || Add a new AssignmentProfile.   
 	//-----------------------------------------------------------------------------------------------------
-	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/profiles/{idAP}/update",  
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/profiles",  
 					method=RequestMethod.POST)
-    public String addAsignmentProfile(@Valid @ModelAttribute("asignmntProf") AssignmentProfileDTO apDTO,  
+    public String addAsignmentProfile(@Valid @ModelAttribute("asignmtProf") AssignmentProfileDTO apDTO,  
     		BindingResult result, @PathVariable String idProject, @PathVariable String idPhase,
-    		@PathVariable String idTask, @PathVariable String idAP, Model model) throws InstanceNotFoundException {
+    		@PathVariable String idTask, Model model) throws InstanceNotFoundException, InputValidationException {
 		
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+		// Convert the DTO to object
+		AssignmentProfile ap = AssignmentProfileDTOConversor.toAssignmentProfile(apDTO);
+		
+		// Create the AssignmentProfile
+		assignmentService.createAssignmentProfile(ap);
 		
 		// Return the main persons interface
 		return showPersons(idProject,idPhase,idTask,model);	

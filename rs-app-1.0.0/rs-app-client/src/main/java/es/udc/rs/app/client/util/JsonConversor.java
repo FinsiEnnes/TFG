@@ -6,6 +6,7 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
 import es.udc.rs.app.model.domain.Milestone;
 import es.udc.rs.app.model.domain.Phase;
@@ -342,9 +343,59 @@ public class JsonConversor {
 		// In this jsonArray we add the data of phases, tasks and milestones as jsonObjects
 		JSONArray jsonArrayData = new JSONArray();
 
-		// Convert the Tasks info
+		// Convert the info
 		for(int i=0; i<nAssignmts; i++){			
 			jsonObject = getAssignmentProfileJSONForTables(aps.get(i));
+			jsonArrayData.add(jsonObject);
+		}
+
+		return jsonArrayData;
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// Create a JSON with the data of AssignmentPerson to show it in Tables. 
+	//-----------------------------------------------------------------------------------------------------
+	@SuppressWarnings("unchecked")
+	private static JSONObject getAssignmentPersonJSONForTables(AssignmentPerson ap) {
+		
+		JSONObject jsonObject = new JSONObject();
+		
+    	jsonObject.put("id", ap.getId());
+    	jsonObject.put("idHPerson", ap.getHistoryPerson().getId());
+    	
+    	String conclude = ((ap.isConclude()) ? "Si" : "No");
+    	jsonObject.put("conclude", conclude);
+
+    	
+    	if (ap.isConclude()) {
+	    	jsonObject.put("hours", ap.getTotalHours());
+	    	jsonObject.put("extraHours", ap.getTotalExtraHours());
+	    	jsonObject.put("cost", ap.getTotalCost());
+    	} 
+    	else {
+	    	jsonObject.put("hours", ClientConstants.NOT_AVAILABLE);
+	    	jsonObject.put("extraHours",ClientConstants.NOT_AVAILABLE);
+	    	jsonObject.put("cost", ClientConstants.NOT_AVAILABLE);
+    	}
+    	
+    	return jsonObject;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static JSONArray getAssignmentPersonAsJSON(List<AssignmentPerson> aps) {
+
+		int nAssignmts = aps.size();
+
+		// The jsonObject each element of the previous arrays
+		JSONObject jsonObject;
+
+		// In this jsonArray we add the data of phases, tasks and milestones as jsonObjects
+		JSONArray jsonArrayData = new JSONArray();
+
+		// Convert the info
+		for(int i=0; i<nAssignmts; i++){			
+			jsonObject = getAssignmentPersonJSONForTables(aps.get(i));
 			jsonArrayData.add(jsonObject);
 		}
 

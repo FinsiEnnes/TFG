@@ -16,9 +16,7 @@ public class ProfessionalCategoryDTOConversor {
 			pcsDTO.add(toProfessionalCategoryDTO(pc));
 		}
 		
-		return pcsDTO;
-		
-		
+		return pcsDTO;	
 	}
 	
 	
