@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import es.udc.rs.app.client.conversor.AssignmentPersonDTOConversor;
 import es.udc.rs.app.client.conversor.AssignmentProfileDTOConversor;
 import es.udc.rs.app.client.conversor.HistoryPersonDTOConversor;
 import es.udc.rs.app.client.conversor.PhaseDTOConversor;
 import es.udc.rs.app.client.conversor.PredecessorDTOConversor;
 import es.udc.rs.app.client.conversor.ProfessionalCategoryDTOConversor;
 import es.udc.rs.app.client.conversor.TaskDTOConversor;
+import es.udc.rs.app.client.dto.AssignmentPersonDTO;
 import es.udc.rs.app.client.dto.AssignmentProfileDTO;
 import es.udc.rs.app.client.dto.HistoryPersonDTO;
 import es.udc.rs.app.client.dto.PhaseDTO;
@@ -487,38 +489,54 @@ public class TaskController {
     	Long longIdTask = Long.parseLong(idTask, 10);
     	Task task = projectService.findTask(longIdTask);
  
+    	
     	// PROFILES
     	//------------------------------------------------	
+      	// Get all the ProfessionalCategories
+    	List<ProfessionalCategory> profCatgs = personService.findAllProfessionalCategories();
+    	List<ProfessionalCategoryDTO> allProfCatgsDTO = ProfessionalCategoryDTOConversor.toProfessionalCategoryDTOList(profCatgs);
+    	
+    	// Get the assigned at the current Task
     	List<AssignmentProfile> assigProfs = assignmentService.findAssignmentProfileByTask(task);
     	
     	// Convert the previous list to JSON
     	JSONArray assignmtProfJson = JsonConversor.getAssignmentProfileAsJSON(assigProfs);
     	
     	// Get the ProfessionalCategoryDTO of each assignment profile
-    	List<ProfessionalCategoryDTO> profCatgsAssignedDTO = getProfCatgOfThisAssignment(assigProfs); 
+    	List<ProfessionalCategoryDTO> taskProfCatgsDTO = getProfCatgOfThisAssignment(assigProfs); 
     	
-    	// Also get all the ProfessionalCategories
-    	List<ProfessionalCategory> profCatgs = personService.findAllProfessionalCategories();
-    	List<ProfessionalCategoryDTO> profCatgsDTO = ProfessionalCategoryDTOConversor.toProfessionalCategoryDTOList(profCatgs);
-    	
-    	
+  
     	// PERSONS
     	//------------------------------------------------
+    	// Get all the HistoryPersons
+    	List<HistoryPerson> hPersons = personService.findAllHistoryPerson();
+    	List<HistoryPersonDTO> allHPersonsDTO = HistoryPersonDTOConversor.toHistoryPersonDTOs(hPersons);
+    	
     	List<AssignmentPerson> assigPersons = assignmentService.findAssignmentPersonByTask(task);
     	
     	// Convert the list of AssignmentPerson in JSON
     	JSONArray assignmtPersonJson = JsonConversor.getAssignmentPersonAsJSON(assigPersons);
     	
     	// Get the HistoryPersonDTO of each assignment person
-    	List<HistoryPersonDTO> hPersonsAssignedDTO = getHPersonOfThisAssignment(assigPersons);
+    	List<HistoryPersonDTO> taskHPersonsDTO = getHPersonOfThisAssignment(assigPersons);
     	
-    	// Create the model
+    	
+    	// CREATE THE MODEL
+    	//------------------------------------------------
+    	// Basic information of the Task
 		model.addAttribute("idProject", idProject);
 		model.addAttribute("idPhase", idPhase);
 		model.addAttribute("idTask", idTask);
-    	model.addAttribute("profcatgs", profCatgsDTO);
-    	model.addAttribute("hPersonsAssigned", hPersonsAssignedDTO);
-    	model.addAttribute("profcatgsAssigned", profCatgsAssignedDTO);
+		
+		// ProfessionalCategories and HPersons to select in the additions
+    	model.addAttribute("profcatgs", allProfCatgsDTO);
+    	model.addAttribute("hpersons", allHPersonsDTO);
+    	
+    	// Planned and Real assignments in the Task
+    	model.addAttribute("hPersonsAssigned", taskHPersonsDTO);
+    	model.addAttribute("profcatgsAssigned", taskProfCatgsDTO);
+    	
+    	// Details of the assignments in JSON format
     	model.addAttribute("assignmtProfJson", assignmtProfJson);
     	model.addAttribute("assignmtPersonJson", assignmtPersonJson);
     	
@@ -592,6 +610,72 @@ public class TaskController {
     	
     	// Delete the assignment profile
 		assignmentService.removeAssignmentProfile(id);
+		
+		// Return the main persons interface
+		return showPersons(idProject,idPhase,idTask,model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/phases/id/tasks/id/persons || Add a new Person to assign in the Task.
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/persons",  
+					method=RequestMethod.POST)
+    public String addAsignmentPerson(@Valid @ModelAttribute("asignmtPerson") AssignmentPersonDTO apDTO,  
+    		BindingResult result, @PathVariable String idProject, @PathVariable String idPhase,
+    		@PathVariable String idTask, Model model) throws InstanceNotFoundException {
+		
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+		// Convert the DTO to object
+		AssignmentPerson ap = AssignmentPersonDTOConversor.toAssignmentPerson(apDTO);
+		
+		// Create the AssignmentProfile
+		assignmentService.createAssignmentPerson(ap);
+		
+		// Return the main persons interface
+		return showPersons(idProject,idPhase,idTask,model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/phases/id/tasks/id/persons/id/conclude || Conclude the work of AssignmentPerson.
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/persons/{idAP}/conclude",  
+					method=RequestMethod.POST)
+    public String concludeAsignmentPerson(@PathVariable String idProject, @PathVariable String idPhase,
+    		@PathVariable String idTask, @PathVariable String idAP, Model model) throws InstanceNotFoundException {
+		
+    	// Convert the string id to long
+    	Long longIdAP = Long.parseLong(idAP, 10);
+    	
+    	// Find the AssignmentPerson
+    	AssignmentPerson ap = assignmentService.findAssignmentPerson(longIdAP);
+    	
+    	// Update the AssignmentPerson and conclude the job
+    	ap.setConclude(true);
+    	assignmentService.updateAssignmentPerson(ap);
+		
+		// Return the main persons interface
+		return showPersons(idProject,idPhase,idTask,model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/phases/id/tasks/id/persons/id/delete || Delete an AssignmentPerson.
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/persons/{idAP}/delete",  
+					method=RequestMethod.POST)
+    public String deleteAsignmentPerson(@PathVariable String idProject, @PathVariable String idPhase,
+    		@PathVariable String idTask, @PathVariable String idAP, Model model) throws InstanceNotFoundException {
+		
+    	// Convert the string id to long
+    	Long longIdAP = Long.parseLong(idAP, 10);
+    	
+    	// Delete the AssignmentPerson
+    	assignmentService.removeAssignmentPerson(longIdAP);
 		
 		// Return the main persons interface
 		return showPersons(idProject,idPhase,idTask,model);

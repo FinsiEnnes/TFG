@@ -230,7 +230,7 @@ small {
 								<th class="col-md-3">Nombre del perfil</th>
 								<th class="col-md-1">
 									<div class="row">
-										<div class="col-md-6">
+										<div class="col-md-4">
 										Exp
 										</div>
 										<div class="col-md-6">
@@ -241,10 +241,10 @@ small {
 										</div>	
 									</div>
 								</th>
-								<th class="col-md-2">Nivel</th>
+								<th class="col-md-3">Nivel</th>
 								<th class="col-md-1"><span class="glyphicon glyphicon-euro"></span>/h</th>
 								<th class="col-md-1"><span class="glyphicon glyphicon-euro"></span>/h extra</th>
-								<th class="col-md-1">Acción</th>
+								<th class="col-md-2">Acción</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -253,7 +253,7 @@ small {
 								<td>
 									<button id="infoAsignmtProfile" type="button"
 										class="btn btn-info btn-xs center-block"
-										onclick="loadAssignProf(${profcatgAssigned.id})">
+										onclick="loadAssignProf('${profcatgAssigned.id}','${profcatgAssigned.name}')">
 										<span class="glyphicon glyphicon-info-sign"></span>
 									</button>
 								</td>
@@ -276,8 +276,9 @@ small {
 											<td>
 												<button id="deleteAsignmtProfile" type="button"
 													class="btn btn-danger btn-xs center-block"
-													data-toggle="modal" data-target="#confirmDelete"
-													data-id="${profcatgAssigned.id}">
+													data-toggle="modal" data-target="#confirmDeleteProfile"
+													data-id="${profcatgAssigned.id}"
+													data-name="${profcatgAssigned.name}">
 													<span class="glyphicon glyphicon-remove"></span>
 												</button>
 											</td>
@@ -306,6 +307,7 @@ small {
 						   data-toggle="table">
 						<thead>
 							<tr>
+								<th class="col-md-4"  data-field="profile"     >Perfil</th>
 								<th class="col-md-2"  data-field="units"      >Nº de personas</th>
 								<th class="col-md-2"  data-field="personhours">Horas/personas</th>
 								<th class="col-md-2"  data-field="totalhours" >Horas totales</th>
@@ -336,7 +338,7 @@ small {
 					</div>
 					<div class="col-md-offset-6 col-md-2">
 						<button type="button" class="btn btn-success pull-right"
-							data-toggle="modal" data-target="#formProfileAssignation">
+							data-toggle="modal" data-target="#formPersonAssignation">
 							<span class="glyphicon glyphicon-plus"></span> 
 							Nueva persona
 						</button>
@@ -346,16 +348,17 @@ small {
 				<div class="row">
 					<div class="form-group col-md-offset-1 col-md-10">
 					<table id="profilesAssignTable" class="table table-bordered"	
-						   data-toggle="table" data-height="162">
+						   data-toggle="table" data-height="162"  data-click-to-select="true" 
+							data-single-select="true">
 						<thead>
 							<tr>
 								<th class="col-md-1"></th>
 								<th class="col-md-3">Persona</th>
-								<th class="col-md-2">Perfil</th>
-								<th class="col-md-2">Exp desde</th>
+								<th class="col-md-3">Perfil</th>
+								<th class="col-md-1">Exp desde</th>
 								<th class="col-md-1"><span class="glyphicon glyphicon-euro"></span>/h</th>
 								<th class="col-md-1"><span class="glyphicon glyphicon-euro"></span>/h extra</th>
-								<th class="col-md-1">Acción</th>
+								<th class="col-md-2">Acción</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -364,7 +367,7 @@ small {
 								<td>
 									<button id="infoAsignmtPerson" type="button"
 										class="btn btn-info btn-xs center-block"
-										onclick="loadAssignPerson(${hPerson.id})">
+										onclick="loadAssignPerson('${hPerson.id}','${hPerson.namePerson}')">
 										<span class="glyphicon glyphicon-info-sign"></span>
 									</button>
 								</td>
@@ -379,8 +382,8 @@ small {
 											<td>
 												<button id="deleteAsignmtProfile" type="button"
 												class="btn btn-success btn-xs center-block"
-												data-toggle="modal" data-target="#confirmDeletePerson"
-												data-id="${hPerson.id}">
+												data-toggle="modal" data-target="#concludePerson"
+												data-id="${hPerson.id}" data-name="${hPerson.namePerson}">
 												<span class="glyphicon glyphicon-ok"></span>
 												</button>
 											</td>
@@ -388,7 +391,7 @@ small {
 												<button id="deleteAsignmtProfile" type="button"
 												class="btn btn-danger btn-xs center-block"
 												data-toggle="modal" data-target="#confirmDeletePerson"
-												data-id="${hPerson.id}">
+												data-id="${hPerson.id}" data-name="${hPerson.namePerson}">
 												<span class="glyphicon glyphicon-remove"></span>
 												</button>
 											</td>
@@ -415,14 +418,15 @@ small {
 				</div>
 				
 				<div class="row">
-					<div class="form-group col-md-offset-3 col-md-6">
+					<div class="form-group col-md-offset-2 col-md-8">
 					<table id="tableAssignmtPersons" class="table table-bordered" data-toggle="table">
 						<thead>
 							<tr>
-								<th class="col-md-3"  data-field="conclude"   >Trabajo finalizado</th>
-								<th class="col-md-3"  data-field="hours"      >Horas</th>
-								<th class="col-md-3"  data-field="extrahours" >Horas extra</th>
-								<th class="col-md-3"  data-field="cost"       >Coste</th>
+								<th class="col-md-4"  data-field="person"     >Persona</th>
+								<th class="col-md-2"  data-field="conclude"   >Trabajo finalizado</th>
+								<th class="col-md-2"  data-field="hours"      >Horas</th>
+								<th class="col-md-2"  data-field="extrahours" >Horas extra</th>
+								<th class="col-md-2"  data-field="cost"       >Coste</th>
 							</tr>
 						</thead>
 					</table>
@@ -432,15 +436,15 @@ small {
 		</div>
 		
 		
-		<!-- Modal: Assignation of a new Profile Category
-    	================================================== -->
+	<!-- Modal: Assignation of a new Profile Category
+	===================================================================================================== -->
 		<div class="modal fade modal" id="formProfileAssignation" role="dialog">
 			<div class="modal-dialog modal-lg">
 
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Asignación de un nuevo perfil a la tarea</h4>
+						<h4 class="modal-title">Asignación de un nuevo perfil</h4>
 					</div>
 
 					<div class="modal-body">
@@ -531,7 +535,7 @@ small {
 
 							<div class="form-group">
 								<div class="row">
-								<button id="assignButton" type="submit"
+								<button id="assignProfileButton" type="submit"
 								 class="btn btn-primary center-block" disabled >
 									Asignar
 								</button>
@@ -545,8 +549,92 @@ small {
 		</div>
 		
 		
-		<!-- Modal: Update Assignment Profile
-    	================================================== -->
+	<!-- Modal: Assignation of a new Person in the Task
+	===================================================================================================== -->
+		<div class="modal fade modal" id="formPersonAssignation" role="dialog">
+			<div class="modal-dialog modal-lg">
+
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Asignación de persona</h4>
+					</div>
+
+					<div class="modal-body">
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+								<h4>
+									Selección de persona<br> 
+									<small>
+										Asigna a una persona para trabajar en la tarea durante su ejecución
+									</small>
+								</h4>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+							<div class="panel panel-default">
+                        	<div class="panel-body table-responsive">
+							<table id="personsTable" class="table table-bordered"	
+							data-toggle="table"  data-click-to-select="true" 
+							data-single-select="true">
+								<thead>
+									<tr>
+										<th class="col-md-1" data-field="state" data-checkbox="true"></th>
+										<th class="col-md-1">ID</th>									
+										<th class="col-md-3">Nombre</th>
+										<th class="col-md-3">Perfil</th>
+										<th class="col-md-2">Exp. desde</th>
+										<th class="col-md-1"><span class="glyphicon glyphicon-euro"></span>/h</th>
+										<th class="col-md-1">Extra</th>
+									</tr>
+								</thead>
+								<tbody>
+								<c:forEach var="hperson" items="${hpersons}">
+								<tr>
+									<td></td>
+									<td class="text-info">${hperson.id}</td>
+									<td>${hperson.namePerson}</td>
+									<td>${hperson.nameProfCatg}</td>
+									<td>${hperson.ini}</td>
+									<td align="center">${hperson.sal}</td>
+									<td align="center"> ${hperson.salExtra}</td>
+								</tr>
+								</c:forEach>
+								</tbody>
+							</table>
+							</div>
+							</div>
+							</div>
+						</div>
+					
+						<form:form id="assignAPForm" class="form" method="post" modelAttribute="asignmtPerson"
+						role="form" action='/projects/${idProject}/phases/${idPhase}/tasks/${idTask}/persons'>
+
+							<div class="form-group">
+								<div class="row">
+									<input type="hidden" name="idTask" id="idTask" value="${idTask}">
+									<input type="hidden" name="idHistoryPerson" id="idHPerson">
+								</div>
+								
+								<div class="row">
+									<button id="assignPersonButton" type="submit"
+									 class="btn btn-primary center-block" disabled >
+										Asignar
+									</button>
+								</div>
+							</div>
+						</form:form>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		
+		
+	<!-- Modal: Update Assignment Profile
+	===================================================================================================== -->
 		<div class="modal fade" id="updateAsignmtProfile" role="dialog">
 			<div class="modal-dialog">
 				<!-- Modal content-->
@@ -610,30 +698,27 @@ small {
 		</div>
 		
 		
-		<!-- Modal: Confirmation of delete
-    	================================================== -->
-		<div class="modal fade" id="confirmDelete" role="dialog">
+	<!-- Modal: Confirmation of delete of Profile
+	===================================================================================================== -->
+		<div class="modal fade" id="confirmDeleteProfile" role="dialog">
 			<div class="modal-dialog">
 				<!-- Modal content-->
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Confirmación de borrado</h4>
+						<h4 class="modal-title">Confirmación de desasignación</h4>
 					</div>
 					<div class="modal-body">
 						<div class="row">
 							<div class="col-md-12">
-								<p align="center"> 
-									¿Seguro que desea eliminar esta tarea como predecesora
-									de la actual?
-								</p>
+								<p id="msgProfile" align="center"></p>
 							</div>
 						</div>
 					</div>
 					<div class="modal-footer">
 						<div class="row center-block">
 							<div class="col-md-offset-3 col-md-3">
-								<form id="confirmDeleteButton" name="confirmDeleteButton" action='' method="post">
+								<form id="confirmDeleteProfileButton" name="confirmDeleteButton" action='' method="post">
 									<button type="submit" class="btn btn-primary btn-block">Si</button>
 								</form>
 							</div>
@@ -648,8 +733,8 @@ small {
 		</div>
 		
 		
-		<!-- Modal: Exp feedback modal
-    	================================================== -->
+	<!-- Modal: Experience feedback modal
+	===================================================================================================== -->
 		<div class="modal fade" id="infoExp" role="dialog">
 			<div class="modal-dialog">
 				<!-- Modal content-->
@@ -674,6 +759,95 @@ small {
 			</div>
 		</div>
 	</div>
+	
+	
+	<!-- Modal: Conclude Person
+	===================================================================================================== -->
+		<div class="modal fade" id="concludePerson" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Concluír trabajo</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-12">
+								<p id="msgConcludePerson" align="center"></p>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+								<div class="alert alert-warning">
+								<strong>Atención:</strong> Finalización del trabajo y cálculo de las
+								horas y costes totales. Concluida la labor no podremos asignar
+								a la persona más trabajo en esta tarea.
+							</div>
+						</div>
+					</div>
+					</div>
+					<div class="modal-footer">
+						<div class="row center-block">
+							<div class="col-md-offset-3 col-md-3">
+								<form id="concludePersonButton" action='' method="post">
+									<button type="submit" class="btn btn-success btn-block">Si</button>
+								</form>
+							</div>
+							<div class="col-md-3">
+								<button type="button" class="btn btn-default btn-block"
+									data-dismiss="modal">No</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+	<!-- Modal: Confirmation of delete Person
+	===================================================================================================== -->
+		<div class="modal fade" id="confirmDeletePerson" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Borrado de asignación</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-12">
+								<p id="msgPerson" align="center"></p>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+								<div class="alert alert-warning">
+								<strong>Atención:</strong> Esto supone el borrado en cascada de los registros 
+								de carga diaria de esa persona en la tarea.
+							</div>
+						</div>
+					</div>
+					</div>
+					<div class="modal-footer">
+						<div class="row center-block">
+							<div class="col-md-offset-3 col-md-3">
+								<form id="confirmDeletePersonButton" action='' method="post">
+									<button type="submit" class="btn btn-danger btn-block">Si</button>
+								</form>
+							</div>
+							<div class="col-md-3">
+								<button type="button" class="btn btn-default btn-block"
+									data-dismiss="modal">No</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	
 
 	<!-- Bootstrap core JavaScript
     ================================================== -->
@@ -706,16 +880,19 @@ small {
 	
 	
 	<!-- Dynamic loads
-    ================================================== -->	
+	===================================================================================================== -->
 	<script>
-		var $table = $('#tableProfiles');	
+	
+		// PROFILES
+		//----------------------------------------------------------------------------------------
+		var $tableAssigProf = $('#tableProfiles');	
 	
 		/* Load the data when the Profile selected has changed */
-		function loadAssignProf(idProfCatg) {
-			$table.bootstrapTable('load', loadDataAssignProf(idProfCatg));
+		function loadAssignProf(idProfCatg,nameProfile) {
+			$tableAssigProf.bootstrapTable('load', loadDataAssignProf(idProfCatg,nameProfile));
 		}	    
 	    
-	    function loadDataAssignProf(id) {
+	    function loadDataAssignProf(id,nameProfile) {
 	    	
 	        var rows = [];
 	        var nAssignment = ${assignmtProfJson}.length;
@@ -723,6 +900,7 @@ small {
 	        for (var i = 0; i < nAssignment; i++) {
 	        	if (${assignmtProfJson}[i].idProfCatg == id) {
 		            rows.push({
+		            	profile:nameProfile,
 		                units: ${assignmtProfJson}[i].units,
 		                personhours: ${assignmtProfJson}[i].personhours,
 		                totalhours: ${assignmtProfJson}[i].totalhours,
@@ -734,61 +912,40 @@ small {
 	    }
 	    
 	    
-		var $tablex = $('#tableAssignmtPersons');	
+		// PERSONS
+		//----------------------------------------------------------------------------------------
+		var $tableAssigPerson = $('#tableAssignmtPersons');	
 		
 		/* Load the data when the Person selected has changed */
-		function loadAssignPerson(idHPerson) {
-			$tablex.bootstrapTable('load', loadDataAssignPerson(idHPerson));
-			
-			// Set the url at the button conclude
-			var idAsignmtPerson = 0;
-			var nAssignment = ${assignmtPersonJson}.length;
-						
-			for (var i = 0; i < nAssignment; i++) {
-		       	if (${assignmtPersonJson}[i].idHPerson == idHPerson) {
-		       		idAsignmtPerson = ${assignmtPersonJson}[i].id;
-				}
-			}
-				
-			// Set the url
-			var url = "/projects/" + ${idProject} + "/phases/" +  ${idPhase} + "/tasks/" + 
-			  ${idTask} + "/persons/" + idAsignmtPerson + "/conclude";
-					
-			// Set the values at the modal components
-			document.getElementById('concludeForm').action = url;
+		function loadAssignPerson(idHPerson, namePerson) {
+			$tableAssigPerson.bootstrapTable('load', loadDataAssignPerson(idHPerson,namePerson));
 		}	    
 	    
-	    function loadDataAssignPerson(id) {
+	    function loadDataAssignPerson(id,namePerson) {
 	    	
 	        var rows = [];
 	        var nAssignment = ${assignmtPersonJson}.length;
 	        var idAssigPerson = "0";
 	        
-	        for (var i = 0; i < nAssignment; i++) {
+	        for (var i = 0; i < nAssignment; i++) {	        	
 	        	if (${assignmtPersonJson}[i].idHPerson == id) {
 		            rows.push({
+		            	person:namePerson,
 		            	conclude: ${assignmtPersonJson}[i].conclude,
 		                hours: ${assignmtPersonJson}[i].hours,
 		                extrahours: ${assignmtPersonJson}[i].extraHours,
 		                cost: ${assignmtPersonJson}[i].cost
 		            });
-		            idAssigPerson = ${assignmtPersonJson}[i].id
 	        	}
 	        }
 	        return rows;
 	    }
 	</script>
 	
-	<script type="text/javascript">
-		$("#tableAssignmtPersons").change(function() {
-				document.getElementById('conludeButton').disabled = false;			  
-		});
-	</script>
-	
 	
 	<!-- Enable in the modal, the assign button when the 
 	 	 user selects a ProfileCategory at the Task. 
-    ================================================== -->	
+	===================================================================================================== -->
 	<script type="text/javascript">
 		$(document).ready(function() { 
 		   $('#profilesTable').change(function() { 
@@ -801,10 +958,35 @@ small {
 			   if (size > 0) {
 				   var idProfile = json['0']['1'];
 				   document.getElementById("idProfCatg").value = idProfile;
-				   document.getElementById("assignButton").disabled = false;
+				   document.getElementById("assignProfileButton").disabled = false;
 			   } 
 			   else {
-				   document.getElementById("assignButton").disabled = true;
+				   document.getElementById("assignProfileButton").disabled = true;
+			   }		        
+		   }); 
+		});
+	</script>
+	
+	
+	<!-- Enable the assign button when the user selects a HistoryPerson at the Task. 
+	===================================================================================================== -->
+	<script type="text/javascript">
+		$(document).ready(function() { 
+		   $('#personsTable').change(function() { 
+			   
+			   // Get info of the table
+			   var json = JSON.parse(JSON.stringify($('#personsTable').bootstrapTable('getSelections')));
+			   var size = json.length;
+			   			   
+			   // If a option is selected then we can add a Person as manager
+			   if (size > 0) {
+				   var idPerson = json['0']['1'];
+
+				   document.getElementById("idHPerson").value = idPerson;
+				   document.getElementById("assignPersonButton").disabled = false;
+			   } 
+			   else {
+				   document.getElementById("assignPersonButton").disabled = true;
 			   }		        
 		   }); 
 		});
@@ -812,7 +994,7 @@ small {
 	
 	
 	<!-- Data transfer to the modal updateAsignmtProfile
-    ================================================== -->	
+	===================================================================================================== -->
 	<script type='text/javascript'>
 		$(function() {
 			$('#updateAsignmtProfile').on('show.bs.modal', function(event) {
@@ -851,17 +1033,18 @@ small {
 	</script>
 	
 	
-	<!-- Data transfer to the modal confirmDelete
-    ================================================== -->	
+	<!-- Data transfer to the modal confirmDeleteProfile
+	===================================================================================================== -->
 	<script type='text/javascript'>
 		$(function() {
-			$('#confirmDelete').on('show.bs.modal', function(event) {
+			$('#confirmDeleteProfile').on('show.bs.modal', function(event) {
 				
 				// Button that triggered the modal
 				var button = $(event.relatedTarget) 
 				
 				// Extract info from data attributes
 				var idProfile = button.data('id');
+				var nameProfile = button.data('name');
 						  
 				// Get the data of the assignmentProfile
 				var idAsignmtProf = 0;
@@ -873,12 +1056,93 @@ small {
 					}
 				}
 				
-				// Set the url
+				// Set the message and the url
+				var msg = "¿Seguro que desea desasignar el perfil de "
+						  + nameProfile.bold() + " de la planificación de la tarea?";
+
 				var url = "/projects/" + ${idProject} + "/phases/" +  ${idPhase} + "/tasks/" + 
 				  ${idTask} + "/profiles/" + idAsignmtProf + "/delete";
+				  
 						
 				// Set the values at the modal components
-				$('#confirmDeleteButton').get(0).setAttribute('action', url);
+				document.getElementById('msgProfile').innerHTML = msg;
+				$('#confirmDeleteProfileButton').get(0).setAttribute('action', url);
+			})
+		});
+	</script>
+	
+	
+	<!-- Data transfer to the modal concludePerson
+	===================================================================================================== -->
+	<script type='text/javascript'>
+		$(function() {
+			$('#concludePerson').on('show.bs.modal', function(event) {
+				
+				// Button that triggered the modal
+				var button = $(event.relatedTarget) 
+				
+				// Extract info from data attributes
+				var idPerson = button.data('id');
+				var namePerson = button.data('name');
+						  
+				// Get the data of the assignmentProfile
+				var idAsignmtPerson = 0;
+				var nAssignment = ${assignmtPersonJson}.length;
+							
+				for (var i = 0; i < nAssignment; i++) {
+			       	if (${assignmtPersonJson}[i].idHPerson == idPerson) {
+			       		idAsignmtPerson = ${assignmtPersonJson}[i].id;
+					}
+				}
+				
+				// Set the message and the url
+				var msg = "¿Seguro que desea finalizar el trabajo de " + namePerson.bold() + " en esta tarea?";
+
+				var url = "/projects/" + ${idProject} + "/phases/" +  ${idPhase} + "/tasks/" + 
+				  ${idTask} + "/persons/" + idAsignmtPerson + "/conclude";
+				  
+						
+				// Set the values at the modal components
+				document.getElementById('msgConcludePerson').innerHTML = msg;
+				$('#concludePersonButton').get(0).setAttribute('action', url);
+			})
+		});
+	</script>
+	
+	
+	<!-- Data transfer to the modal confirmDeletePerson
+	===================================================================================================== -->
+	<script type='text/javascript'>
+		$(function() {
+			$('#confirmDeletePerson').on('show.bs.modal', function(event) {
+				
+				// Button that triggered the modal
+				var button = $(event.relatedTarget) 
+				
+				// Extract info from data attributes
+				var idPerson = button.data('id');
+				var namePerson = button.data('name');
+						  
+				// Get the data of the assignmentProfile
+				var idAsignmtPerson = 0;
+				var nAssignment = ${assignmtPersonJson}.length;
+							
+				for (var i = 0; i < nAssignment; i++) {
+			       	if (${assignmtPersonJson}[i].idHPerson == idPerson) {
+			       		idAsignmtPerson = ${assignmtPersonJson}[i].id;
+					}
+				}
+				
+				// Set the message and the url
+				var msg = "¿Seguro que desea desasignar a " + namePerson.bold() + " de la ejecución de la tarea?";
+
+				var url = "/projects/" + ${idProject} + "/phases/" +  ${idPhase} + "/tasks/" + 
+				  ${idTask} + "/persons/" + idAsignmtPerson + "/delete";
+				  
+						
+				// Set the values at the modal components
+				document.getElementById('msgPerson').innerHTML = msg;
+				$('#confirmDeletePersonButton').get(0).setAttribute('action', url);
 			})
 		});
 	</script>
