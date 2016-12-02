@@ -62,7 +62,7 @@ body {
 				<li><a href="#"><font size="3">Tarea</font></a></li>
 				<li><a href="#"><font size="3">Hito</font></a></li>
 				<li><a href="#"><font size="3">Personas</font></a></li>
-				<li><a href="#"><font size="3">Materiales</font></a></li>
+				<li><a href="/materials"><font size="3">Materiales</font></a></li>
 			</ul>
 		</div>
 		<!-- /.navbar-collapse -->
@@ -436,7 +436,9 @@ body {
 								<hr align="left" width="70%">
 							</div>
 							<div class="row">
-								<button type="submit" class="btn btn-info center-block">Información</button>
+								<form id="taskInformationForm" action="" method="get">
+									<button type="submit" class="btn btn-info center-block">Información</button>
+								</form>
 							</div>
 						</div>
 					</div>
@@ -693,7 +695,7 @@ body {
 	<script type="text/javascript">	
 		gantt.attachEvent("onTaskDblClick", function(id,item){
 			var type = id.substring(0, 1);
-			var idDB = id.substring(1);
+			var idTask = id.substring(1);
 			
 			// Check the type of the object
 			if (type == "p") {
@@ -709,7 +711,9 @@ body {
 					document.getElementById("daysRealSelectTask").readOnly = true;
 				}
 				
-				var urlUpdate = "/project/" + ${idProject} + "/task/" + idDB + "/update";
+				var idPhase = ${taskDetails}[id].idPhase;
+				var urlGetInfo = "/projects/" + ${idProject} + "/phases/" + idPhase + "/tasks/" + idTask;
+				var urlUpdate = "/project/" + ${idProject} + "/task/" + idTask + "/update";
 				
 				document.getElementById("formSelectTask").action = urlUpdate;
 				document.getElementById("nameSelectTask").value = ${taskDetails}[id].name;
@@ -721,12 +725,14 @@ body {
 				document.getElementById("daysPlanSelectTask").value = ${taskDetails}[id].daysPlan;
 				document.getElementById("iniRealSelectTask").value = ${taskDetails}[id].iniReal;
 				document.getElementById("daysRealSelectTask").value = ${taskDetails}[id].daysReal;
+				document.getElementById("daysRealSelectTask").value = ${taskDetails}[id].daysReal;
+				document.getElementById("taskInformationForm").action = urlGetInfo;
 				
 				$('#selectTaskModal').modal('show');
 			} 
 			else {
 				
-				var urlUpdate = "/project/" + ${idProject} + "/task/" + idDB + "/update";
+				var urlUpdate = "/project/" + ${idProject} + "/task/" + idTask + "/update";
 				
 				document.getElementById("formSelectMS").action = urlUpdate;
 				document.getElementById("nameSelectMS").value = ${msDetails}[id].name;

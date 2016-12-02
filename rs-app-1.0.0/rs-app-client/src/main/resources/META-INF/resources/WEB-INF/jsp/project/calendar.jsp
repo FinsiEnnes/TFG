@@ -93,7 +93,7 @@ small {
 				<li><a href="#"><font size="3">Tarea</font></a></li>
 				<li><a href="#"><font size="3">Hito</font></a></li>
 				<li><a href="#"><font size="3">Personas</font></a></li>
-				<li><a href="#"><font size="3">Materiales</font></a></li>
+				<li><a href="/materials"><font size="3">Materiales</font></a></li>
 			</ul>
 		</div>
 		<!-- /.navbar-collapse -->

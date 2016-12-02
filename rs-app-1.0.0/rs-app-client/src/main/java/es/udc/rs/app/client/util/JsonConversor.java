@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
+import es.udc.rs.app.model.domain.Material;
 import es.udc.rs.app.model.domain.Milestone;
 import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Predecessor;
@@ -187,6 +188,7 @@ public class JsonConversor {
     	SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
 		
     	jsonObject.put("name", task.getName());
+    	jsonObject.put("idPhase", task.getPhase().getId());
     	jsonObject.put("state", task.getState().getName());
     	jsonObject.put("progress", task.getProgress());
     	jsonObject.put("idPriority", task.getPriority().getId());
@@ -396,6 +398,41 @@ public class JsonConversor {
 		// Convert the info
 		for(int i=0; i<nAssignmts; i++){			
 			jsonObject = getAssignmentPersonJSONForTables(aps.get(i));
+			jsonArrayData.add(jsonObject);
+		}
+
+		return jsonArrayData;
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// Create a JSON with the data of AssignmentPerson to show it in Tables. 
+	//-----------------------------------------------------------------------------------------------------
+	@SuppressWarnings("unchecked")
+	private static JSONObject getMaterialJSONForTables(Material material) {
+		
+		JSONObject jsonObject = new JSONObject();
+		
+    	jsonObject.put("id", material.getId());
+    	jsonObject.put("desc", material.getDescription());
+
+    	return jsonObject;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static JSONArray getMaterialDescAsJSON(List<Material> materials) {
+
+		int nMaterials = materials.size();
+
+		// The jsonObject each element of the previous arrays
+		JSONObject jsonObject;
+
+		// In this jsonArray we add the data of phases, tasks and milestones as jsonObjects
+		JSONArray jsonArrayData = new JSONArray();
+
+		// Convert the info
+		for(int i=0; i<nMaterials; i++){			
+			jsonObject = getMaterialJSONForTables(materials.get(i));
 			jsonArrayData.add(jsonObject);
 		}
 

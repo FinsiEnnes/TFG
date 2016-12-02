@@ -105,7 +105,7 @@ small {
 				<li class="active"><a href="#"><font size="3">Tarea</font></a></li>
 				<li><a href="#"><font size="3">Hito</font></a></li>
 				<li><a href="#"><font size="3">Personas</font></a></li>
-				<li><a href="#"><font size="3">Materiales</font></a></li>
+				<li><a href="/materials"><font size="3">Materiales</font></a></li>
 			</ul>
 		</div>
 		<!-- /.navbar-collapse -->
@@ -164,7 +164,8 @@ small {
 								
 								<ul>
 								<li>
-									<a href="#">Materiales
+									<a href="/projects/${idProject}/phases/${idPhase}/tasks/${idTask}/materials">
+										Materiales
 										<span class="glyphicon glyphicon-wrench pull-right"></span>
 									</a>
 								</li>
@@ -214,7 +215,7 @@ small {
 						<button type="button" class="btn btn-success pull-right"
 							data-toggle="modal" data-target="#formProfileAssignation">
 							<span class="glyphicon glyphicon-plus"></span> 
-							Nuevo perfil
+							Asignar perfil
 						</button>
 					</div>
 				</div>
@@ -340,7 +341,7 @@ small {
 						<button type="button" class="btn btn-success pull-right"
 							data-toggle="modal" data-target="#formPersonAssignation">
 							<span class="glyphicon glyphicon-plus"></span> 
-							Nueva persona
+							Asignar persona
 						</button>
 					</div>
 				</div>
@@ -432,6 +433,8 @@ small {
 					</table>
 					</div>
 				</div>
+				
+				<br><br>
 			</div>
 		</div>
 		
@@ -544,7 +547,6 @@ small {
 						</form:form>
 					</div>
 				</div>
-
 			</div>
 		</div>
 		

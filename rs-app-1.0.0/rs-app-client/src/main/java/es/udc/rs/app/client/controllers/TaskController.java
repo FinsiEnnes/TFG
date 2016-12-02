@@ -681,4 +681,22 @@ public class TaskController {
 		return showPersons(idProject,idPhase,idTask,model);
 	}
 	
+	
+	//-----------------------------------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------------------------
+	//------------------------------------------- TASK MATERIALS ------------------------------------------  
+	//-----------------------------------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------------------------
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [GET]-> /projects/id/phases/id/tasks/id/materials || Get the materials assigned at this task.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/materials",  
+					method=RequestMethod.GET)
+    public String showMaterials(@PathVariable String idProject, @PathVariable String idPhase,
+    					   @PathVariable String idTask, Model model) throws InstanceNotFoundException {
+    	
+		return "task/materials";
+	}
 }
