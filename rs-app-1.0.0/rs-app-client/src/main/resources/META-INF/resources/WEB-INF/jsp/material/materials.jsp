@@ -193,11 +193,11 @@ small {
 									<table>
 										<tr>
 											<td>
-												<button id="editMaterial" type="button"
-													class="btn btn-primary btn-xs center-block"
-													data-toggle="modal" data-target="#updateMaterial"
+												<button type="button" class="btn btn-primary btn-xs center-block"
+													data-toggle="modal" data-target="#editMaterial"
 													data-id="${material.id}" data-name="${material.name}"
-													data-cost="${material.cost}" data-type="${material.type}">
+													data-cost="${material.cost}" data-type="${material.type}"
+													data-desc="${material.description}">
 													<span class="glyphicon glyphicon-edit"></span>
 												</button>
 											</td>
@@ -205,7 +205,7 @@ small {
 												<button id="deleteMaterial" type="button"
 													class="btn btn-danger btn-xs center-block"
 													data-toggle="modal" data-target="#confirmDeleteMaterial"
-													data-id="${material.id}">
+													data-id="${material.id}" data-name="${material.name}">
 													<span class="glyphicon glyphicon-remove"></span>
 												</button>
 											</td>
@@ -324,6 +324,129 @@ small {
 				</div>
 			</div>
 		</div>
+		
+		
+	<!-- Modal: Creation of a new Material
+	===================================================================================================== -->
+		<div class="modal fade modal" id="editMaterial" role="dialog">
+			<div class="modal-dialog">
+
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Actualización de material</h4>
+					</div>
+
+					<div class="modal-body">						
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+								<h4>
+									Información del material<br> 
+									<small>
+										Cambia la información relativa al material seleccionado.
+									</small>
+								</h4>
+							</div>
+						</div>
+					
+						<form:form id="editMaterialForm" class="form-horizontal" method="post" 
+						modelAttribute="material" action='/materials' data-toggle="validator">
+
+							<input type="hidden" name="id" id="idEditMaterial">
+										
+							<div class="form-group">
+								<div class="row">
+									<label class="col-md-offset-2 col-md-2 control-label">Nombre</label>
+									<div class="form-group col-md-5">
+										<input class="form-control" name="name" id="nameEditMaterial"
+										type="text" required>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="row">
+									<label class="col-md-offset-2 col-md-2 control-label">Tipo</label>
+									<div class="form-group col-md-5">
+										<select class="form-control" name="type">
+											<option id="ownOption">Propio</option>
+											<option id="buyOption">Comprado</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<div class="row">
+									<label class="col-md-offset-2 col-md-2 control-label">Coste</label>
+									<div class="form-group has-feedback col-md-5">
+										<input class="form-control" name="cost"  id="costEditMaterial"
+										type="text" pattern="^[1-9]\d*$" readOnly>
+										 <span class="glyphicon form-control-feedback"></span>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="row">
+									<label class="col-md-offset-2 col-md-2 control-label">Descripción</label>
+									<div class="form-group col-md-5">
+										<textarea class="form-control" rows="4" name="description"
+										id="descEditMaterial">
+										</textarea>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="row">
+								<button id="editMaterialButton" type="submit"
+								 class="btn btn-primary center-block" disabled>
+									Guardar cambios
+								</button>
+								</div>
+							</div>
+						</form:form>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		
+	<!-- Modal: Confirmation of delete Material
+	===================================================================================================== -->
+		<div class="modal fade" id="confirmDeleteMaterial" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Borrado de material</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-12">
+								<p id="msgMaterial" align="center"></p>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="row center-block">
+							<div class="col-md-offset-3 col-md-3">
+								<form id="confirmDeleteMaterialButton" action='' method="post">
+									<button type="submit" class="btn btn-danger btn-block">Si</button>
+								</form>
+							</div>
+							<div class="col-md-3">
+								<button type="button" class="btn btn-default btn-block"
+									data-dismiss="modal">No</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	
 	</div>
 	
@@ -358,7 +481,8 @@ small {
 		})
 	</script>
 	
-	
+	<!-- Dynamic load of the material description in the textarea
+	===================================================================================================== -->
 	<script type="text/javascript">
 		$(document).ready(function() { 
 		   $('#materialTable').change(function() { 
@@ -382,6 +506,81 @@ small {
 			   } 
 	        
 		   }); 
+		});
+	</script>
+	
+	
+	<!-- Data transfer to the modal editMaterial
+	===================================================================================================== -->
+	<script type='text/javascript'>
+		$(function() {
+			$('#editMaterial').on('show.bs.modal', function(event) {
+				
+				// Button that triggered the modal
+				var button = $(event.relatedTarget) 
+				
+				// Extract info from data attributes
+				var id = button.data('id');
+				var name = button.data('name');
+				var cost = button.data('cost');
+				var type = button.data('type');
+				var desc = button.data('desc');
+				  
+				// Create the url
+				var url = "/materials/" + id + "/update";
+						
+				// Set the values at the modal components
+				document.getElementById('editMaterialForm').action = url;
+				document.getElementById('idEditMaterial').value = id;
+				document.getElementById('nameEditMaterial').value = name;
+				document.getElementById('costEditMaterial').value = cost;
+				document.getElementById('descEditMaterial').value = desc;
+				
+				// Set the select option
+				if (type=="Propio") {
+					document.getElementById('ownOption').selected = "selected";
+				} else {
+					document.getElementById('buyOption').selected = "selected";
+				}
+			})
+		});
+	</script>
+	
+	
+	<!-- Enable the edit button when the data of the data modal change 
+	===================================================================================================== -->
+	<script type="text/javascript">
+		$(document).ready(function() { 
+		   $('#editMaterialForm').change(function() { 
+				document.getElementById("editMaterialButton").disabled = false;		        
+		   }); 
+		});
+	</script>
+	
+	
+		<!-- Data transfer to the modal confirmDeleteMaterial
+	===================================================================================================== -->
+	<script type='text/javascript'>
+		$(function() {
+			$('#confirmDeleteMaterial').on('show.bs.modal', function(event) {
+				
+				// Button that triggered the modal
+				var button = $(event.relatedTarget) 
+				
+				// Extract info from data attributes
+				var id = button.data('id');
+				var name = button.data('name');
+				  
+				// Create the url
+				var url = "/materials/" + id + "/delete";
+				
+				// Create the msg
+				var msg = "Material seleccionado: " + name.bold() + ". ¿Seguro que desea eliminar este material?";
+						
+				// Set the values at the modal components
+				document.getElementById('msgMaterial').innerHTML = msg;
+				$('#confirmDeleteMaterialButton').get(0).setAttribute('action', url);
+			})
 		});
 	</script>
 

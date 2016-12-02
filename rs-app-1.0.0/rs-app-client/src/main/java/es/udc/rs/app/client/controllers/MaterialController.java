@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -67,6 +68,45 @@ public class MaterialController {
 		
 		// Create the material
 		materialService.createMaterial(material);
+		
+		// Return the main interface
+		return showMaterials(model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /materials/id/update || Update a material   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/materials/{idMaterial}/update",  method=RequestMethod.POST)
+	public String updateMaterial(@Valid @ModelAttribute("material") MaterialDTO materialDTO, 
+			BindingResult result, @PathVariable String idMaterial, Model model) throws InstanceNotFoundException, InputValidationException {
+
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+		// Convert the DTO to object
+		Material material = MaterialDTOConversor.toMaterial(materialDTO);
+		
+		// Create the material
+		materialService.updateMaterial(material);
+		
+		// Return the main interface
+		return showMaterials(model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /materials/id/delete || Delete a material   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/materials/{idMaterial}/delete",  method=RequestMethod.POST)
+	public String deleteMaterial(@PathVariable String idMaterial, Model model) throws InstanceNotFoundException, InputValidationException {
+		
+		// Convert the string id to long
+		Long id =  Long.parseLong(idMaterial, 10);
+				
+		// Delete the material
+		materialService.removeMaterial(id);
 		
 		// Return the main interface
 		return showMaterials(model);

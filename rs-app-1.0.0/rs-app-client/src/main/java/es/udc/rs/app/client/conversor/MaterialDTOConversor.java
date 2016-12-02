@@ -44,7 +44,7 @@ public class MaterialDTOConversor {
 		
 		material.setId(materialDTO.getId());
 		material.setName(materialDTO.getName());
-		material.setDescription(materialDTO.getDescription());
+		material.setDescription(materialDTO.getDescription().trim());
 		material.setInner(inner);
 		material.setCost(materialDTO.getCost());
 		
