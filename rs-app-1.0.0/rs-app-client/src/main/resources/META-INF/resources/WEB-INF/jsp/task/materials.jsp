@@ -70,6 +70,21 @@ small {
     padding: 0px;
 }
 
+/* Necessary to put the icons inside the inputs */
+.right-inner-addon {
+	position: relative;
+}
+
+.right-inner-addon input {
+	padding-right: 30px;
+}
+
+.right-inner-addon i {
+	position: absolute;
+	right: 0px;
+	padding: 10px 12px;
+}
+
 
 .btn-circle {
   width: 20px;
@@ -209,7 +224,7 @@ small {
 				<div class="row">
 					<div class="col-md-offset-10 col-md-1">
 						<button id="addPlanMaterialButton" type="button" class="btn btn-success pull-right"
-							data-toggle="modal" data-target="#addPlanMaterial">
+							data-toggle="modal" data-target="#assignPlanMaterial">
 							<span class="glyphicon glyphicon-plus"></span> 
 							Asignar material
 						</button>
@@ -232,13 +247,13 @@ small {
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach var="material" items="${planMaterials}">
+							<c:forEach var="material" items="${assignedPlanMaterials}">
 							<tr>
 								<td>${material.name}</td>
 								<td>${material.cost}</td>
 								<td>${material.type}</td>
 								<td>${material.unitsPlan}</td>
-								<td>${material.totalCostPlan}</td>
+								<td>${material.costPlan}</td>
 								<td>
 									<table>
 										<tr>
@@ -246,7 +261,7 @@ small {
 												<button id="editPlanMaterial" type="button"
 													class="btn btn-primary btn-xs center-block"
 													data-toggle="modal" data-target="#updatePlanMaterial"
-													data-id="${material.id}" data-units="${material.units}">
+													data-id="${material.id}" data-units="${material.unitsPlan}">
 													<span class="glyphicon glyphicon-edit"></span>
 												</button>
 											</td>
@@ -254,7 +269,8 @@ small {
 												<button id="deletePlanMaterial" type="button"
 													class="btn btn-danger btn-xs center-block"
 													data-toggle="modal" data-target="#confirmDeletePlanMaterial"
-													data-id="${material.id}" data-units="${material.units}">
+													data-id="${material.id}" data-name="${material.name}"
+													data-units="${material.unitsPlan}">
 													<span class="glyphicon glyphicon-remove"></span>
 												</button>
 											</td>
@@ -348,6 +364,146 @@ small {
 			</div>
 		</div>
 		<br><br>
+		
+		
+	<!-- Modal: Assignation of a new Planned Material
+	===================================================================================================== -->
+		<div class="modal fade modal" id="assignPlanMaterial" role="dialog">
+			<div class="modal-dialog modal-lg">
+
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Asignación de un nuevo material</h4>
+					</div>
+
+					<div class="modal-body">
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+								<h4>
+									Selección de material<br> 
+									<small>
+										Asigna un material previsto y necesario para poder realizar la tarea
+									</small>
+								</h4>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+							<div class="panel panel-default">
+                        	<div class="panel-body table-responsive">
+							<table id="selectPlanMaterialTable" class="table table-bordered" data-toggle="table" 
+							data-click-to-select="true" data-single-select="true">
+								<thead>
+									<tr>
+										<th class="col-md-1" data-field="state" data-checkbox="true"></th>
+										<th class="col-md-1">ID</th>
+										<th class="col-md-6">Nombre</th>
+										<th class="col-md-3">Coste</th>
+										<th class="col-md-1">Tipo</th>
+									</tr>
+								</thead>
+								<tbody>
+									<c:forEach var="material" items="${materials}">
+									<tr>
+										<td></td>
+										<td class="text-info">${material.id}</td>
+										<td>${material.name}</td>
+										<td>${material.cost}</td>
+										<td>${material.type}</td>
+									</tr>
+									</c:forEach>
+								</tbody>
+							</table>
+							</div>
+							</div>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+								<h4>
+									Datos relacionados<br> 
+									<small>
+										Establece el nº de unidades previstas a usar de este material
+									</small>
+								</h4>
+							</div>
+						</div>
+					
+						<form:form id="assignPlanMaterial" class="form" method="post" modelAttribute="assignMaterial" 
+						role="form" action='/projects/${idProject}/phases/${idPhase}/tasks/${idTask}/materials/plan' 
+						data-toggle="validator">
+
+							<div class="form-group">
+								<div class="row">
+									<input type="hidden" name="idTask" id="idTask" value="${idTask}">
+									<input type="hidden" name="idMaterial" id="idMaterialPlan">
+									<input type="hidden" name="plan" value=true>
+									<input type="hidden" name="real" value=false>
+								
+									<div class="form-group col-md-offset-5 col-md-2 has-feedback">
+										<label class="control-label">Unidades</label> 
+										<div class="right-inner-addon">
+											<input type="text" class="form-control" pattern="^[1-9]\d*$" 
+											maxlength="3" placeholder="1-999" name="unitsPlan" required>
+											<span class="glyphicon form-control-feedback"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<div class="row">
+								<button id="assignPlanMaterialButton" type="submit"
+								 class="btn btn-primary center-block" disabled>
+									Asignar
+								</button>
+								</div>
+							</div>
+						</form:form>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+	<!-- Modal: Confirmation of delete Material
+	===================================================================================================== -->
+		<div class="modal fade" id="confirmDeletePlanMaterial" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Borrado de asignación</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-12">
+								<p id="msgMaterialPlan" align="center"></p>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="row center-block">
+							<div class="col-md-offset-3 col-md-3">
+								<form id="confirmDeleteMaterialPlanButton" action='' method="post">
+									<button type="submit" class="btn btn-danger btn-block">Si</button>
+								</form>
+							</div>
+							<div class="col-md-3">
+								<button type="button" class="btn btn-default btn-block"
+									data-dismiss="modal">No</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	
+		
+		
 	</div>
 		
 
@@ -378,6 +534,59 @@ small {
 				language : 'es'
 			});
 		})
+	</script>
+	
+	
+	<!-- Enable in the modal, the assign button when the 
+		 user selects a Plan Material at the Task. 
+	===================================================================================================== -->
+	<script type="text/javascript">
+		$(document).ready(function() { 
+		   $('#selectPlanMaterialTable').change(function() { 
+			   
+			   // Get info of the table
+			   var json = JSON.parse(JSON.stringify($('#selectPlanMaterialTable').bootstrapTable('getSelections')));
+			   var size = json.length;
+			   
+			   // If a option is selected then we can assign a Material
+			   if (size > 0) {
+				   var idProfile = json['0']['1'];
+				   document.getElementById("idMaterialPlan").value = idProfile;
+				   document.getElementById("assignPlanMaterialButton").disabled = false;
+			   } 
+			   else {
+				   document.getElementById("assignPlanMaterialButton").disabled = true;
+			   }		        
+		   }); 
+		});
+	</script>
+	
+	
+	<!-- Data transfer to the modal confirmDeletePlanMaterial
+	===================================================================================================== -->
+	<script type='text/javascript'>
+		$(function() {
+			$('#confirmDeletePlanMaterial').on('show.bs.modal', function(event) {
+				
+				// Button that triggered the modal
+				var button = $(event.relatedTarget) 
+				
+				// Extract info from data attributes
+				var id = button.data('id');
+				var name = button.data('name');
+				
+				// Set the message and the url
+				var msg = "¿Seguro que desea desasignar el material "
+						  + name.bold() + " de la planificación de la tarea?";
+
+				var url = "/projects/" + ${idProject} + "/phases/" +  ${idPhase} + "/tasks/" + 
+				  ${idTask} + "/materials/" + id + "/delete";
+				  
+				// Set the values at the modal components
+				document.getElementById('msgMaterialPlan').innerHTML = msg;
+				$('#confirmDeleteMaterialPlanButton').get(0).setAttribute('action', url);
+			})
+		});
 	</script>
 
 </body>

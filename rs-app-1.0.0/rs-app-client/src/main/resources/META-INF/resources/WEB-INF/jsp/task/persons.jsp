@@ -760,8 +760,7 @@ small {
 				</div>
 			</div>
 		</div>
-	</div>
-	
+			
 	
 	<!-- Modal: Conclude Person
 	===================================================================================================== -->
@@ -849,6 +848,8 @@ small {
 				</div>
 			</div>
 		</div>
+		
+	</div>
 	
 
 	<!-- Bootstrap core JavaScript

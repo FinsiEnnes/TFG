@@ -62,7 +62,7 @@ small {
     padding-left: 12px;
 }
 
-/* Neccesar to adapt a table in the modal */
+/* Neccesary to adapt a table in the modal */
 .table-responsive {
     max-height:154px;
     padding: 0px;

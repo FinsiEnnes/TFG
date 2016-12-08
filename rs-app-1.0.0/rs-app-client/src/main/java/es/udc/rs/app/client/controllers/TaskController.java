@@ -17,16 +17,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import es.udc.rs.app.client.conversor.AssignmentMaterialDTOConversor;
 import es.udc.rs.app.client.conversor.AssignmentPersonDTOConversor;
 import es.udc.rs.app.client.conversor.AssignmentProfileDTOConversor;
 import es.udc.rs.app.client.conversor.HistoryPersonDTOConversor;
+import es.udc.rs.app.client.conversor.MaterialDTOConversor;
 import es.udc.rs.app.client.conversor.PhaseDTOConversor;
 import es.udc.rs.app.client.conversor.PredecessorDTOConversor;
 import es.udc.rs.app.client.conversor.ProfessionalCategoryDTOConversor;
 import es.udc.rs.app.client.conversor.TaskDTOConversor;
+import es.udc.rs.app.client.dto.AssignmentMaterialDTO;
 import es.udc.rs.app.client.dto.AssignmentPersonDTO;
 import es.udc.rs.app.client.dto.AssignmentProfileDTO;
 import es.udc.rs.app.client.dto.HistoryPersonDTO;
+import es.udc.rs.app.client.dto.MaterialDTO;
 import es.udc.rs.app.client.dto.PhaseDTO;
 import es.udc.rs.app.client.dto.PredecessorDTO;
 import es.udc.rs.app.client.dto.ProfessionalCategoryDTO;
@@ -35,9 +39,11 @@ import es.udc.rs.app.client.util.ClientUtilMethods;
 import es.udc.rs.app.client.util.JsonConversor;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
+import es.udc.rs.app.model.domain.AssignmentMaterial;
 import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
 import es.udc.rs.app.model.domain.HistoryPerson;
+import es.udc.rs.app.model.domain.Material;
 import es.udc.rs.app.model.domain.Milestone;
 import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Predecessor;
@@ -47,6 +53,7 @@ import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TaskLinkType;
 import es.udc.rs.app.model.service.assignment.AssignmentService;
+import es.udc.rs.app.model.service.material.MaterialService;
 import es.udc.rs.app.model.service.person.PersonService;
 import es.udc.rs.app.model.service.project.ProjectService;
 
@@ -61,6 +68,9 @@ public class TaskController {
 	
 	@Autowired 
 	private AssignmentService assignmentService;
+	
+	@Autowired 
+	private MaterialService materialService;
 	
 	//-----------------------------------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------------------------
@@ -696,7 +706,69 @@ public class TaskController {
 					method=RequestMethod.GET)
     public String showMaterials(@PathVariable String idProject, @PathVariable String idPhase,
     					   @PathVariable String idTask, Model model) throws InstanceNotFoundException {
+		
+		Long longIdTask = Long.parseLong(idTask, 10);
+		
+		// Find all the materials
+		List<Material> materials = materialService.findAllMaterials();
+		
+		// Convert the previous object to DTO
+		List<MaterialDTO> materialsDTO = MaterialDTOConversor.toMaterialDTOList(materials);
+		
+		// Find the assignment of materials
+		Task task = projectService.findTask(longIdTask);
+		List<AssignmentMaterial> amPlan = assignmentService.findAssignmentMaterialByTaskPlan(task);
+		List<AssignmentMaterialDTO> amPlanDTO = AssignmentMaterialDTOConversor.toAssignmentMaterialDTOList(amPlan);
+		
+		// Create the model
+		model.addAttribute("idProject", idProject);
+		model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
+		model.addAttribute("materials", materialsDTO);
+		model.addAttribute("assignedPlanMaterials", amPlanDTO);
     	
 		return "task/materials";
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [GET]-> /projects/id/phases/id/tasks/id/materials/plan || Assignment of planned materials to the task.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/materials/plan",  
+					method=RequestMethod.POST)
+    public String assignPlanMaterials(@Valid @ModelAttribute("assignMaterial") AssignmentMaterialDTO amDTO,  
+    		BindingResult result, @PathVariable String idProject, @PathVariable String idPhase,
+    		@PathVariable String idTask, Model model) throws InstanceNotFoundException, InputValidationException {
+		
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+		// Convert the DTO to object 
+		AssignmentMaterial am = AssignmentMaterialDTOConversor.toAAssignmentMaterial(amDTO);
+		
+		// Create the assignment
+		assignmentService.createAssignmentMaterial(am);
+		
+		return showMaterials(idProject, idPhase, idTask, model); 
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [GET]-> /projects/id/phases/id/tasks/id/materials/id/delete || Delete of an assignment materials.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/materials/{idAM}/delete",  
+					method=RequestMethod.POST)
+	public String deleteAssignedMaterial(@PathVariable String idProject, @PathVariable String idPhase,
+    		@PathVariable String idTask, @PathVariable String idAM, Model model) throws InstanceNotFoundException {
+		
+    	// Convert the string id to long
+    	Long longIdAM = Long.parseLong(idAM, 10);
+    	
+    	// Remove the assignment
+    	assignmentService.removeAssignmentMaterial(longIdAM);
+    	
+    	// Return to the main material menu
+		return showMaterials(idProject, idPhase, idTask, model); 
 	}
 }
