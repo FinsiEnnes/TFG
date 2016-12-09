@@ -26,6 +26,7 @@ import es.udc.rs.app.client.conversor.PhaseDTOConversor;
 import es.udc.rs.app.client.conversor.PredecessorDTOConversor;
 import es.udc.rs.app.client.conversor.ProfessionalCategoryDTOConversor;
 import es.udc.rs.app.client.conversor.TaskDTOConversor;
+import es.udc.rs.app.client.conversor.TaskIncidentDTOConversor;
 import es.udc.rs.app.client.dto.AssignmentMaterialDTO;
 import es.udc.rs.app.client.dto.AssignmentPersonDTO;
 import es.udc.rs.app.client.dto.AssignmentProfileDTO;
@@ -35,6 +36,7 @@ import es.udc.rs.app.client.dto.PhaseDTO;
 import es.udc.rs.app.client.dto.PredecessorDTO;
 import es.udc.rs.app.client.dto.ProfessionalCategoryDTO;
 import es.udc.rs.app.client.dto.TaskDTO;
+import es.udc.rs.app.client.dto.TaskIncidentDTO;
 import es.udc.rs.app.client.util.ClientUtilMethods;
 import es.udc.rs.app.client.util.JsonConversor;
 import es.udc.rs.app.exceptions.InputValidationException;
@@ -51,6 +53,7 @@ import es.udc.rs.app.model.domain.Priority;
 import es.udc.rs.app.model.domain.ProfessionalCategory;
 import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
+import es.udc.rs.app.model.domain.TaskIncident;
 import es.udc.rs.app.model.domain.TaskLinkType;
 import es.udc.rs.app.model.service.assignment.AssignmentService;
 import es.udc.rs.app.model.service.material.MaterialService;
@@ -717,8 +720,12 @@ public class TaskController {
 		
 		// Find the assignment of materials
 		Task task = projectService.findTask(longIdTask);
+		
 		List<AssignmentMaterial> amPlan = assignmentService.findAssignmentMaterialByTaskPlan(task);
 		List<AssignmentMaterialDTO> amPlanDTO = AssignmentMaterialDTOConversor.toAssignmentMaterialDTOList(amPlan);
+		
+		List<AssignmentMaterial> amReal = assignmentService.findAssignmentMaterialByTaskReal(task);
+		List<AssignmentMaterialDTO> amRealDTO = AssignmentMaterialDTOConversor.toAssignmentMaterialDTOList(amReal);
 		
 		// Create the model
 		model.addAttribute("idProject", idProject);
@@ -726,15 +733,34 @@ public class TaskController {
 		model.addAttribute("idTask", idTask);
 		model.addAttribute("materials", materialsDTO);
 		model.addAttribute("assignedPlanMaterials", amPlanDTO);
+		model.addAttribute("assignedRealMaterials", amRealDTO);
     	
 		return "task/materials";
 	}
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [GET]-> /projects/id/phases/id/tasks/id/materials/plan || Assignment of planned materials to the task.   
+	// [POST]-> /projects/id/phases/id/tasks/id/materials || Assignment of planned materials to the task.   
 	//-----------------------------------------------------------------------------------------------------
-	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/materials/plan",  
+	private Long existsThisAssignment(Long idTask, Long idMaterial) throws InstanceNotFoundException {
+		
+		Long idAssignmentMaterial = null;
+		
+		Task task = projectService.findTask(idTask);
+		List<AssignmentMaterial> ams = assignmentService.findAssignmentMaterialByTask(task);
+		
+		for (AssignmentMaterial am : ams) {
+			if (am.getMaterial().getId() == idMaterial) {
+				idAssignmentMaterial = am.getId();
+				break;
+			}
+		}
+		
+		return idAssignmentMaterial;
+	}
+	
+	
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/materials",  
 					method=RequestMethod.POST)
     public String assignPlanMaterials(@Valid @ModelAttribute("assignMaterial") AssignmentMaterialDTO amDTO,  
     		BindingResult result, @PathVariable String idProject, @PathVariable String idPhase,
@@ -744,18 +770,80 @@ public class TaskController {
             return "error";
         }
 		
-		// Convert the DTO to object 
-		AssignmentMaterial am = AssignmentMaterialDTOConversor.toAAssignmentMaterial(amDTO);
-		
-		// Create the assignment
-		assignmentService.createAssignmentMaterial(am);
+		// Check if the assignment is in the planning or execution
+		if (amDTO.isPlan()) {
+			
+			AssignmentMaterial am = AssignmentMaterialDTOConversor.toAAssignmentMaterial(amDTO);
+			assignmentService.createAssignmentMaterial(am);
+			
+		} else if (amDTO.isReal()) {
+			
+			// Check if the assignment already exits 
+			Long idExistedAssigMat = existsThisAssignment(amDTO.getIdTask(), amDTO.getIdMaterial());
+			
+			if (idExistedAssigMat != null) {
+				
+				// Get the AssignmentMaterial
+				AssignmentMaterial am = assignmentService.findAssignmentMaterial(idExistedAssigMat);
+				
+				// Update the data
+				am.setReal(true);
+				am.setUnitsReal(amDTO.getUnitsPlan());
+				assignmentService.updateAssignmentMaterial(am);				
+			} 
+			
+			else {
+				
+				// Set the realUnits
+				amDTO.setUnitsReal(amDTO.getUnitsPlan());
+				amDTO.setUnitsPlan(null);
+				
+				// Create the assignment
+				AssignmentMaterial am = AssignmentMaterialDTOConversor.toAAssignmentMaterial(amDTO);
+				assignmentService.createAssignmentMaterial(am);
+			}
+		}
+
 		
 		return showMaterials(idProject, idPhase, idTask, model); 
 	}
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [GET]-> /projects/id/phases/id/tasks/id/materials/id/delete || Delete of an assignment materials.   
+	// [GET]-> /projects/id/phases/id/tasks/id/materials/id/delete || Update an assignment materials.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/materials/{idAM}/update",  
+					method=RequestMethod.POST)
+	public String updateAssignedMaterial(@Valid @ModelAttribute("assignMaterial") AssignmentMaterialDTO amDTO,  
+    		BindingResult result, @PathVariable String idProject, @PathVariable String idPhase,
+    		@PathVariable String idTask, @PathVariable String idAM, Model model) throws InstanceNotFoundException, InputValidationException {
+		
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+		Long longIdAM = Long.parseLong(idAM, 10);
+		
+		AssignmentMaterial am = assignmentService.findAssignmentMaterial(longIdAM);
+			
+		// Update the units in function of the task state
+		if (amDTO.isPlan()) {
+			am.setUnitsPlan(amDTO.getUnitsPlan());
+		}
+		else if (amDTO.isReal()) {
+			am.setUnitsReal(amDTO.getUnitsPlan());
+		}
+			
+		// Update the object in the database
+		assignmentService.updateAssignmentMaterial(am);
+		
+		// Return the main material menu
+		return showMaterials(idProject, idPhase, idTask, model); 
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/phases/id/tasks/id/materials/id/delete || Delete of an assignment materials.   
 	//-----------------------------------------------------------------------------------------------------
 	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/materials/{idAM}/delete",  
 					method=RequestMethod.POST)
@@ -770,5 +858,40 @@ public class TaskController {
     	
     	// Return to the main material menu
 		return showMaterials(idProject, idPhase, idTask, model); 
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------------------------
+	//------------------------------------------- TASK INCIDENTS ------------------------------------------  
+	//-----------------------------------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------------------------
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [GET]-> /projects/id/phases/id/tasks/id/incidents || Get the incidents assigned at this task.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/incidents",
+					method=RequestMethod.GET)
+    public String showIncidents(@PathVariable String idProject, @PathVariable String idPhase,
+    					   @PathVariable String idTask, Model model) throws InstanceNotFoundException {
+		
+    	// Convert the string id to long
+    	Long longIdTask = Long.parseLong(idTask, 10);
+    	
+    	// Get the task
+    	Task task = projectService.findTask(longIdTask);
+    	
+    	// Get the incidents of this task
+		List<TaskIncident> taskIncidents = projectService.findTaskIncidentByTask(task);
+		List<TaskIncidentDTO> taskIncidentsDTO = TaskIncidentDTOConversor.toTaskIncidentDTOList(taskIncidents);
+		
+		// Create the model
+		model.addAttribute("idProject", idProject);
+		model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
+		model.addAttribute("incidents", taskIncidentsDTO);
+		
+		return "task/incidents";
 	}
 }

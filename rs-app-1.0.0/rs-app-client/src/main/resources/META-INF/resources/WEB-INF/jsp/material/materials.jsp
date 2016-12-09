@@ -141,8 +141,6 @@ small {
     		================================================== -->
 			<div class="col-md-9">
 			
-				<!-- Planned Materials assigned in the Task
-    			================================================== -->
 				<h3>
 					Listado de materiales<br> 
 					<small>

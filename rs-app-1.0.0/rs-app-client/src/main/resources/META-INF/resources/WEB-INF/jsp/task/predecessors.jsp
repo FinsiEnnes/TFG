@@ -168,7 +168,8 @@ small {
 							<li class="menu">
 								<ul>
 								<li>
-									<a href="#">Incidencias
+									<a href="/projects/${idProject}/phases/${idPhase}/tasks/${idTask}/incidents">
+										Incidencias
 										<span class="glyphicon glyphicon-fire pull-right"></span>
 									</a>
 								</li>
