@@ -487,7 +487,8 @@ public class JsonConversor {
 		String day = ClientUtilMethods.convertDateToString(workload.getDayDate());
 		
 		// Create the JSON object
-    	jsonObject.put("idHPerson", workload.getId());
+		jsonObject.put("id", workload.getId());
+    	jsonObject.put("idHPerson", workload.getHistoryPerson().getId());
     	jsonObject.put("personName", person);
     	jsonObject.put("personProfile", profile);
     	jsonObject.put("day", day);

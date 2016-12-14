@@ -69,6 +69,21 @@ small {
     padding: 0px;
 }
 
+/* Necessary to put the icons inside the inputs */
+.right-inner-addon {
+	position: relative;
+}
+
+.right-inner-addon input {
+	padding-right: 30px;
+}
+
+.right-inner-addon i {
+	position: absolute;
+	right: 0px;
+	padding: 10px 12px;
+}
+
 </style>
 </head>
 
@@ -206,11 +221,11 @@ small {
     		================================================== -->
 				<div class="row">
 					<div class="col-md-3">
-						<div id="date" class="datepicker"></div>
+						<div id="calendar" class="datepicker"></div>
 					</div>
 					
 					<div class="col-md-offset-1 col-md-8">
-						<table id="personAssignTable" class="table table-bordered"	
+						<table id="personTable" class="table table-bordered"	
 						data-toggle="table" data-height="229" data-click-to-select="true">
 						<thead>
 							<tr>
@@ -239,15 +254,23 @@ small {
 					</div>
 				</div>
 				
-				
+				<div class="row">
+					<div class=" col-md-3">
+						<button id="reset-date" type="button" class="btn btn-primary center-block"
+							data-toggle="modal" data-target="#formProfileAssignation">
+							<span class="glyphicon glyphicon-refresh"></span> 
+							Reset
+						</button>
+					</div>
+				</div>
 				
 				<!-- Workload table
     			================================================== -->
     			<br><br><br>
 				<div class="row">
-					<div class="form-group col-md-offset-1 col-md-5 pull-left">
+					<div class="form-group col-md-offset-1 col-md-4 pull-left">
 						<h4 class="subtitle">
-							Día seleccionado: Ninguno<br> 
+							Carga de trabajo<br> 
 						</h4>
 					</div>
 					<div class="col-md-offset-2 col-md-1">
@@ -257,41 +280,42 @@ small {
 						</button>
 					</div>
 					<div class="col-md-1">
-						<button type="button" class="btn btn-primary pull-right"
-							data-toggle="modal" data-target="#formProfileAssignation">
+						<button type="button" id="updateWorkloadButton" class="btn btn-primary pull-right" 
+								data-toggle="modal"	data-target="#formProfileAssignation" disabled>
 							<span class="glyphicon glyphicon-edit"></span> 
 						</button>
 					</div>
 					<div class="col-md-1">
-						<button type="button" class="btn btn-danger pull-right"
-							data-toggle="modal" data-target="#formProfileAssignation">
+						<button type="button" id="deleteWorkloadButton" class="btn btn-danger pull-right"	
+								data-toggle="modal" data-target="#deleteWorkload" disabled>
 							<span class="glyphicon glyphicon-remove"></span> 
 						</button>
 					</div>
 				</div>
 			
 				<div class="row">
-					<div class="form-group col-md-offset-1 col-md-10">
+					<div class="form-group col-md-offset-2 col-md-8">
 					<table id="workloadTable" class="table table-bordered"	
-						   data-toggle="table" data-height="162">
+						   data-toggle="table" data-height="229" data-single-select="true">
 						<thead>
 							<tr>
-								<th class="col-md-1" data-field="state" data-checkbox="true"></th>
-								<th class="col-md-1">ID</th>
-								<th class="col-md-3">Persona</th>
-								<th class="col-md-3">Perfil</th>
-								<th class="col-md-2">Horas</th>
-								<th class="col-md-2">H. extra</th>
+								<th class="col-md-1" data-checkbox="true" data-field="check"></th>
+								<th class="col-md-1" data-field="id"        >ID</th>
+								<th class="col-md-2" data-field="day"       >Día</th>
+								<th class="col-md-4" data-field="person"    >Persona</th>
+								<th class="col-md-2" data-field="hours"     >Horas</th>
+								<th class="col-md-2" data-field="extrahours">H. extra</th>
 							</tr>
 						</thead>
 						<tbody>
 							<c:forEach var="workload" items="${workloads}">
 							<tr>
 								<td></td>
-								<td>${workload.person}</td>
-								<td>${workload.profile}</td>
+								<td class="text-info">${workload.id}</td>
+								<td>${workload.day}</td>
+								<td>${workload.personName}</td>
 								<td>${workload.hours}</td>
-								<td align="center">${workload.extraHours}</td>
+								<td>${workload.extraHours}</td>
 							</tr>
 							</c:forEach>
 						</tbody>
@@ -299,6 +323,7 @@ small {
 					</div>
 				</div>
 
+				<br><br>
 			</div>
 		</div>
 		
@@ -330,7 +355,7 @@ small {
 							<div class="form-group col-md-offset-1 col-md-10">
 							<div class="panel panel-default">
                         	<div class="panel-body table-responsive">
-							<table id="personAssignedTable2" class="table table-bordered"	
+							<table id="personTable2" class="table table-bordered"	
 							data-toggle="table" data-click-to-select="true" data-single-select="true">
 							<thead>
 								<tr>
@@ -373,7 +398,8 @@ small {
 						</div>
 					
 						<form:form id="assignAPForm" class="form" method="post" modelAttribute="workload"
-						role="form" action='/projects/${idProject}/phases/${idPhase}/tasks/${idTask}/workloads'>
+						role="form" action='/projects/${idProject}/phases/${idPhase}/tasks/${idTask}/workloads'
+						data-toggle="validator">
 
 							<!-- First row -->
 							<div class="form-group">
@@ -384,16 +410,22 @@ small {
 									   data-format="dd/MM/yyyy" placeholder="dd/mm/aaaa" name="dayDate" required>
 									</div>
 
-									<div class="form-group col-md-2">
+									<div class="form-group has-feedback col-md-2">
 										<label for="inputSurname1" class="control-label">Horas</label> 
-										<input type="text" class="form-control"
-									   		   name="hours" required>
+										<div class="right-inner-addon">
+											<input type="text" class="form-control" placeholder="0-8"
+										   		   name="hours" pattern="^[0-8]\d*$" maxlength="1" required>
+										   	<span class="glyphicon form-control-feedback"></span>
+										</div>
 									</div>
 									
-									<div class="form-group col-md-2">
+									<div class="form-group has-feedback col-md-2">
 										<label for="inputSurname1" class="control-label">Horas extra</label> 
-										<input type="text" class="form-control"
-									   		   name="extraHours" required>
+										<div class="right-inner-addon">
+											<input type="text" class="form-control" placeholder="0-8"
+										   		   name="extraHours" pattern="^[0-8]\d*$" maxlength="1" required>
+										   	<span class="glyphicon form-control-feedback"></span>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -458,15 +490,104 @@ small {
                     }
                  }
       
-			}).on('changeDate', function(ev){
-	            // do what you want here
-	            var date = $("#date").data("datepicker").getDate();
-			    formatted = date.getDate()  + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
-	            alert("han clikado en la fecha " + formatted);
-	        })
+			})
 	        ;
 
 		})
+	</script>
+	
+	
+	<!-- Dynamic loads of workload
+	===================================================================================================== -->
+	<script>
+
+		var $table = $('#workloadTable');	
+		
+		// PERSON TABLE CHANGES
+		//------------------------------------------------------------------------------------------------
+		$(document).ready(function() { 
+			$('#personTable').change(function() {    
+				thereAreChanges();			        
+			}); 
+		});
+		
+		// CALENDAR CHANGES
+		//------------------------------------------------------------------------------------------------
+		$(document).ready(function () {
+			$('#calendar').datepicker().on('changeDate', function (ev) {
+				thereAreChanges();
+			});
+		});
+		
+		$(document).ready(function() { 
+			$("#reset-date").click(function(){
+				$('#calendar').val('').datepicker('update');
+				thereAreChanges();
+			})
+		});
+		
+		// DYNAMIC LOAD
+		//------------------------------------------------------------------------------------------------
+		function thereAreChanges() {
+			// Get info of the table
+			var json = JSON.parse(JSON.stringify($('#personTable').bootstrapTable('getSelections')));
+
+		  	// Load dynamicly the data
+		  	if (json.length > 0) {
+		  		$table.bootstrapTable('load', loadDataWorkload(json));
+		  	} 
+		  	
+		  	// If there arent selections the table is empty
+		  	else {
+		  		$table.bootstrapTable('removeAll');	
+		  	}
+		}
+		
+		
+	    function loadDataWorkload(json) {
+	    	
+	    	// Init variables
+	        var rows = [];
+	        var nWorkloads = ${workloads}.length;
+	        
+	        // Get the select day
+	        var calendarDay = $("#calendar").data("datepicker").getDate();
+	        var day = null;
+	        
+	        if (calendarDay != null) {
+	        	numberDay = calendarDay.getDate();
+	        	if (numberDay < 10) {
+	        		numberDay = "0" + numberDay;
+	        	}
+	        	
+	        	numberMonth = (calendarDay.getMonth() + 1);
+	        	if (numberMonth < 10) {
+	        		numberMonth = "0" + numberMonth;
+	        	}
+	        	
+				day = numberDay + "/" + numberMonth + "/" + calendarDay.getFullYear();
+	        }
+	        
+	        for (var i = 0; i < nWorkloads; i++) {
+	        	for (j = 0; j < json.length; j++) {
+					var idHPerson = json[j]['1'];
+									   
+		        	if (${workloads}[i].idHPerson == idHPerson) {
+		        		//alert("PickerDay: " + day + " || WorkDay: " + ${workloads}[i].day)
+		        		if (day==null || ${workloads}[i].day==day)
+			            rows.push({
+			            	check: false,
+			            	id:${workloads}[i].id,
+			                day: ${workloads}[i].day,
+			                person:${workloads}[i].personName,
+			                hours: ${workloads}[i].hours,
+			                extrahours: ${workloads}[i].extraHours
+			            });
+		        	} 
+	        	}
+	        }
+	        return rows;
+	    } 
 	</script>
 	
 	
@@ -474,10 +595,10 @@ small {
 	===================================================================================================== -->
 	<script type="text/javascript">
 		$(document).ready(function() { 
-		   $('#personAssignedTable2').change(function() { 
+		   $('#personTable2').change(function() { 
 			   
 			   // Get info of the table
-			   var json = JSON.parse(JSON.stringify($('#personAssignedTable2').bootstrapTable('getSelections')));
+			   var json = JSON.parse(JSON.stringify($('#personTable2').bootstrapTable('getSelections')));
 			   var size = json.length;
 			   			   
 			   // If a option is selected then we can add a Person as manager
@@ -489,6 +610,32 @@ small {
 			   } 
 			   else {
 				   document.getElementById("createWorkloadButton").disabled = true;
+			   }		        
+		   }); 
+		});
+	</script>
+	
+	<!-- Enable the edit/remove button of the workload table. 
+	===================================================================================================== -->
+	<script type="text/javascript">
+		$(document).ready(function() { 
+		   $('#workloadTable').change(function() { 
+			   
+			   // Get info of the table
+			   var json = JSON.parse(JSON.stringify($('#workloadTable').bootstrapTable('getSelections')));
+			   var size = json.length;
+			   			   
+			   // If a option is selected then we can add a Person as manager
+			   if (size > 0) {
+				   var idPerson = json['0']['1'];
+
+				   document.getElementById("idHPerson").value = idPerson;
+				   document.getElementById("updateWorkloadButton").disabled = false;
+				   document.getElementById("deleteWorkloadButton").disabled = false;
+			   } 
+			   else {
+				   document.getElementById("updateWorkloadButton").disabled = true;
+				   document.getElementById("deleteWorkloadButton").disabled = true;
 			   }		        
 		   }); 
 		});
