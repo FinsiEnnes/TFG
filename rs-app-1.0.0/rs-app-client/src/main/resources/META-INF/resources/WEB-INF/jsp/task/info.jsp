@@ -142,7 +142,7 @@ textarea {
 							<li class="menu">
 								<ul>
 								<li>
-									<a href="#"  class="active"> Información 
+									<a href="#" class="active"> Información 
 										<span class="glyphicon glyphicon-info-sign pull-right"></span>
 									</a>
 								</li>
@@ -173,7 +173,8 @@ textarea {
 								
 								<ul>
 								<li>
-									<a href="#">Carga de trabajo 
+									<a href="/projects/${idProject}/phases/${idPhase}/tasks/${idTask}/workloads">
+										Carga de trabajo 
 										<span class="glyphicon glyphicon-time pull-right"></span>
 									</a>
 								</li>

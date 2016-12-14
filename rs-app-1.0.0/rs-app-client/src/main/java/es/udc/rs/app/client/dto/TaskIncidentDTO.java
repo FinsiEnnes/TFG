@@ -6,6 +6,7 @@ public class TaskIncidentDTO {
 	private Long id;
 	private Long idIncident;
 	private Long idTask;
+	private String idDamage;
 	private String damage;
 	private String reason;
 	private String result;
@@ -17,15 +18,20 @@ public class TaskIncidentDTO {
 
 
 	public TaskIncidentDTO(Long id, Long idIncident, Long idTask,
-			String damage, String reason, String result, Integer loss) {
+			String idDamage, String damage, String reason, String result,
+			Integer loss) {
 		this.id = id;
 		this.idIncident = idIncident;
 		this.idTask = idTask;
+		this.idDamage = idDamage;
 		this.damage = damage;
 		this.reason = reason;
 		this.result = result;
 		this.loss = loss;
 	}
+
+
+
 
 
 	public Long getId() {
@@ -55,6 +61,15 @@ public class TaskIncidentDTO {
 
 	public void setIdTask(Long idTask) {
 		this.idTask = idTask;
+	}
+
+	public String getIdDamage() {
+		return idDamage;
+	}
+
+
+	public void setIdDamage(String idDamage) {
+		this.idDamage = idDamage;
 	}
 
 

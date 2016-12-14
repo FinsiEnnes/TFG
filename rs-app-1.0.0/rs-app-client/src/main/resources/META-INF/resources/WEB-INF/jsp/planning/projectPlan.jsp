@@ -172,7 +172,7 @@ body {
 											<div class="form-group">
 												<div class="row">
 													<label class="col-md-2 control-label">Fase</label>
-													<input type="hidden" name="idPhase" id="idPhase"
+													<input type="hidden" name="idPhase" id="idPhaseT"
 														   value="${phases[0].id}">
 													<div class="form-group col-md-3">
 														<select class="form-control" name="namePhase" 
@@ -277,7 +277,7 @@ body {
 											<div class="form-group">
 												<div class="row">
 													<label class="col-md-2 control-label">Fase</label> <input
-														type="hidden" name="idPhase" id="idPhase"
+														type="hidden" name="idPhase" id="idPhaseMS"
 														value="${phases[0].id}">
 													<div class="form-group col-md-3">
 														<select class="form-control" name="namePhase"
@@ -576,10 +576,18 @@ body {
 
 	<!-- Scripts neccesaries to get the id in selects
     ================================================== -->
-	<script type="text/javascript">
-		$("#namePhase").change(function() {
+    <script type="text/javascript">
+		$("#namePhaseNewTask").change(function() {
 			  var id = $(this).children(":selected").attr("id");
-			  document.getElementById("idPhase").value = id;
+			  document.getElementById("idPhaseT").value = id;
+			  
+		});
+	</script>
+	
+	<script type="text/javascript">
+		$("#namePhaseNewMS").change(function() {
+			  var id = $(this).children(":selected").attr("id");
+			  document.getElementById("idPhaseMS").value = id;
 			  
 		});
 	</script>

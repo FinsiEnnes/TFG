@@ -6,13 +6,16 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import es.udc.rs.app.client.dto.TaskIncidentDTO;
 import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
 import es.udc.rs.app.model.domain.Material;
 import es.udc.rs.app.model.domain.Milestone;
+import es.udc.rs.app.model.domain.Person;
 import es.udc.rs.app.model.domain.Phase;
 import es.udc.rs.app.model.domain.Predecessor;
 import es.udc.rs.app.model.domain.Task;
+import es.udc.rs.app.model.domain.Workload;
 
 public class JsonConversor {
 
@@ -424,15 +427,87 @@ public class JsonConversor {
 
 		int nMaterials = materials.size();
 
-		// The jsonObject each element of the previous arrays
 		JSONObject jsonObject;
-
-		// In this jsonArray we add the data of phases, tasks and milestones as jsonObjects
 		JSONArray jsonArrayData = new JSONArray();
 
 		// Convert the info
 		for(int i=0; i<nMaterials; i++){			
 			jsonObject = getMaterialJSONForTables(materials.get(i));
+			jsonArrayData.add(jsonObject);
+		}
+
+		return jsonArrayData;
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// Create a JSON with the result of the TaskIncidents to show in a text. 
+	//-----------------------------------------------------------------------------------------------------
+	@SuppressWarnings("unchecked")
+	private static JSONObject getIncidentResult(TaskIncidentDTO incident) {
+		
+		JSONObject jsonObject = new JSONObject();
+		
+    	jsonObject.put("id", incident.getId());
+    	jsonObject.put("result", incident.getResult());
+
+    	return jsonObject;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static JSONArray geIncidentResultAsJSON(List<TaskIncidentDTO> incidents) {
+
+		int size = incidents.size();
+
+		JSONObject jsonObject;
+		JSONArray jsonArrayData = new JSONArray();
+
+		// Convert the info
+		for(int i=0; i<size; i++){			
+			jsonObject = getIncidentResult(incidents.get(i));
+			jsonArrayData.add(jsonObject);
+		}
+
+		return jsonArrayData;
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// Create a JSON with the data of the Workload 
+	//-----------------------------------------------------------------------------------------------------
+	@SuppressWarnings("unchecked")
+	private static JSONObject getWorkload(Workload workload) {
+		
+		JSONObject jsonObject = new JSONObject();
+		
+		// Create the data
+		Person p = workload.getHistoryPerson().getPerson();
+		String person = p.getName() + " " + p.getSurname1() + " " + p.getSurname2();
+		String profile = workload.getHistoryPerson().getProfcatg().getName();
+		String day = ClientUtilMethods.convertDateToString(workload.getDayDate());
+		
+		// Create the JSON object
+    	jsonObject.put("idHPerson", workload.getId());
+    	jsonObject.put("personName", person);
+    	jsonObject.put("personProfile", profile);
+    	jsonObject.put("day", day);
+    	jsonObject.put("hours", workload.getHours());
+    	jsonObject.put("extraHours", workload.getExtraHours());
+
+    	return jsonObject;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static JSONArray geWorkloadAsJSON(List<Workload> workloads) {
+
+		int size = workloads.size();
+
+		JSONObject jsonObject;
+		JSONArray jsonArrayData = new JSONArray();
+
+		// Convert the info
+		for(int i=0; i<size; i++){			
+			jsonObject = getWorkload(workloads.get(i));
 			jsonArrayData.add(jsonObject);
 		}
 

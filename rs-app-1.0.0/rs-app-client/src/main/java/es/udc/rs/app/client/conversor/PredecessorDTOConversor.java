@@ -11,7 +11,6 @@ import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Predecessor;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TaskLinkType;
-import es.udc.rs.app.model.service.person.PersonService;
 import es.udc.rs.app.model.service.project.ProjectService;
 
 @Component
@@ -20,7 +19,7 @@ public class PredecessorDTOConversor {
 	private static ProjectService projectService;
 	
 	@Autowired
-    public PredecessorDTOConversor(ProjectService projectService, PersonService personService) {
+    public PredecessorDTOConversor(ProjectService projectService) {
 		PredecessorDTOConversor.projectService = projectService;
     }
 	

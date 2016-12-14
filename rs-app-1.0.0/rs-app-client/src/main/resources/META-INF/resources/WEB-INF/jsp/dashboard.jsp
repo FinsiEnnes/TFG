@@ -291,7 +291,7 @@ body {
 			</div>
 
 			<div class="col-md-10">
-				<div id="date" class="datepicker" onclick="myFunction()"></div>
+				<div id="date" class="datepicker"></div>
 			</div>
 		</div>
 	</div>

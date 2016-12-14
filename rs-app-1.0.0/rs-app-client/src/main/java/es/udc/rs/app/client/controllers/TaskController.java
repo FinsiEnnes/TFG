@@ -27,6 +27,7 @@ import es.udc.rs.app.client.conversor.PredecessorDTOConversor;
 import es.udc.rs.app.client.conversor.ProfessionalCategoryDTOConversor;
 import es.udc.rs.app.client.conversor.TaskDTOConversor;
 import es.udc.rs.app.client.conversor.TaskIncidentDTOConversor;
+import es.udc.rs.app.client.conversor.WorkloadDTOConversor;
 import es.udc.rs.app.client.dto.AssignmentMaterialDTO;
 import es.udc.rs.app.client.dto.AssignmentPersonDTO;
 import es.udc.rs.app.client.dto.AssignmentProfileDTO;
@@ -37,6 +38,7 @@ import es.udc.rs.app.client.dto.PredecessorDTO;
 import es.udc.rs.app.client.dto.ProfessionalCategoryDTO;
 import es.udc.rs.app.client.dto.TaskDTO;
 import es.udc.rs.app.client.dto.TaskIncidentDTO;
+import es.udc.rs.app.client.dto.WorkloadDTO;
 import es.udc.rs.app.client.util.ClientUtilMethods;
 import es.udc.rs.app.client.util.JsonConversor;
 import es.udc.rs.app.exceptions.InputValidationException;
@@ -45,6 +47,7 @@ import es.udc.rs.app.model.domain.AssignmentMaterial;
 import es.udc.rs.app.model.domain.AssignmentPerson;
 import es.udc.rs.app.model.domain.AssignmentProfile;
 import es.udc.rs.app.model.domain.HistoryPerson;
+import es.udc.rs.app.model.domain.Incident;
 import es.udc.rs.app.model.domain.Material;
 import es.udc.rs.app.model.domain.Milestone;
 import es.udc.rs.app.model.domain.Phase;
@@ -55,6 +58,7 @@ import es.udc.rs.app.model.domain.State;
 import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TaskIncident;
 import es.udc.rs.app.model.domain.TaskLinkType;
+import es.udc.rs.app.model.domain.Workload;
 import es.udc.rs.app.model.service.assignment.AssignmentService;
 import es.udc.rs.app.model.service.material.MaterialService;
 import es.udc.rs.app.model.service.person.PersonService;
@@ -697,10 +701,79 @@ public class TaskController {
 	
 	//-----------------------------------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------------------------
+	//------------------------------------------- TASK WORKLOAD -------------------------------------------  
+	//-----------------------------------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------------------------
+
+	//-----------------------------------------------------------------------------------------------------
+	// [GET]-> /projects/id/phases/id/tasks/id/workload || Get the workload assigned at this task.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/workloads",
+					method=RequestMethod.GET)
+	public String showWorkload(@PathVariable String idProject, @PathVariable String idPhase,
+				   @PathVariable String idTask, Model model) throws InstanceNotFoundException {
+		
+    	// Find the Task
+    	Long longIdTask = Long.parseLong(idTask, 10);
+    	Task task = projectService.findTask(longIdTask);
+    	
+  
+    	// PERSONS
+    	//------------------------------------------------
+    	// Get all the HistoryPersons assigned at this task
+    	List<AssignmentPerson> assigPersons = assignmentService.findAssignmentPersonByTask(task);    	
+    	List<HistoryPersonDTO> assigPersonsDTO = getHPersonOfThisAssignment(assigPersons);
+    	
+    	// WORKLOAD 
+    	//------------------------------------------------
+    	// Get the workload assigned at this task
+    	List<Workload> workloads = assignmentService.findWorkloadByTask(task);
+    	JSONArray workloadJson = JsonConversor.geWorkloadAsJSON(workloads);
+    	
+    	
+    	// CREATE THE MODEL
+    	//------------------------------------------------
+    	// Basic information of the Task
+		model.addAttribute("idProject", idProject);
+		model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
+		
+		model.addAttribute("assignedPersons", assigPersonsDTO);
+		model.addAttribute("workloads", workloadJson);
+		
+		
+		return "task/workloads";
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/phases/id/tasks/id/workload || Get the workload assigned at this task.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/workloads",
+					method=RequestMethod.POST)
+	public String addWorkload(@Valid @ModelAttribute("workload") WorkloadDTO workloadDTO,  
+    		BindingResult result, @PathVariable String idProject, @PathVariable String idPhase,
+				   @PathVariable String idTask, Model model) throws InstanceNotFoundException, InputValidationException {
+		
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+		// Convert the DTO to object
+		Workload workload = WorkloadDTOConversor.toWorkload(workloadDTO);
+		
+		// Create the workload
+		assignmentService.createWorkload(workload);		
+		
+		return showWorkload(idProject, idPhase, idTask, model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------------------------
 	//------------------------------------------- TASK MATERIALS ------------------------------------------  
 	//-----------------------------------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------------------------
-	
 	
 	//-----------------------------------------------------------------------------------------------------
 	// [GET]-> /projects/id/phases/id/tasks/id/materials || Get the materials assigned at this task.   
@@ -874,7 +947,7 @@ public class TaskController {
 	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/incidents",
 					method=RequestMethod.GET)
     public String showIncidents(@PathVariable String idProject, @PathVariable String idPhase,
-    					   @PathVariable String idTask, Model model) throws InstanceNotFoundException {
+    					   		@PathVariable String idTask, Model model) throws InstanceNotFoundException {
 		
     	// Convert the string id to long
     	Long longIdTask = Long.parseLong(idTask, 10);
@@ -886,12 +959,94 @@ public class TaskController {
 		List<TaskIncident> taskIncidents = projectService.findTaskIncidentByTask(task);
 		List<TaskIncidentDTO> taskIncidentsDTO = TaskIncidentDTOConversor.toTaskIncidentDTOList(taskIncidents);
 		
+		// Get the material description information as JSON
+		JSONArray incidentResults = JsonConversor.geIncidentResultAsJSON(taskIncidentsDTO);
+		
 		// Create the model
 		model.addAttribute("idProject", idProject);
 		model.addAttribute("idPhase", idPhase);
 		model.addAttribute("idTask", idTask);
 		model.addAttribute("incidents", taskIncidentsDTO);
+		model.addAttribute("results", incidentResults);
 		
 		return "task/incidents";
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/phases/id/tasks/id/incidents || Add a new incident at this task.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/incidents",
+					method=RequestMethod.POST)
+    public String addIncidents(@Valid @ModelAttribute("incident") TaskIncidentDTO taskIncidentDTO,  
+    		BindingResult result, @PathVariable String idProject, @PathVariable String idPhase,
+    		@PathVariable String idTask, Model model) throws InstanceNotFoundException, InputValidationException {
+	
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+		// First we must create the Incident object 
+		Incident incident = TaskIncidentDTOConversor.toIncident(taskIncidentDTO);
+		projectService.createIncident(incident);
+		
+		// Now create the TaskIncident object 
+		taskIncidentDTO.setIdIncident(incident.getId());
+		TaskIncident taskIncident = TaskIncidentDTOConversor.toTaskIncident(taskIncidentDTO);
+		
+		projectService.createTaskIncident(taskIncident);
+		
+		// Return the main task incident menu
+		return showIncidents(idProject, idPhase, idTask, model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/phases/id/tasks/id/incidents/update || Get the incidents assigned at this task.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/incidents/{idTaskIncident}/update",
+					method=RequestMethod.POST)
+    public String updateIncidents(@Valid @ModelAttribute("incident") TaskIncidentDTO taskIncidentDTO,  
+    		BindingResult result, @PathVariable String idProject, @PathVariable String idPhase,
+    		@PathVariable String idTask, @PathVariable String idTaskIncident, Model model) throws InstanceNotFoundException, InputValidationException {
+	
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+		// Update the Incident object 
+		Incident incident = TaskIncidentDTOConversor.toIncident(taskIncidentDTO);
+		projectService.updateIncident(incident);
+		
+		// Now update the TaskIncident object 
+		TaskIncident taskIncident = TaskIncidentDTOConversor.toTaskIncident(taskIncidentDTO);
+		projectService.updateTaskIncident(taskIncident);
+		
+		// Return the main task incident menu
+		return showIncidents(idProject, idPhase, idTask, model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/phases/id/tasks/id/incidents/delete || Get the incidents assigned at this task.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/incidents/{idTaskIncident}/delete",
+					method=RequestMethod.POST)
+    public String deleteIncidents(@PathVariable String idProject, @PathVariable String idPhase,
+    		@PathVariable String idTask, @PathVariable String idTaskIncident, Model model) throws InstanceNotFoundException {
+		
+    	// Convert the string id to long
+    	Long longIdTaskIncident = Long.parseLong(idTaskIncident, 10);
+    	
+		// Get the id of the incident
+		TaskIncident taskIncident = projectService.findTaskIncident(longIdTaskIncident);
+		Long idIncident = taskIncident.getIncident().getId();
+		
+		// Delete the TaskIncident and the Incident
+		projectService.removeTaskIncident(longIdTaskIncident);
+		projectService.removeIncident(idIncident);
+		
+		// Return the main task incident menu
+		return showIncidents(idProject, idPhase, idTask, model);
 	}
 }

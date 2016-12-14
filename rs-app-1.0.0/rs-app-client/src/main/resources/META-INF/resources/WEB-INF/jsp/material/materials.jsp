@@ -410,8 +410,7 @@ small {
 			</div>
 		</div>
 		
-		
-		
+				
 	<!-- Modal: Confirmation of delete Material
 	===================================================================================================== -->
 		<div class="modal fade" id="confirmDeleteMaterial" role="dialog">
@@ -556,7 +555,7 @@ small {
 	</script>
 	
 	
-		<!-- Data transfer to the modal confirmDeleteMaterial
+	<!-- Data transfer to the modal confirmDeleteMaterial
 	===================================================================================================== -->
 	<script type='text/javascript'>
 		$(function() {

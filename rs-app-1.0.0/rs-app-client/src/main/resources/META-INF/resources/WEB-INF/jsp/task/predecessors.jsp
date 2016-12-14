@@ -145,7 +145,8 @@ small {
 								
 								<ul>
 								<li>
-									<a href="#">Carga de trabajo 
+									<a href="/projects/${idProject}/phases/${idPhase}/tasks/${idTask}/workloads">
+										Carga de trabajo 
 										<span class="glyphicon glyphicon-time pull-right"></span>
 									</a>
 								</li>
