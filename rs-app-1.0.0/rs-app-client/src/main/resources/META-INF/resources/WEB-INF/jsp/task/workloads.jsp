@@ -281,7 +281,7 @@ small {
 					</div>
 					<div class="col-md-1">
 						<button type="button" id="updateWorkloadButton" class="btn btn-primary pull-right" 
-								data-toggle="modal"	data-target="#formProfileAssignation" disabled>
+								data-toggle="modal"	data-target="#updateWorkload" disabled>
 							<span class="glyphicon glyphicon-edit"></span> 
 						</button>
 					</div>
@@ -446,7 +446,119 @@ small {
 						</form:form>
 					</div>
 				</div>
+			</div>
+		</div>
+		
+	
+	<!-- Modal: Update a Workload
+	===================================================================================================== -->
+		<div class="modal fade modal" id="updateWorkload" role="dialog">
+			<div class="modal-dialog">
 
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Actualización de carga de trabajo</h4>
+					</div>
+
+					<div class="modal-body">
+										
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-10">
+								<h4>
+									Datos relacionados<br> 
+									<small>
+										Cambia el número de horas de carga de trabajo asignada a esta persona
+									</small>
+								</h4>
+							</div>
+						</div>
+					
+						<form:form id="updateWorkloadForm" class="form" method="post" modelAttribute="workload"
+						role="form" action='' data-toggle="validator">
+
+							<!-- First row -->
+							<div class="form-group">
+								<div class="row">								
+									<div class="form-group col-md-offset-1 col-md-4">
+										<label for="inputName" class="control-label">Día</label> 
+										<input type="text" class="form-control datepicker" id="dayUpdate"
+									   data-format="dd/MM/yyyy" placeholder="dd/mm/aaaa" name="dayDate" readOnly>
+									</div>
+
+									<div class="form-group has-feedback col-md-3">
+										<label for="inputSurname1" class="control-label">Horas</label> 
+										<div class="right-inner-addon">
+											<input type="text" class="form-control" id="hoursUpdate"
+										   		   name="hours" pattern="^[0-8]\d*$" maxlength="1" required>
+										   	<span class="glyphicon form-control-feedback"></span>
+										</div>
+									</div>
+									
+									<div class="form-group has-feedback col-md-3">
+										<label for="inputSurname1" class="control-label">Horas extra</label> 
+										<div class="right-inner-addon">
+											<input type="text" class="form-control" id="extraHoursUpdate"
+										   		   name="extraHours" pattern="^[0-8]\d*$" maxlength="1" required>
+										   	<span class="glyphicon form-control-feedback"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<div class="row">
+									<input type="hidden" name="idTask" id="idTask" value="${idTask}">
+									<input type="hidden" name="idHPerson" id="idHPerson">
+								</div>
+								
+								<div class="row">
+									<button id="createWorkloadButton" type="submit"
+									 class="btn btn-primary center-block">
+										Crear
+									</button>
+								</div>
+							</div>
+						</form:form>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+	<!-- Modal: Confirmation of delete Workload
+	===================================================================================================== -->
+		<div class="modal fade" id="deleteWorkload" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Borrado de carga de trabajo</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-12">
+								<p align="center">
+									¿Seguro que desea eliminar esta carga de trabajo?
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="row center-block">
+							<div class="col-md-offset-3 col-md-3">
+								<form id="confirmDeleteWorkloadButton" action='' method="post">
+									<button type="submit" class="btn btn-danger btn-block">Si</button>
+								</form>
+							</div>
+							<div class="col-md-3">
+								<button type="button" class="btn btn-default btn-block"
+									data-dismiss="modal">No</button>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -615,28 +727,54 @@ small {
 		});
 	</script>
 	
+	
 	<!-- Enable the edit/remove button of the workload table. 
 	===================================================================================================== -->
 	<script type="text/javascript">
 		$(document).ready(function() { 
 		   $('#workloadTable').change(function() { 
 			   
-			   // Get info of the table
-			   var json = JSON.parse(JSON.stringify($('#workloadTable').bootstrapTable('getSelections')));
-			   var size = json.length;
-			   			   
-			   // If a option is selected then we can add a Person as manager
-			   if (size > 0) {
-				   var idPerson = json['0']['1'];
-
-				   document.getElementById("idHPerson").value = idPerson;
-				   document.getElementById("updateWorkloadButton").disabled = false;
-				   document.getElementById("deleteWorkloadButton").disabled = false;
-			   } 
-			   else {
-				   document.getElementById("updateWorkloadButton").disabled = true;
-				   document.getElementById("deleteWorkloadButton").disabled = true;
-			   }		        
+			   	// Get info of the table
+			   	var json = JSON.parse(JSON.stringify($('#workloadTable').bootstrapTable('getSelections')));
+			   	var size = json.length;
+			   			
+			   	var data = $('#workloadTable').bootstrapTable('getSelections');
+			   	var id = $.map(data, function (item) {
+				    return item.id;
+				});
+			   	
+			   	// If a option is selected then we can add a Person as manager
+			  	if (id != "") {
+			  		
+				   	// Create the urls
+					var urlUpdate =  "/projects/" + ${idProject} + "/phases/" + ${idPhase} + "/tasks/" + 
+						${idTask} + "/workloads/" + id + "/update";
+					  
+					var urlDelete =  "/projects/" + ${idProject} + "/phases/" + ${idPhase} + "/tasks/" + 
+						${idTask} + "/workloads/" + id + "/delete";
+						
+					// Get the data for the update modal
+					var day = $.map(data, function (item) { return item.day; });
+					var hours = $.map(data, function (item) { return item.hours; });
+					var extraHours = $.map(data, function (item) { return item.extrahours; });
+					
+							
+					// Set the values at the modal components
+					document.getElementById("updateWorkloadForm").action = urlUpdate;
+					$('#confirmDeleteWorkloadButton').get(0).setAttribute('action', urlDelete);
+					
+					document.getElementById("dayUpdate").value = day;
+					document.getElementById("hoursUpdate").value = hours;
+					document.getElementById("extraHoursUpdate").value = extraHours;
+					
+					// Enable the buttons
+				   	document.getElementById("updateWorkloadButton").disabled = false;
+				   	document.getElementById("deleteWorkloadButton").disabled = false;
+			   	} 
+			   	else {
+				   	document.getElementById("updateWorkloadButton").disabled = true;
+				   	document.getElementById("deleteWorkloadButton").disabled = true;
+			   	}		        
 		   }); 
 		});
 	</script>

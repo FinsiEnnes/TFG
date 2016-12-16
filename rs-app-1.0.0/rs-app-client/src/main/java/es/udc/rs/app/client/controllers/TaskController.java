@@ -770,6 +770,51 @@ public class TaskController {
 	
 	
 	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/phases/id/tasks/id/workload || Get the workload assigned at this task.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/workloads/{idWorkload}/update",
+					method=RequestMethod.POST)
+	public String updateWorkload(@Valid @ModelAttribute("workload") WorkloadDTO workloadDTO,  
+    		BindingResult result, @PathVariable String idProject, @PathVariable String idPhase,
+				   @PathVariable String idTask, @PathVariable String idWorkload, Model model) throws InstanceNotFoundException, InputValidationException {
+		
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+		// Get the Workload object
+		Long longIdWorkload = Long.parseLong(idWorkload, 10);
+		Workload workload = assignmentService.findWorkload(longIdWorkload);
+		
+		// Update the workload
+		workload.setHours(workloadDTO.getHours());
+		workload.setExtraHours(workloadDTO.getExtraHours());
+		assignmentService.updateWorkload(workload);		
+		
+		// Return the main workload menu
+		return showWorkload(idProject, idPhase, idTask, model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/phases/id/tasks/id/workload || Get the workload assigned at this task.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/phases/{idPhase}/tasks/{idTask}/workloads/{idWorkload}/delete",
+					method=RequestMethod.POST)
+	public String deleteWorkload(@PathVariable String idProject, @PathVariable String idPhase,
+				   @PathVariable String idTask, @PathVariable String idWorkload, Model model) throws InstanceNotFoundException {
+		
+    	// Convert the string id to long
+    	Long longIdWorkload = Long.parseLong(idWorkload, 10);
+    	
+    	// Remove the workload
+    	assignmentService.removeWorkload(longIdWorkload);
+    	
+		return showWorkload(idProject, idPhase, idTask, model);
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------------------------
 	//------------------------------------------- TASK MATERIALS ------------------------------------------  
 	//-----------------------------------------------------------------------------------------------------
