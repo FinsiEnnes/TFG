@@ -114,9 +114,9 @@ hr { border-color: grey }
 			<ul class="nav navbar-nav">
 				<li><a href="/project/${idProject}/planning"><font size="3">Planificación</font></a></li>
 				<li class="active"><a href="#"><font size="3">Proyecto</font></a></li>
-				<li><a href="#"><font size="3">Tarea</font></a></li>
-				<li><a href="#"><font size="3">Hito</font></a></li>
-				<li><a href="#"><font size="3">Personas</font></a></li>
+				<li><a href="/projects/${idProject}/phases/${idPhase}/tasks/${idTask}"><font size="3">Tarea</font></a></li>
+				<li><a href="/projects/${idProject}/milestones"><font size="3">Hito</font></a></li>
+				<li><a href="/persons"><font size="3">Personas</font></a></li>
 				<li><a href="/materials"><font size="3">Materiales</font></a></li>
 			</ul>
 		</div>

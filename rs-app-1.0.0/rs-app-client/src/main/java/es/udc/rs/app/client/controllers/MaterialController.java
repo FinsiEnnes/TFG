@@ -20,7 +20,9 @@ import es.udc.rs.app.client.util.JsonConversor;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Material;
+import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.service.material.MaterialService;
+import es.udc.rs.app.model.service.project.ProjectService;
 
 @Controller
 public class MaterialController {
@@ -28,12 +30,15 @@ public class MaterialController {
 	@Autowired 
 	private MaterialService materialService;
 	
+	@Autowired 
+	private ProjectService projectService;
+	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [GET]-> /materials || Get all the information about materials   
+	// [GET]-> /projects/id/materials || Get all the information about materials   
 	//-----------------------------------------------------------------------------------------------------
-	@RequestMapping(value="/materials",  method=RequestMethod.GET)
-    public String showMaterials(Model model) throws InstanceNotFoundException {
+	@RequestMapping(value="/projects/{idProject}/materials",  method=RequestMethod.GET)
+    public String showMaterials(@PathVariable String idProject, Model model) throws InstanceNotFoundException {
 		
 		// Find all the materials
 		List<Material> materials = materialService.findAllMaterials();
@@ -44,7 +49,14 @@ public class MaterialController {
 		// Get the material description information as JSON
 		JSONArray materialDesc = JsonConversor.getMaterialDescAsJSON(materials);
 		
+		// Find the first task of this project
+		Long longIdProject =  Long.parseLong(idProject, 10);
+		Task task = projectService.findFirstTask(longIdProject);
+		
 		// Create the model
+		model.addAttribute("idProject", idProject);
+		model.addAttribute("idPhase", task.getPhase().getId());
+		model.addAttribute("idTask", task.getId());
 		model.addAttribute("materials", materialsDTO);
 		model.addAttribute("matDescriptions", materialDesc);
 		
@@ -53,11 +65,11 @@ public class MaterialController {
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [POST]-> /materials || Add a new material   
+	// [POST]-> /projects/id/materials || Add a new material   
 	//-----------------------------------------------------------------------------------------------------
-	@RequestMapping(value="/materials",  method=RequestMethod.POST)
+	@RequestMapping(value="/projects/{idProject}/materials",  method=RequestMethod.POST)
 	public String addMaterial(@Valid @ModelAttribute("material") MaterialDTO materialDTO, 
-							  BindingResult result,Model model) throws InstanceNotFoundException, InputValidationException {
+							  BindingResult result, @PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
 
 		if (result.hasErrors()) {
             return "error";
@@ -70,16 +82,16 @@ public class MaterialController {
 		materialService.createMaterial(material);
 		
 		// Return the main interface
-		return showMaterials(model);
+		return showMaterials(idProject, model);
 	}
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [POST]-> /materials/id/update || Update a material   
+	// [POST]-> /projects/id/materials/id/update || Update a material   
 	//-----------------------------------------------------------------------------------------------------
-	@RequestMapping(value="/materials/{idMaterial}/update",  method=RequestMethod.POST)
+	@RequestMapping(value="/projects/{idProject}/materials/{idMaterial}/update",  method=RequestMethod.POST)
 	public String updateMaterial(@Valid @ModelAttribute("material") MaterialDTO materialDTO, 
-			BindingResult result, @PathVariable String idMaterial, Model model) throws InstanceNotFoundException, InputValidationException {
+			BindingResult result, @PathVariable String idProject, @PathVariable String idMaterial, Model model) throws InstanceNotFoundException, InputValidationException {
 
 		if (result.hasErrors()) {
             return "error";
@@ -92,15 +104,15 @@ public class MaterialController {
 		materialService.updateMaterial(material);
 		
 		// Return the main interface
-		return showMaterials(model);
+		return showMaterials(idProject, model);
 	}
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [POST]-> /materials/id/delete || Delete a material   
+	// [POST]-> /projects/id/materials/id/delete || Delete a material   
 	//-----------------------------------------------------------------------------------------------------
-	@RequestMapping(value="/materials/{idMaterial}/delete",  method=RequestMethod.POST)
-	public String deleteMaterial(@PathVariable String idMaterial, Model model) throws InstanceNotFoundException, InputValidationException {
+	@RequestMapping(value="/projects/{idProject}/materials/{idMaterial}/delete",  method=RequestMethod.POST)
+	public String deleteMaterial(@PathVariable String idMaterial, @PathVariable String idProject, Model model) throws InstanceNotFoundException, InputValidationException {
 		
 		// Convert the string id to long
 		Long id =  Long.parseLong(idMaterial, 10);
@@ -109,7 +121,7 @@ public class MaterialController {
 		materialService.removeMaterial(id);
 		
 		// Return the main interface
-		return showMaterials(model);
+		return showMaterials(idProject, model);
 	}
 
 }

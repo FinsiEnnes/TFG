@@ -103,8 +103,8 @@ small {
 				<li><a href="/project/${idProject}/planning"><font size="3">Planificación</font></a></li>
 				<li><a href="/projects/${idProject}"><font size="3">Proyecto</font></a></li>
 				<li><a href="/projects/${idProject}/phases/${idPhase}/tasks/${idTask}"><font size="3">Tarea</font></a></li>
-				<li><a href="/projects/${idProject}/milestones"><font size="3">Hito</font></a></li>
-				<li><a href="/projects/${idProject}/persons"><font size="3">Personas</font></a></li>
+				<li><a href="#"><font size="3">Hito</font></a></li>
+				<li><a href="#"><font size="3">Personas</font></a></li>
 				<li class="active"><a href="#"><font size="3">Materiales</font></a></li>
 			</ul>
 		</div>
@@ -264,7 +264,7 @@ small {
 						</div>
 					
 						<form:form id="materialForm" class="form-horizontal" method="post" 
-						modelAttribute="material" action='/projects/${idProject}/materials' data-toggle="validator">
+						modelAttribute="material" action='/materials' data-toggle="validator">
 
 							<div class="form-group">
 								<div class="row">
@@ -324,7 +324,7 @@ small {
 		</div>
 		
 		
-	<!-- Modal: Update of Material
+	<!-- Modal: Creation of a new Material
 	===================================================================================================== -->
 		<div class="modal fade modal" id="editMaterial" role="dialog">
 			<div class="modal-dialog">
@@ -348,7 +348,7 @@ small {
 						</div>
 					
 						<form:form id="editMaterialForm" class="form-horizontal" method="post" 
-						modelAttribute="material" action='' data-toggle="validator">
+						modelAttribute="material" action='/materials' data-toggle="validator">
 
 							<input type="hidden" name="id" id="idEditMaterial">
 										
@@ -524,7 +524,7 @@ small {
 				var desc = button.data('desc');
 				  
 				// Create the url
-				var url = "/projects/" + ${idProject} + "/materials/" + id + "/update";
+				var url = "/materials/" + id + "/update";
 						
 				// Set the values at the modal components
 				document.getElementById('editMaterialForm').action = url;
@@ -569,7 +569,7 @@ small {
 				var name = button.data('name');
 				  
 				// Create the url
-				var url = "/projects/" + ${idProject} + "/materials/" + id + "/delete";
+				var url = "/materials/" + id + "/delete";
 				
 				// Create the msg
 				var msg = "Material seleccionado: " + name.bold() + ". ¿Seguro que desea eliminar este material?";

@@ -38,6 +38,7 @@ import es.udc.rs.app.model.domain.Project;
 import es.udc.rs.app.model.domain.ProjectFreeDay;
 import es.udc.rs.app.model.domain.ProjectMgmt;
 import es.udc.rs.app.model.domain.Province;
+import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.service.customer.CustomerService;
 import es.udc.rs.app.model.service.person.PersonService;
 import es.udc.rs.app.model.service.project.ProjectService;
@@ -105,8 +106,14 @@ public class ProjectController {
     	Long idProvinceProject =  projectDTO.getIdProvince();
     	List<ProvinceDTO> provincesDTO = ProvinceDTOConversor.toProvincesDTOExceptOne(provinces,idProvinceProject);
     	
+		// Find the first task of this project
+		Task task = projectService.findFirstTask(id);
+		
     	// Create the model
     	model.addAttribute("project", projectDTO);
+    	model.addAttribute("idProject", idProject);
+    	model.addAttribute("idPhase", task.getPhase().getId());
+		model.addAttribute("idTask", task.getId());
     	model.addAttribute("iniProject", iniProject);
     	model.addAttribute("provinces", provincesDTO);
     	
@@ -176,8 +183,13 @@ public class ProjectController {
     	List<HistoryProject> hps = projectService.findHistoryProjectByProject(project);
     	List<HistoryProjectDTO> hpsDTO = HistoryProjectDTOConversor.toHistoryProjectDTOList(hps);
     	
+		// Find the first task of this project
+		Task task = projectService.findFirstTask(id);
+    	
     	// Create the model
     	model.addAttribute("idProject", id);
+    	model.addAttribute("idPhase", task.getPhase().getId());
+		model.addAttribute("idTask", task.getId());
     	model.addAttribute("currentState", currentState);
     	model.addAttribute("stateDescription", stateDesc);
     	model.addAttribute("historyProject", hpsDTO);
@@ -216,8 +228,14 @@ public class ProjectController {
     	Project project = projectService.findProject(id);
     	ProjectDTO projectDTO = ProjectDTOConversor.toProjectDTO(project);
     	
+		// Find the first task of this project
+		Task task = projectService.findFirstTask(id);
+		
     	// Create the model
-    	model.addAttribute("project", projectDTO);
+		model.addAttribute("project", projectDTO);
+		model.addAttribute("idProject", id);
+    	model.addAttribute("idPhase", task.getPhase().getId());
+		model.addAttribute("idTask", task.getId());    	
 		
 		return "project/statics";
 	}
@@ -240,8 +258,13 @@ public class ProjectController {
 		List<ProjectMgmtDTO> managersDTO = ProjectMgmtDTOConversor.toProjectMgmtDTOList(managers);
 		List<HistoryPersonDTO> personsDTO = HistoryPersonDTOConversor.toHistoryPersonDTOs(persons);
 		
+		// Find the first task of this project
+		Task task = projectService.findFirstTask(id);
+		
     	// Create the model
 		model.addAttribute("idProject", id);
+    	model.addAttribute("idPhase", task.getPhase().getId());
+		model.addAttribute("idTask", task.getId());
     	model.addAttribute("managers", managersDTO);
     	model.addAttribute("persons", personsDTO);
 		
@@ -324,6 +347,11 @@ public class ProjectController {
     	//  Add the id project to the model
     	model.addAttribute("idProject", id);
     	
+		// Find the first task of this project
+		Task task = projectService.findFirstTask(id);
+    	model.addAttribute("idPhase", task.getPhase().getId());
+		model.addAttribute("idTask", task.getId());
+		
     	// If this project doesn't have customer we show a warning interface 
     	if (project.getCustomer() == null) {
     		
@@ -349,7 +377,6 @@ public class ProjectController {
     	// Create the model with this list
 		model.addAttribute("customer", customerDTO);
 		model.addAttribute("project", projectDTO);
-		model.addAttribute("idProject", projectDTO.getId());
 		
 		return "project/customer";
 	}
@@ -483,8 +510,13 @@ public class ProjectController {
     		}
     	}
 		
+		// Find the first task of this project
+		Task task = projectService.findFirstTask(id);
+		
     	// Create the model
 		model.addAttribute("idProject", id);
+    	model.addAttribute("idPhase", task.getPhase().getId());
+		model.addAttribute("idTask", task.getId());
     	model.addAttribute("freeWeekDays", freeWeekDays);
     	model.addAttribute("freePeriodDays", freePeriodDays);
     	model.addAttribute("otherFreeWeekDays", otherFreeWeekDays);
