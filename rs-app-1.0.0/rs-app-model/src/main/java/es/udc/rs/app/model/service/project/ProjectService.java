@@ -164,6 +164,8 @@ public interface ProjectService {
 	public Task findTask(Long id) throws InstanceNotFoundException;
 	
 	public List<Task> findProjectTasks(Long idProject) throws InstanceNotFoundException;
+	
+	public Task findFirstTask(Long idProject) throws InstanceNotFoundException;
 					
 	public void updateTask(Task task) throws InputValidationException, InstanceNotFoundException;
 	

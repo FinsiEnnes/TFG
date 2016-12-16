@@ -1472,6 +1472,29 @@ public class ProjectServiceImpl implements ProjectService {
 				+ " Project with idProject[" + project.getId() + "]");
 		return tasks;
 	}
+	
+	
+	// ============================================================================
+	@Override
+	@Transactional(value="myTransactionManager")
+	public Task findFirstTask(Long idProject) throws InstanceNotFoundException {
+		
+		Task task = new Task();
+		
+		// Check if the Project exists and get it
+		Project project = this.findProject(idProject);
+		
+		// Find the Tasks of the Project
+		try{
+			task = taskDAO.findFirstTask(project);
+		}
+		catch (DataAccessException e){
+			throw e;
+		}
+		
+		// Return the result
+		return task;
+	}
 
 	
 	// ============================================================================

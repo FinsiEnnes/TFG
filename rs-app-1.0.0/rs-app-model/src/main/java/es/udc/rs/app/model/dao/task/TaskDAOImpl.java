@@ -69,6 +69,53 @@ public class TaskDAOImpl implements TaskDAO {
 		
 		return projectTasks;
 	}
+	
+	@Override 
+	public Task findFirstTask(Project project) {
+		
+		// First, we get the Phases of the Project
+		String queryString = "FROM Phase P WHERE P.project = :project ORDER BY P.ini ASC";
+		
+		// Execute the query
+		Query query = sessionFactory.getCurrentSession().createQuery(queryString);
+		query.setParameter("project", project);
+		
+		Phase phase = (Phase) query.list().get(0);
+		
+		// In the case of planned task
+		queryString = "FROM Task T "
+					+ "WHERE T.phase = :phase "
+					+ "  AND T.iniPlan = (SELECT MIN(task.iniPlan)"
+					+ "					  FROM Task AS task"
+					+ "					  WHERE task.phase = :phase)";
+		
+		// Execute the query
+		query = sessionFactory.getCurrentSession().createQuery(queryString);
+		query.setParameter("phase", phase);
+		
+		Task taskPlan = (Task) query.list().get(0);
+		
+		// For real task
+		queryString = "FROM Task T "
+					+ "WHERE T.phase = :phase "
+					+ "  AND T.iniReal = (SELECT MIN(task.iniReal)"
+					+ "					  FROM Task AS task"
+					+ "					  WHERE task.phase = :phase)";
+
+		// Execute the query
+		query = sessionFactory.getCurrentSession().createQuery(queryString);
+		query.setParameter("phase", phase);
+		
+		@SuppressWarnings("unchecked")
+		List<Task> tasks = (List<Task>) query.list();
+		
+		if (!tasks.isEmpty()) {
+			Task taskReal = tasks.get(0);
+			return taskReal;
+		}
+		
+		return taskPlan;
+	}
 
 	@Override
 	public boolean TaskExists(Long id) {
