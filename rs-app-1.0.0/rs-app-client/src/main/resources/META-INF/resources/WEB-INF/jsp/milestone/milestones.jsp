@@ -103,9 +103,9 @@ small {
 				<li><a href="/project/${idProject}/planning"><font size="3">Planificación</font></a></li>
 				<li><a href="/projects/${idProject}"><font size="3">Proyecto</font></a></li>
 				<li><a href="/projects/${idProject}/phases/${idPhase}/tasks/${idTask}"><font size="3">Tarea</font></a></li>
-				<li><a href="#"><font size="3">Hito</font></a></li>
+				<li class="active"><a href="#"><font size="3">Hito</font></a></li>
 				<li><a href="#"><font size="3">Personas</font></a></li>
-				<li class="active"><a href="#"><font size="3">Materiales</font></a></li>
+				<li><a href="/projects/${idProject}/materials"><font size="3">Materiales</font></a></li>
 			</ul>
 		</div>
 		<!-- /.navbar-collapse -->
@@ -126,8 +126,8 @@ small {
 								<ul>
 								<li>
 									<a href="#" class="active">
-										Materiales
-										<span class="glyphicon glyphicon-wrench pull-right"></span>
+										Hitos
+										<span class="glyphicon glyphicon-info-sign pull-right"></span>
 									</a>
 								</li>
 								</ul>
@@ -142,9 +142,9 @@ small {
 			<div class="col-md-9">
 			
 				<h3>
-					Listado de materiales<br> 
+					Listado de hitos<br> 
 					<small>
-						Lista completa de todos los materiales registrados
+						Lista completa de todos los hitos registrados en el proyecto
 					</small>
 				</h3>
 				<hr width="110%">
@@ -153,14 +153,14 @@ small {
 				<div class="row">
 					<div class="form-group col-md-2">
 						<h4 class="subtitle">
-							Materiales<br> 
+							Hitos<br> 
 						</h4>
 					</div>
 					<div class="col-md-offset-7 col-md-2">
 						<button id="addPlanMaterialButton" type="button" class="btn btn-success pull-right"
-							data-toggle="modal" data-target="#addMaterial">
+							data-toggle="modal" data-target="#addMilestone">
 							<span class="glyphicon glyphicon-plus"></span> 
-							Nuevo material
+							Nuevo hito
 						</button>
 					</div>
 				</div>
@@ -173,29 +173,32 @@ small {
 							<tr>
 								<th class="col-md-1" data-field="state" data-checkbox="true"></th>
 								<th class="col-md-1">ID</th>
-								<th class="col-md-5">Nombre</th>
-								<th class="col-md-2">Coste</th>
-								<th class="col-md-1">Tipo</th>
+								<th class="col-md-3">Nombre</th>
+								<th class="col-md-3">Fase</th>
+								<th class="col-md-1">Fecha prevista</th>
+								<th class="col-md-1">Fecha real</th>
 								<th class="col-md-2">Acción</th>
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach var="material" items="${materials}">
+							<c:forEach var="milestone" items="${milestones}">
 							<tr>
 								<td></td>
-								<td class="text-info">${material.id}</td>
-								<td>${material.name}</td>
-								<td>${material.cost}</td>
-								<td>${material.type}</td>
+								<td class="text-info">${milestone.id}</td>
+								<td>${milestone.name}</td>
+								<td>${milestone.namePhase}</td>
+								<td>${milestone.datePlan}</td>
+								<td>${milestone.dateReal}</td>
 								<td>
 									<table>
 										<tr>
 											<td>
 												<button type="button" class="btn btn-primary btn-xs center-block"
-													data-toggle="modal" data-target="#editMaterial"
-													data-id="${material.id}" data-name="${material.name}"
-													data-cost="${material.cost}" data-type="${material.type}"
-													data-desc="${material.description}">
+													data-toggle="modal" data-target="#editMilestone"
+													data-id="${milestone.id}" data-name="${milestone.name}"
+													data-datePlan="${milestone.datePlan}" 
+													data-dateReal="${milestone.dateReal}"
+													data-comment="${milestone.dateReal}">
 													<span class="glyphicon glyphicon-edit"></span>
 												</button>
 											</td>
@@ -220,7 +223,7 @@ small {
 				<div class="row">
 					<div class="form-group col-md-6">
 						<h4 class="subtitle">
-							Descripción del material seleccionado<br> 
+							Comentarios asociados al hito seleccionado<br> 
 						</h4>
 					</div>
 				</div>
@@ -239,13 +242,13 @@ small {
 	
 	<!-- Modal: Creation of a new Material
 	===================================================================================================== -->
-		<div class="modal fade modal" id="addMaterial" role="dialog">
+		<div class="modal fade modal" id="addMilestone" role="dialog">
 			<div class="modal-dialog">
 
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Creación de un nuevo material</h4>
+						<h4 class="modal-title">Creación de un nuevo hito</h4>
 					</div>
 
 					<div class="modal-body">						
@@ -254,10 +257,10 @@ small {
 								<h4>
 									Datos relacionados<br> 
 									<small>
-										Define el nombre, tipo y coste del nuevo material. También puedes
+										Define el nombre, fase a la que pertenece y fecha prevista del hito.
 									</small>
 									<small>
-										añadir una descripción detallada sobre el producto.
+										También puede añadir comentarios relacionados.
 									</small>
 								</h4>
 							</div>
@@ -278,7 +281,7 @@ small {
 							
 							<div class="form-group">
 								<div class="row">
-									<label class="col-md-offset-2 col-md-2 control-label">Tipo</label>
+									<label class="col-md-offset-2 col-md-2 control-label">Fase</label>
 									<div class="form-group col-md-5">
 										<select class="form-control" name="type">
 											<option>Propio</option>
@@ -290,7 +293,7 @@ small {
 
 							<div class="form-group">
 								<div class="row">
-									<label class="col-md-offset-2 col-md-2 control-label">Coste</label>
+									<label class="col-md-offset-2 col-md-2 control-label">Fecha</label>
 									<div class="form-group has-feedback col-md-5">
 										<input class="form-control" name="cost" 
 										type="text" pattern="^[1-9]\d*$" required>
@@ -301,7 +304,7 @@ small {
 							
 							<div class="form-group">
 								<div class="row">
-									<label class="col-md-offset-2 col-md-2 control-label">Descripción</label>
+									<label class="col-md-offset-2 col-md-2 control-label">Comentario</label>
 									<div class="form-group col-md-5">
 										<textarea class="form-control" rows="4" name="description">
 										</textarea>
@@ -326,29 +329,29 @@ small {
 		
 	<!-- Modal: Creation of a new Material
 	===================================================================================================== -->
-		<div class="modal fade modal" id="editMaterial" role="dialog">
+		<div class="modal fade modal" id="editMilestone" role="dialog">
 			<div class="modal-dialog">
 
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Actualización de material</h4>
+						<h4 class="modal-title">Actualización de hito</h4>
 					</div>
 
 					<div class="modal-body">						
 						<div class="row">
 							<div class="form-group col-md-offset-1 col-md-10">
 								<h4>
-									Información del material<br> 
+									Información del hito<br> 
 									<small>
-										Cambia la información relativa al material seleccionado.
+										Cambia la información relativa al hito seleccionado.
 									</small>
 								</h4>
 							</div>
 						</div>
 					
-						<form:form id="editMaterialForm" class="form-horizontal" method="post" 
-						modelAttribute="material" action='/materials' data-toggle="validator">
+						<form:form id="editMilestoneForm" class="form-horizontal" method="post" 
+						modelAttribute="material" action='' data-toggle="validator">
 
 							<input type="hidden" name="id" id="idEditMaterial">
 										
@@ -356,7 +359,7 @@ small {
 								<div class="row">
 									<label class="col-md-offset-2 col-md-2 control-label">Nombre</label>
 									<div class="form-group col-md-5">
-										<input class="form-control" name="name" id="nameEditMaterial"
+										<input class="form-control" name="name" id="nameEditMilestone"
 										type="text" required>
 									</div>
 								</div>
@@ -364,23 +367,27 @@ small {
 							
 							<div class="form-group">
 								<div class="row">
-									<label class="col-md-offset-2 col-md-2 control-label">Tipo</label>
-									<div class="form-group col-md-5">
-										<select class="form-control" name="type">
-											<option id="ownOption">Propio</option>
-											<option id="buyOption">Comprado</option>
-										</select>
+									<label class="col-md-offset-2 col-md-2 control-label">Fase</label>
+									<div class="form-group col-md-5" id="phaseEditMilestone">
+										<input class="form-control" readOnly>
 									</div>
 								</div>
 							</div>
 
 							<div class="form-group">
 								<div class="row">
-									<label class="col-md-offset-2 col-md-2 control-label">Coste</label>
-									<div class="form-group has-feedback col-md-5">
-										<input class="form-control" name="cost"  id="costEditMaterial"
-										type="text" pattern="^[1-9]\d*$" readOnly>
-										 <span class="glyphicon form-control-feedback"></span>
+									<label class="col-md-offset-2 col-md-2 control-label">Fecha prevista</label>
+									<div class="form-group col-md-5">
+										<input class="form-control" name="datePlan"  id="datePlanEditMilestone">
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="row">
+									<label class="col-md-offset-2 col-md-2 control-label">Fecha real</label>
+									<div class="form-group col-md-5">
+										<input class="form-control" name="dateReal"  id="dateRealEditMilestone">
 									</div>
 								</div>
 							</div>
@@ -389,8 +396,8 @@ small {
 								<div class="row">
 									<label class="col-md-offset-2 col-md-2 control-label">Descripción</label>
 									<div class="form-group col-md-5">
-										<textarea class="form-control" rows="4" name="description"
-										id="descEditMaterial">
+										<textarea class="form-control" rows="4" name="comment"
+										id="commentEditMilestone">
 										</textarea>
 									</div>
 								</div>
@@ -511,34 +518,32 @@ small {
 	===================================================================================================== -->
 	<script type='text/javascript'>
 		$(function() {
-			$('#editMaterial').on('show.bs.modal', function(event) {
+			$('#editMilestone').on('show.bs.modal', function(event) {
 				
+				alert("e")
 				// Button that triggered the modal
 				var button = $(event.relatedTarget) 
 				
 				// Extract info from data attributes
 				var id = button.data('id');
-				var name = button.data('name');
-				var cost = button.data('cost');
-				var type = button.data('type');
-				var desc = button.data('desc');
+				var name     = button.data('name');
+				var phase    = button.data('phase');
+				var datePlan = button.data('datePlan');
+				var dateReal = button.data('dateReal');
+				var comment  = button.data('comment');
 				  
 				// Create the url
-				var url = "/materials/" + id + "/update";
+				var url = "/projects/" + ${idProject} + "/milestones/"+ id + "/update";
 						
 				// Set the values at the modal components
-				document.getElementById('editMaterialForm').action = url;
-				document.getElementById('idEditMaterial').value = id;
-				document.getElementById('nameEditMaterial').value = name;
-				document.getElementById('costEditMaterial').value = cost;
-				document.getElementById('descEditMaterial').value = desc;
-				
-				// Set the select option
-				if (type=="Propio") {
-					document.getElementById('ownOption').selected = "selected";
-				} else {
-					document.getElementById('buyOption').selected = "selected";
-				}
+				document.getElementById('editMilestoneForm').action = url;
+				//document.getElementById('idEditMilestone').value = id;
+				document.getElementById('nameEditMilestone').value = name;
+				document.getElementById('phaseEditMilestone').value = phase;
+				document.getElementById('datePlanEditMilestone').value = datePlan;
+				document.getElementById('datePlanEditMilestone').value = dateReal;
+				document.getElementById('commentEditMilestone').value = comment;
+
 			})
 		});
 	</script>

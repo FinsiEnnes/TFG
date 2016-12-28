@@ -1,5 +1,8 @@
 package es.udc.rs.app.client.conversor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,5 +39,32 @@ public class MilestoneDTOConversor {
 		milestone.setComment(milestoneDTO.getComment());
 		
 		return milestone;		
+	}
+	
+	public static List<MilestoneDTO> toMilestoneDTOList(List<Milestone> milestoneList) throws InstanceNotFoundException {
+		
+		List<MilestoneDTO> milestoneDTOList = new ArrayList<MilestoneDTO>();
+		
+		for (Milestone m : milestoneList) {
+			milestoneDTOList.add(toMilestoneDTO(m));
+		}
+		
+		return milestoneDTOList;
+		
+	}
+	
+	public static MilestoneDTO toMilestoneDTO(Milestone milestone) throws InstanceNotFoundException {
+		
+		MilestoneDTO milestoneDTO = new MilestoneDTO();
+		
+		milestoneDTO.setId(milestone.getId());
+		milestoneDTO.setIdPhase(milestone.getPhase().getId());
+		milestoneDTO.setNamePhase(milestone.getPhase().getName());
+		milestoneDTO.setName(milestone.getName());
+		milestoneDTO.setDatePlan(ClientUtilMethods.convertDateToString(milestone.getDatePlan()));
+		milestoneDTO.setDateReal(ClientUtilMethods.convertDateToString(milestone.getDateReal()));
+		milestoneDTO.setComment(milestone.getComment());
+		
+		return milestoneDTO;
 	}
 }
