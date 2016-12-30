@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import es.udc.rs.app.exceptions.FirstPageElementException;
+import es.udc.rs.app.exceptions.PaginationException;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.HistoryPerson;
@@ -118,7 +118,7 @@ public class TestUtils {
 	}
 	
 	
-	public void deleteDataSet () throws InstanceNotFoundException, FirstPageElementException {
+	public void deleteDataSet () throws InstanceNotFoundException, PaginationException {
 		
 		// ============================= Project ==============================
 		projectService.removeProject(project.getId()); // Also delete HistoryProject and Phase

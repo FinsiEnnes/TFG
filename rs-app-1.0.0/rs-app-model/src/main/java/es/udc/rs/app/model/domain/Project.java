@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 @Entity
 @Table(name = "Project")
 public class Project {
@@ -122,6 +124,7 @@ public class Project {
 	}
 
 	@Column(name = "stateDateProject", nullable = true)
+	@Type(type = "date")
 	public Date getStateDate() {
 		return stateDate;
 	}
@@ -232,6 +235,7 @@ public class Project {
 	}
 
 	@Column(name = "iniPlanProject", nullable = true)
+	@Type(type = "date")
 	public Date getIniPlan() {
 		return iniPlan;
 	}
@@ -241,6 +245,7 @@ public class Project {
 	}
 
 	@Column(name = "iniRealProject")
+	@Type(type = "date")
 	public Date getIniReal() {
 		return iniReal;
 	}
@@ -250,6 +255,7 @@ public class Project {
 	}
 
 	@Column(name = "endPlanProject")
+	@Type(type = "date")
 	public Date getEndPlan() {
 		return endPlan;
 	}
@@ -259,6 +265,7 @@ public class Project {
 	}
 
 	@Column(name = "endRealProject")
+	@Type(type = "date")
 	public Date getEndReal() {
 		return endReal;
 	}

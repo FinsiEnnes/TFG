@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import es.udc.rs.app.exceptions.FirstPageElementException;
+import es.udc.rs.app.exceptions.PaginationException;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Person;
@@ -55,7 +55,7 @@ public class PersonTest {
 	}
 	
 	@Test
-	public void fullPersonTest() throws InputValidationException, InstanceNotFoundException, ParseException, FirstPageElementException {
+	public void fullPersonTest() throws InputValidationException, InstanceNotFoundException, ParseException, PaginationException {
 		
 		createAndFindPerson();
 		updatePerson();
@@ -63,7 +63,7 @@ public class PersonTest {
 	}
 	
 	private void createAndFindPerson() 
-			throws InputValidationException, InstanceNotFoundException, ParseException, FirstPageElementException {
+			throws InputValidationException, InstanceNotFoundException, ParseException, PaginationException {
 		
 		Person p1;
 		Person p2;

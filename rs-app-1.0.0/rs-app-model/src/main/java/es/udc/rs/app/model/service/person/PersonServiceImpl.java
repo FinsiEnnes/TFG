@@ -9,7 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.udc.rs.app.exceptions.FirstPageElementException;
+import es.udc.rs.app.exceptions.PaginationException;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.dao.aptitude.AptitudeDAO;
@@ -171,7 +171,7 @@ public class PersonServiceImpl implements PersonService{
 	// ============================================================================
 	@Override
 	@Transactional(value="myTransactionManager")
-	public List<Person> findAllPersons(int pageNumber, int pageSize) throws FirstPageElementException {
+	public List<Person> findAllPersons(int pageNumber, int pageSize) throws PaginationException {
 
 		List<Person> persons = new ArrayList<Person>();
 		

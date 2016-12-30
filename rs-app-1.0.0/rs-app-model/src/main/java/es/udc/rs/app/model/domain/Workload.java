@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Type;
+
 @Entity
 @Table(name = "Workload", 
 	   uniqueConstraints = { @UniqueConstraint(columnNames = { "dayDateWorkload", "idTask", "idHPerson"}) })
@@ -84,6 +86,7 @@ public class Workload {
 	}
 
 	@Column(name = "dayDateWorkload", nullable = true)
+	@Type(type = "date")
 	public Date getDayDate() {
 		return dayDate;
 	}

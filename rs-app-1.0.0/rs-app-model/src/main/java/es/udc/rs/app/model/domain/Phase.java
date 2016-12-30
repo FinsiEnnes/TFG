@@ -14,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Type;
+
 
 @Entity
 @Table(name = "Phase", 
@@ -84,6 +86,7 @@ public class Phase {
 	}
 	
 	@Column(name = "iniPhase")
+	@Type(type = "date")
 	public Date getIni() {
 		return ini;
 	}
@@ -93,6 +96,7 @@ public class Phase {
 	}
 	
 	@Column(name = "endPhase")
+	@Type(type = "date")
 	public Date getEnd() {
 		return end;
 	}

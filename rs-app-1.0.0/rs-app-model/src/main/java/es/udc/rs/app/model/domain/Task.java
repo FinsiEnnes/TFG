@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Type;
+
 @Entity
 @Table(name = "Task", 
 	   uniqueConstraints = { @UniqueConstraint(columnNames = { "idPhase", "nameTask" }) })
@@ -170,6 +172,7 @@ public class Task {
 	}
 
 	@Column(name = "iniPlanTask")
+	@Type(type = "date")
 	public Date getIniPlan() {
 		return iniPlan;
 	}
@@ -179,6 +182,7 @@ public class Task {
 	}
 
 	@Column(name = "iniRealTask")
+	@Type(type = "date")
 	public Date getIniReal() {
 		return iniReal;
 	}
@@ -206,6 +210,7 @@ public class Task {
 	}
 
 	@Column(name = "endPlanTask")
+	@Type(type = "date")
 	public Date getEndPlan() {
 		return endPlan;
 	}
@@ -215,6 +220,7 @@ public class Task {
 	}
 
 	@Column(name = "endRealTask")
+	@Type(type = "date")
 	public Date getEndReal() {
 		return endReal;
 	}
