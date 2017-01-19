@@ -2,9 +2,13 @@ package es.udc.rs.app.client.controllers;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -54,5 +58,25 @@ public class MilestoneController {
 		model.addAttribute("phases", phasesDTO);
 		
 		return "milestone/milestones";
+	}
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /project/id/milestone || Add a new Milestone at the project.   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/milestones",  method=RequestMethod.POST)
+    public String createMilestone(@Valid @ModelAttribute("milestone") MilestoneDTO milestoneDTO, 
+   		 BindingResult result, @PathVariable String idProject, Model model) throws InstanceNotFoundException {
+		
+		if (result.hasErrors()) {
+            return "error";
+        }
+		
+		// Convert the MilestoneDTO to Milestone
+		Milestone milestone = MilestoneDTOConversor.toMilestone(milestoneDTO);
+		
+		// Create the milestone
+		projectService.createMilestone(milestone);
+		
+		return showMilestones(idProject, model);
 	}
 }

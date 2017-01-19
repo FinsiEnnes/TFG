@@ -25,7 +25,7 @@ import es.udc.rs.app.client.dto.PersonDTO;
 import es.udc.rs.app.client.dto.TimeOffDTO;
 import es.udc.rs.app.client.util.ClientConstants;
 import es.udc.rs.app.client.util.ClientUtilMethods;
-import es.udc.rs.app.exceptions.FirstPageElementException;
+import es.udc.rs.app.exceptions.PaginationException;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Aptitude;
@@ -101,7 +101,7 @@ public class PersonController {
     	(@RequestParam(value="page", required=false) Integer pageNumber,
     	 @RequestParam(value="search-term", required=false) String searchTerm,
     	 @RequestParam(value="keyword", required=false) String keyword,
-    	 Model model) throws FirstPageElementException, InputValidationException, 
+    	 Model model) throws PaginationException, InputValidationException, 
     	 					 NumberFormatException {
     	
     	// Initialization of variables
@@ -216,7 +216,7 @@ public class PersonController {
     //-----------------------------------------------------------------------------------------------------
     @RequestMapping(value="/persons", method=RequestMethod.POST)
     public String addPerson(@Valid @ModelAttribute("person")PersonDTO personDTO, 
-    	      BindingResult result, Model model, HttpServletRequest request) throws InputValidationException, FirstPageElementException, NumberFormatException, InstanceNotFoundException {
+    	      BindingResult result, Model model, HttpServletRequest request) throws InputValidationException, PaginationException, NumberFormatException, InstanceNotFoundException {
     	
     	// Get the PersonDTO
     	String hiredate = request.getParameter("hiredate");
@@ -272,7 +272,7 @@ public class PersonController {
     // [POST]-> /persons/id/delete || Delete a Person.   
     //-----------------------------------------------------------------------------------------------------
     @RequestMapping(value="/persons/{idPerson}/delete", method=RequestMethod.POST)
-    public String deletePerson(@PathVariable String idPerson, Model model) throws InstanceNotFoundException, NumberFormatException, FirstPageElementException, InputValidationException {
+    public String deletePerson(@PathVariable String idPerson, Model model) throws InstanceNotFoundException, NumberFormatException, PaginationException, InputValidationException {
     	
     	Long id = Long.parseLong(idPerson, 10);
     	

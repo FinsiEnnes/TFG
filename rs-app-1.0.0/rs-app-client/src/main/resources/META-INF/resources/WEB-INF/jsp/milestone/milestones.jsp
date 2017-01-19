@@ -196,9 +196,10 @@ small {
 												<button type="button" class="btn btn-primary btn-xs center-block"
 													data-toggle="modal" data-target="#editMilestone"
 													data-id="${milestone.id}" data-name="${milestone.name}"
-													data-datePlan="${milestone.datePlan}" 
-													data-dateReal="${milestone.dateReal}"
-													data-comment="${milestone.dateReal}">
+													data-phase="${milestone.namePhase}"
+													data-dateplan="${milestone.datePlan}" 
+													data-datereal="${milestone.dateReal}"
+													data-comment="${milestone.comment}">
 													<span class="glyphicon glyphicon-edit"></span>
 												</button>
 											</td>
@@ -240,7 +241,7 @@ small {
 
 	
 	
-	<!-- Modal: Creation of a new Material
+	<!-- Modal: Creation of a new Milestone
 	===================================================================================================== -->
 		<div class="modal fade modal" id="addMilestone" role="dialog">
 			<div class="modal-dialog">
@@ -266,8 +267,8 @@ small {
 							</div>
 						</div>
 					
-						<form:form id="materialForm" class="form-horizontal" method="post" 
-						modelAttribute="material" action='/materials' data-toggle="validator">
+						<form:form id="milestoneForm" class="form-horizontal" method="post" 
+						modelAttribute="milestone" action='/projects/${idProject}/milestones' data-toggle="validator">
 
 							<div class="form-group">
 								<div class="row">
@@ -282,10 +283,12 @@ small {
 							<div class="form-group">
 								<div class="row">
 									<label class="col-md-offset-2 col-md-2 control-label">Fase</label>
+									<input type="hidden" name="idPhase" id="idPhaseMS" value="${phases[0].id}">
 									<div class="form-group col-md-5">
-										<select class="form-control" name="type">
-											<option>Propio</option>
-											<option>Comprado</option>
+										<select class="form-control" name="namePhase" id="namePhaseNewMS">
+											<c:forEach var="phase" items="${phases}">
+												<option id="${phase.id}">${phase.name}</option>
+											</c:forEach>
 										</select>
 									</div>
 								</div>
@@ -293,11 +296,11 @@ small {
 
 							<div class="form-group">
 								<div class="row">
-									<label class="col-md-offset-2 col-md-2 control-label">Fecha</label>
+									<label class="col-md-offset-2 col-md-2 control-label">Fecha prevista</label>
 									<div class="form-group has-feedback col-md-5">
-										<input class="form-control" name="cost" 
-										type="text" pattern="^[1-9]\d*$" required>
-										 <span class="glyphicon form-control-feedback"></span>
+										<input type="text" class="form-control datepicker"
+										data-format="dd/MM/yyyy" name="datePlan" id="datePlanNewMS"
+										placeholder="dd/mm/aaaa" required>
 									</div>
 								</div>
 							</div>
@@ -306,7 +309,7 @@ small {
 								<div class="row">
 									<label class="col-md-offset-2 col-md-2 control-label">Comentario</label>
 									<div class="form-group col-md-5">
-										<textarea class="form-control" rows="4" name="description">
+										<textarea class="form-control" rows="4" name="comment">
 										</textarea>
 									</div>
 								</div>
@@ -327,7 +330,7 @@ small {
 		</div>
 		
 		
-	<!-- Modal: Creation of a new Material
+	<!-- Modal: Update of milestone
 	===================================================================================================== -->
 		<div class="modal fade modal" id="editMilestone" role="dialog">
 			<div class="modal-dialog">
@@ -369,7 +372,7 @@ small {
 								<div class="row">
 									<label class="col-md-offset-2 col-md-2 control-label">Fase</label>
 									<div class="form-group col-md-5" id="phaseEditMilestone">
-										<input class="form-control" readOnly>
+										<input class="form-control" >
 									</div>
 								</div>
 							</div>
@@ -520,7 +523,6 @@ small {
 		$(function() {
 			$('#editMilestone').on('show.bs.modal', function(event) {
 				
-				alert("e")
 				// Button that triggered the modal
 				var button = $(event.relatedTarget) 
 				
@@ -528,9 +530,10 @@ small {
 				var id = button.data('id');
 				var name     = button.data('name');
 				var phase    = button.data('phase');
-				var datePlan = button.data('datePlan');
-				var dateReal = button.data('dateReal');
+				var datePlan = button.data('dateplan');
+				var dateReal = button.data('datereal');
 				var comment  = button.data('comment');
+				alert(name + phase + datePlan + dateReal)
 				  
 				// Create the url
 				var url = "/projects/" + ${idProject} + "/milestones/"+ id + "/update";
@@ -541,7 +544,7 @@ small {
 				document.getElementById('nameEditMilestone').value = name;
 				document.getElementById('phaseEditMilestone').value = phase;
 				document.getElementById('datePlanEditMilestone').value = datePlan;
-				document.getElementById('datePlanEditMilestone').value = dateReal;
+				document.getElementById('dateRealEditMilestone').value = dateReal;
 				document.getElementById('commentEditMilestone').value = comment;
 
 			})
@@ -583,6 +586,16 @@ small {
 				document.getElementById('msgMaterial').innerHTML = msg;
 				$('#confirmDeleteMaterialButton').get(0).setAttribute('action', url);
 			})
+		});
+	</script>
+	
+	<!-- Update the phase id when the user change the option
+	===================================================================================================== -->
+	<script type="text/javascript">
+		$("#namePhaseNewMS").change(function() {
+			  var id = $(this).children(":selected").attr("id");
+			  document.getElementById("idPhaseMS").value = id;
+			  
 		});
 	</script>
 

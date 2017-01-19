@@ -36,7 +36,7 @@ public class MilestoneDTOConversor {
 		milestone.setName(milestoneDTO.getName());
 		milestone.setDatePlan(ClientUtilMethods.toDate(milestoneDTO.getDatePlan()));
 		milestone.setDateReal(ClientUtilMethods.toDate(milestoneDTO.getDateReal()));
-		milestone.setComment(milestoneDTO.getComment());
+		milestone.setComment(milestoneDTO.getComment().trim());
 		
 		return milestone;		
 	}

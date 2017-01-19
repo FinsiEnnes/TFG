@@ -245,7 +245,7 @@ public class JsonConversor {
     	
     	// Real data can be null
     	String dateReal = ((milestone.getDateReal() == null) ? null : fmt.format(milestone.getDateReal()));
-    	String comment = ((milestone.getComment() == null) ? null : fmt.format(milestone.getComment()));
+    	String comment = ((milestone.getComment() == null) ? null : milestone.getComment());
     	
     	jsonObject.put("dateReal", dateReal);
     	jsonObject.put("comment", comment);
