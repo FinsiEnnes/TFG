@@ -439,6 +439,37 @@ public class JsonConversor {
 		return jsonArrayData;
 	}
 	
+	//-----------------------------------------------------------------------------------------------------
+	// Create a JSON with the data of AssignmentPerson to show it in Tables. 
+	//-----------------------------------------------------------------------------------------------------
+	@SuppressWarnings("unchecked")
+	private static JSONObject getMilestoneJSONForTables(Milestone milestone) {
+		
+		JSONObject jsonObject = new JSONObject();
+		
+    	jsonObject.put("id", milestone.getId());
+    	jsonObject.put("comment", milestone.getComment());
+
+    	return jsonObject;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static JSONArray getMilestoneDescAsJSON(List<Milestone> milestone) {
+
+		int nMilestones = milestone.size();
+
+		JSONObject jsonObject;
+		JSONArray jsonArrayData = new JSONArray();
+
+		// Convert the info
+		for(int i=0; i<nMilestones; i++){			
+			jsonObject = getMilestoneJSONForTables(milestone.get(i));
+			jsonArrayData.add(jsonObject);
+		}
+
+		return jsonArrayData;
+	}
+	
 	
 	//-----------------------------------------------------------------------------------------------------
 	// Create a JSON with the result of the TaskIncidents to show in a text. 

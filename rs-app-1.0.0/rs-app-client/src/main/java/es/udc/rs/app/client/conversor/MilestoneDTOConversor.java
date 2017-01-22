@@ -29,7 +29,7 @@ public class MilestoneDTOConversor {
 		
 		// Get the Phase object
 		Phase phase = projectService.findPhase(milestoneDTO.getIdPhase());
-		
+
 		// Create the Milestone object
 		milestone.setId(milestoneDTO.getId());
 		milestone.setPhase(phase);

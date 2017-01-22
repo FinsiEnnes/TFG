@@ -658,13 +658,13 @@ body {
 		];
  		
  		gantt.templates.scale_cell_class = function(date){
- 		    if(date.getDay()==0||date.getDay()==6||date=="02-06-2016"){
+ 		    if(date.getDay()==0||date.getDay()==6||date=="02/06/2016"){
  		        return "weekend";
  		    }
  		};
  		
  		gantt.templates.task_cell_class = function(item,date){
- 		    if(date.getDay()==0||date.getDay()==6||date=="02-06-2016"){ 
+ 		    if(date.getDay()==0||date.getDay()==6||date=="02/06/2016"){ 
  		        return "weekend" ;
  		    }
  		};

@@ -206,8 +206,8 @@ small {
 											<td>
 												<button id="deleteMaterial" type="button"
 													class="btn btn-danger btn-xs center-block"
-													data-toggle="modal" data-target="#confirmDeleteMaterial"
-													data-id="${material.id}" data-name="${material.name}">
+													data-toggle="modal" data-target="#confirmDeleteMilestone"
+													data-id="${milestone.id}" data-name="${milestone.name}">
 													<span class="glyphicon glyphicon-remove"></span>
 												</button>
 											</td>
@@ -231,7 +231,7 @@ small {
 				
 				<div class="row">
 					<div class="form-group col-md-offset-3 col-md-6">
-						<textarea class="form-control" rows="6" id="descMaterial">
+						<textarea class="form-control" rows="6" id="commentMilestone">
 						</textarea>
 					</div>
 				</div>
@@ -371,8 +371,8 @@ small {
 							<div class="form-group">
 								<div class="row">
 									<label class="col-md-offset-2 col-md-2 control-label">Fase</label>
-									<div class="form-group col-md-5" id="phaseEditMilestone">
-										<input class="form-control" >
+									<div class="form-group col-md-5">
+										<input class="form-control" name="namePhase" id="phaseEditMilestone" readOnly>
 									</div>
 								</div>
 							</div>
@@ -381,7 +381,9 @@ small {
 								<div class="row">
 									<label class="col-md-offset-2 col-md-2 control-label">Fecha prevista</label>
 									<div class="form-group col-md-5">
-										<input class="form-control" name="datePlan"  id="datePlanEditMilestone">
+										<input type="text" class="form-control datepicker"
+										data-format="dd/MM/yyyy" name="datePlan" id="datePlanEditMilestone"
+										placeholder="dd/mm/aaaa" required>
 									</div>
 								</div>
 							</div>
@@ -390,7 +392,9 @@ small {
 								<div class="row">
 									<label class="col-md-offset-2 col-md-2 control-label">Fecha real</label>
 									<div class="form-group col-md-5">
-										<input class="form-control" name="dateReal"  id="dateRealEditMilestone">
+										<input type="text" class="form-control datepicker"
+										data-format="dd/MM/yyyy" name="datePlan" id="dateRealEditMilestone"
+										placeholder="dd/mm/aaaa" required>
 									</div>
 								</div>
 							</div>
@@ -421,27 +425,27 @@ small {
 		</div>
 		
 				
-	<!-- Modal: Confirmation of delete Material
+	<!-- Modal: Confirmation of delete Milestone
 	===================================================================================================== -->
-		<div class="modal fade" id="confirmDeleteMaterial" role="dialog">
+		<div class="modal fade" id="confirmDeleteMilestone" role="dialog">
 			<div class="modal-dialog">
 				<!-- Modal content-->
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Borrado de material</h4>
+						<h4 class="modal-title">Borrado de hito</h4>
 					</div>
 					<div class="modal-body">
 						<div class="row">
 							<div class="col-md-12">
-								<p id="msgMaterial" align="center"></p>
+								<p id="msgMilestone" align="center"></p>
 							</div>
 						</div>
 					</div>
 					<div class="modal-footer">
 						<div class="row center-block">
 							<div class="col-md-offset-3 col-md-3">
-								<form id="confirmDeleteMaterialButton" action='' method="post">
+								<form id="confirmDeleteMilestoneButton" action='' method="post">
 									<button type="submit" class="btn btn-danger btn-block">Si</button>
 								</form>
 							</div>
@@ -488,7 +492,7 @@ small {
 		})
 	</script>
 	
-	<!-- Dynamic load of the material description in the textarea
+	<!-- Dynamic load of the milestone description in the textarea
 	===================================================================================================== -->
 	<script type="text/javascript">
 		$(document).ready(function() { 
@@ -500,16 +504,16 @@ small {
 			   
 			   // If a option is selected then we can add a Person as manager
 			   if (size > 0) {
-				   var idMaterial = json['0']['1'];
-				   var desc = "";
+				   var idMilestone = json['0']['1'];
+				   var comment = "";
 				   
 				   // Find the description of this Material
-				   for (i = 0; i < ${matDescriptions}.length; i++) { 
-    					if (${matDescriptions}[i].id == idMaterial) {
-    						desc = ${matDescriptions}[i].desc;
+				   for (i = 0; i < ${milestoneCom}.length; i++) { 
+    					if (${milestoneCom}[i].id == idMilestone) {
+    						comment = ${milestoneCom}[i].comment;
     					}
 					}
-				   document.getElementById("descMaterial").value = desc;
+				   document.getElementById("commentMilestone").value = comment;
 			   } 
 	        
 		   }); 
@@ -525,28 +529,31 @@ small {
 				
 				// Button that triggered the modal
 				var button = $(event.relatedTarget) 
+				var b = event.relatedTarget;
 				
-				// Extract info from data attributes
-				var id = button.data('id');
-				var name     = button.data('name');
-				var phase    = button.data('phase');
-				var datePlan = button.data('dateplan');
-				var dateReal = button.data('datereal');
-				var comment  = button.data('comment');
-				alert(name + phase + datePlan + dateReal)
-				  
-				// Create the url
-				var url = "/projects/" + ${idProject} + "/milestones/"+ id + "/update";
-						
-				// Set the values at the modal components
-				document.getElementById('editMilestoneForm').action = url;
-				//document.getElementById('idEditMilestone').value = id;
-				document.getElementById('nameEditMilestone').value = name;
-				document.getElementById('phaseEditMilestone').value = phase;
-				document.getElementById('datePlanEditMilestone').value = datePlan;
-				document.getElementById('dateRealEditMilestone').value = dateReal;
-				document.getElementById('commentEditMilestone').value = comment;
-
+				// Only set the modal data if the event comes from the main edit botton
+				if (b != null)
+			    {	
+					// Extract info from data attributes
+					var id = button.data('id');
+					var name     = button.data('name');
+					var phase    = button.data('phase');
+					var datePlan = button.data('dateplan');
+					var dateReal = button.data('datereal');
+					var comment  = button.data('comment');
+					  
+					// Create the url
+					var url = "/projects/" + ${idProject} + "/milestones/"+ id + "/update";
+							
+					// Set the values at the modal components
+					document.getElementById('editMilestoneForm').action = url;
+					//document.getElementById('idEditMilestone').value = id;
+					document.getElementById('nameEditMilestone').value = name;
+					document.getElementById('phaseEditMilestone').value = phase;
+					document.getElementById('datePlanEditMilestone').value = datePlan;
+					document.getElementById('dateRealEditMilestone').value = dateReal;
+					document.getElementById('commentEditMilestone').value = comment;
+			    }
 			})
 		});
 	</script>
@@ -556,7 +563,7 @@ small {
 	===================================================================================================== -->
 	<script type="text/javascript">
 		$(document).ready(function() { 
-		   $('#editMaterialForm').change(function() { 
+		   $('#editMilestoneForm').change(function() { 
 				document.getElementById("editMaterialButton").disabled = false;		        
 		   }); 
 		});
@@ -567,7 +574,7 @@ small {
 	===================================================================================================== -->
 	<script type='text/javascript'>
 		$(function() {
-			$('#confirmDeleteMaterial').on('show.bs.modal', function(event) {
+			$('#confirmDeleteMilestone').on('show.bs.modal', function(event) {
 				
 				// Button that triggered the modal
 				var button = $(event.relatedTarget) 
@@ -577,14 +584,14 @@ small {
 				var name = button.data('name');
 				  
 				// Create the url
-				var url = "/materials/" + id + "/delete";
+				var url = "/projects/" + ${idProject} + "/milestones/"+ id + "/delete";
 				
 				// Create the msg
-				var msg = "Material seleccionado: " + name.bold() + ". ¿Seguro que desea eliminar este material?";
+				var msg = "Hito seleccionado: " + name.bold() + ". ¿Seguro que desea eliminar este hito?";
 						
 				// Set the values at the modal components
-				document.getElementById('msgMaterial').innerHTML = msg;
-				$('#confirmDeleteMaterialButton').get(0).setAttribute('action', url);
+				document.getElementById('msgMilestone').innerHTML = msg;
+				$('#confirmDeleteMilestoneButton').get(0).setAttribute('action', url);
 			})
 		});
 	</script>
