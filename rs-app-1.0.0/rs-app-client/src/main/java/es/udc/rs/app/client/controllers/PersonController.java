@@ -176,7 +176,7 @@ public class PersonController {
     	model.addAttribute("msg", msg);
     	
     	// Return the name of the view
-        return "person/personTable";
+        return "person/table";
     }
     
     
@@ -207,7 +207,7 @@ public class PersonController {
     	model.addAttribute("section2State", "");
     	model.addAttribute("section3State", "");
     	
-    	return "person/personInfo";
+    	return "person/info";
     }
     
     
@@ -240,7 +240,7 @@ public class PersonController {
     	model.addAttribute("msg",msg);
     	
     	// Return the table in the first page 
-    	return "person/personTable";
+    	return "person/table";
     }
     
     
@@ -285,7 +285,7 @@ public class PersonController {
     	model.addAttribute("action", "");
     	
     	// Return the table in the first page 
-    	return "person/personTable";
+    	return "person/table";
     }
     
     
