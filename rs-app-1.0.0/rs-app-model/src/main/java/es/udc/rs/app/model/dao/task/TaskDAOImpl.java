@@ -73,6 +73,13 @@ public class TaskDAOImpl implements TaskDAO {
 	@Override 
 	public Task findFirstTask(Project project) {
 		
+		// Check if it exists task
+		List<Task> projectTasks = findByProject(project);
+		
+		if (projectTasks.isEmpty()) {
+			return new Task();
+		}
+		
 		// First, we get the Phases of the Project
 		String queryString = "FROM Phase P WHERE P.project = :project ORDER BY P.ini ASC";
 		

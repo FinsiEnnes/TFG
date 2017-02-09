@@ -52,13 +52,17 @@ public class MilestoneController {
 		List<Phase> phases = projectService.findPhaseByProject(longIdProject);
 		List<PhaseDTO> phasesDTO = PhaseDTOConversor.toPhaseDTOList(phases);
 		
+		// Get the id of the first task
+		Long idTask = (task.getId() == null ? 0L : task.getId());
+		Long idPhase = (task.getId() == null ? 0L : task.getPhase().getId());
+		
 		// Get the comments as JSON
 		JSONArray milestoneCom = JsonConversor.getMilestoneDescAsJSON(milestones);
 		
 		// Create the model
 		model.addAttribute("idProject", idProject);
-		model.addAttribute("idPhase", task.getPhase().getId());
-		model.addAttribute("idTask", task.getId());
+		model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
 		model.addAttribute("milestones", milestonesDTO);
 		model.addAttribute("phases", phasesDTO);
 		model.addAttribute("milestoneCom", milestoneCom);

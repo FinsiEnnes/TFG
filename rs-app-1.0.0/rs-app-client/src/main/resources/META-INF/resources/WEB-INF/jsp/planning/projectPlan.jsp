@@ -18,7 +18,8 @@
 
 <!-- Gantt chart  -->
 <script src="/dhtmlxGantt/codebase/dhtmlxgantt.js"></script>
-<link href="/dhtmlxGantt/codebase/dhtmlxgantt.css" rel="stylesheet">
+<script src="http://export.dhtmlx.com/gantt/api.js"></script>
+<link href="/dhtmlxGantt/codebase/dhtmlxgantt.css" rel="stylesheet" type="text/css">
 
 <!-- Custom tabs for the add operationes -->
 <link href="/css/customTabs.css" rel="stylesheet">
@@ -33,6 +34,19 @@ body {
 .nested_task .gantt_add{
    display: none;
 }
+
+.custom-btn{
+margin-right:25px;
+margin-top:7px;
+}
+
+/* Add scrolls in the popup */
+.modal .modal-body {
+    max-height: 296px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 
 </style>
 
@@ -64,14 +78,24 @@ body {
 				<li><a href="/persons"><font size="3">Personas</font></a></li>
 				<li><a href="/materials"><font size="3">Materiales</font></a></li>
 			</ul>
+		
+		<div class="custom-btn">
+			<div class="nav navbar-nav pull-right">
+	        	<button type="button" class="btn move-btn btn-success" onclick='gantt.exportToPDF()'>
+					<span class="glyphicon glyphicon-export"></span> Exportar a PDF
+				</button>
+	        </div>
+        </div>
 		</div>
+		
+
 		<!-- /.navbar-collapse -->
 	</nav>
 	
 	<!-- Content of the interface
     ================================================== -->
 	<div class="container-fluid">
-		<div class="row">
+		<div class="row">			
 			<div id="gantt_here" style='width: 1366px; height: 580px;'></div>
 		</div>
 
@@ -616,8 +640,6 @@ body {
 		});
 	</script>
 
-
-
 	<!-- Gantt chart configuration
     ================================================== -->
 	<script type="text/javascript">
@@ -644,7 +666,7 @@ body {
 		
 		gantt.config.scale_unit = "day"; 
 		gantt.config.date_scale = "%D %d";
-		gantt.config.min_column_width = 50;
+		gantt.config.min_column_width = 45;
 		
 		var weekScaleTemplate = function(date){
 			  var dateToStr = gantt.date.date_to_str("%d %M");

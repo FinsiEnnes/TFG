@@ -234,7 +234,7 @@ public class FullTest {
 		log.info("");
 		log.info("===> Assignment of the Profiles in the Task");
 		// ================================================================================
-		AssignmentProfile ap1 = new AssignmentProfile(task1, profCatg1, 2, 20, 0);
+		AssignmentProfile ap1 = new AssignmentProfile(task1, profCatg1, 1, 20, 0);
 		AssignmentProfile ap2 = new AssignmentProfile(task1, profCatg2, 1, 10, 0);
 		AssignmentProfile ap3 = new AssignmentProfile(task1, profCatg3, 1, 8, 0);
 		
@@ -308,7 +308,7 @@ public class FullTest {
 		
 		// Check the final costs and update the objects Task
 		task1 = projectService.findTask(task1.getId());
-		num = 468;
+		num = 348;
 		assertEquals(num, task1.getCostPlan());
 		
 		task2 = projectService.findTask(task2.getId());
@@ -343,10 +343,10 @@ public class FullTest {
 		num = 11;
 		assertEquals(num, thisProject.getDaysPlan());
 		
-		num = 137;
+		num = 117;
 		assertEquals(num, thisProject.getHoursPlan());
 		
-		num = 1231;
+		num = 1111;
 		assertEquals(num, thisProject.getCostPlan());
 		thisDate = fmt.parse("2016-09-11");
 		assertEquals(thisDate, thisProject.getEndPlan());

@@ -108,12 +108,14 @@ public class ProjectController {
     	
 		// Find the first task of this project
 		Task task = projectService.findFirstTask(id);
+		Long idTask = (task.getId() == null ? 0L : task.getId());
+		Long idPhase = (task.getId() == null ? 0L : task.getPhase().getId());
 		
     	// Create the model
     	model.addAttribute("project", projectDTO);
     	model.addAttribute("idProject", idProject);
-    	model.addAttribute("idPhase", task.getPhase().getId());
-		model.addAttribute("idTask", task.getId());
+    	model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
     	model.addAttribute("iniProject", iniProject);
     	model.addAttribute("provinces", provincesDTO);
     	
@@ -185,11 +187,13 @@ public class ProjectController {
     	
 		// Find the first task of this project
 		Task task = projectService.findFirstTask(id);
+		Long idTask = (task.getId() == null ? 0L : task.getId());
+		Long idPhase = (task.getId() == null ? 0L : task.getPhase().getId());
     	
     	// Create the model
     	model.addAttribute("idProject", id);
-    	model.addAttribute("idPhase", task.getPhase().getId());
-		model.addAttribute("idTask", task.getId());
+    	model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
     	model.addAttribute("currentState", currentState);
     	model.addAttribute("stateDescription", stateDesc);
     	model.addAttribute("historyProject", hpsDTO);
@@ -230,12 +234,14 @@ public class ProjectController {
     	
 		// Find the first task of this project
 		Task task = projectService.findFirstTask(id);
+		Long idTask = (task.getId() == null ? 0L : task.getId());
+		Long idPhase = (task.getId() == null ? 0L : task.getPhase().getId());
 		
     	// Create the model
 		model.addAttribute("project", projectDTO);
 		model.addAttribute("idProject", id);
-    	model.addAttribute("idPhase", task.getPhase().getId());
-		model.addAttribute("idTask", task.getId());    	
+    	model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);   	
 		
 		return "project/statics";
 	}
@@ -260,11 +266,13 @@ public class ProjectController {
 		
 		// Find the first task of this project
 		Task task = projectService.findFirstTask(id);
+		Long idTask = (task.getId() == null ? 0L : task.getId());
+		Long idPhase = (task.getId() == null ? 0L : task.getPhase().getId());
 		
     	// Create the model
 		model.addAttribute("idProject", id);
-    	model.addAttribute("idPhase", task.getPhase().getId());
-		model.addAttribute("idTask", task.getId());
+    	model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
     	model.addAttribute("managers", managersDTO);
     	model.addAttribute("persons", personsDTO);
 		
@@ -349,8 +357,11 @@ public class ProjectController {
     	
 		// Find the first task of this project
 		Task task = projectService.findFirstTask(id);
-    	model.addAttribute("idPhase", task.getPhase().getId());
-		model.addAttribute("idTask", task.getId());
+		Long idTask = (task.getId() == null ? 0L : task.getId());
+		Long idPhase = (task.getId() == null ? 0L : task.getPhase().getId());
+		
+    	model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
 		
     	// If this project doesn't have customer we show a warning interface 
     	if (project.getCustomer() == null) {
@@ -512,11 +523,13 @@ public class ProjectController {
 		
 		// Find the first task of this project
 		Task task = projectService.findFirstTask(id);
+		Long idTask = (task.getId() == null ? 0L : task.getId());
+		Long idPhase = (task.getId() == null ? 0L : task.getPhase().getId());
 		
     	// Create the model
 		model.addAttribute("idProject", id);
-    	model.addAttribute("idPhase", task.getPhase().getId());
-		model.addAttribute("idTask", task.getId());
+    	model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
     	model.addAttribute("freeWeekDays", freeWeekDays);
     	model.addAttribute("freePeriodDays", freePeriodDays);
     	model.addAttribute("otherFreeWeekDays", otherFreeWeekDays);

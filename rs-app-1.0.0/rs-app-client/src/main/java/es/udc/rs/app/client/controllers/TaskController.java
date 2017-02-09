@@ -96,6 +96,13 @@ public class TaskController {
 		Long longIdProject =  Long.parseLong(idProject, 10);
     	Long longIdTask = Long.parseLong(idTask, 10);
     	
+    	model.addAttribute("idProject", longIdProject);
+    	
+		// With idTask=0 there are not tasks
+		if (longIdTask == 0L) {
+			return "task/taskEmpty";
+		}
+    	
 		// First we get the selected task
 		Task task = projectService.findTask(longIdTask);
 		TaskDTO taskDTO = TaskDTOConversor.toTaskDTO(task);

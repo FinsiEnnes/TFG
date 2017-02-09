@@ -1,6 +1,7 @@
 package es.udc.rs.app.client.conversor;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +30,21 @@ public class MilestoneDTOConversor {
 		
 		// Get the Phase object
 		Phase phase = projectService.findPhase(milestoneDTO.getIdPhase());
+		
+		// Get the datas
+		Date planDate = (milestoneDTO.getDatePlan() == null) ? null : ClientUtilMethods.toDate(milestoneDTO.getDatePlan());
+		Date realDate = (milestoneDTO.getDateReal() == null) ? null : ClientUtilMethods.toDate(milestoneDTO.getDateReal());
+		
+		// Get the comment
+		String comment = (milestoneDTO.getComment() == null) ? null : milestoneDTO.getComment().trim();
 
 		// Create the Milestone object
 		milestone.setId(milestoneDTO.getId());
 		milestone.setPhase(phase);
 		milestone.setName(milestoneDTO.getName());
-		milestone.setDatePlan(ClientUtilMethods.toDate(milestoneDTO.getDatePlan()));
-		milestone.setDateReal(ClientUtilMethods.toDate(milestoneDTO.getDateReal()));
-		milestone.setComment(milestoneDTO.getComment().trim());
+		milestone.setDatePlan(planDate);
+		milestone.setDateReal(realDate);
+		milestone.setComment(comment);
 		
 		return milestone;		
 	}
@@ -57,12 +65,16 @@ public class MilestoneDTOConversor {
 		
 		MilestoneDTO milestoneDTO = new MilestoneDTO();
 		
+		// Get the datas
+		String planDate = (milestone.getDatePlan() == null) ? null : ClientUtilMethods.convertDateToString(milestone.getDatePlan());
+		String realDate = (milestone.getDateReal() == null) ? null : ClientUtilMethods.convertDateToString(milestone.getDateReal());
+				
 		milestoneDTO.setId(milestone.getId());
 		milestoneDTO.setIdPhase(milestone.getPhase().getId());
 		milestoneDTO.setNamePhase(milestone.getPhase().getName());
 		milestoneDTO.setName(milestone.getName());
-		milestoneDTO.setDatePlan(ClientUtilMethods.convertDateToString(milestone.getDatePlan()));
-		milestoneDTO.setDateReal(ClientUtilMethods.convertDateToString(milestone.getDateReal()));
+		milestoneDTO.setDatePlan(planDate);
+		milestoneDTO.setDateReal(realDate);
 		milestoneDTO.setComment(milestone.getComment());
 		
 		return milestoneDTO;

@@ -5,7 +5,7 @@
 }
 
 .side-bar {
-	background: #74AFAD;
+	background: #9a9a9a;
 	position: absolute;
 	height: 100%;
 	width: 200px;
@@ -49,12 +49,12 @@
 .side-bar ul .menu li  a:hover {
 	border-left: 3px solid #ECECEA;
 	padding-left: 17px;
-	background: #fb9d4b;
+	background: #769870;
 }
 
 .side-bar ul .menu li  a.active {
 	padding-left: 17px;
-	background: #D9853B;
+	background: #46ad44;
 	border-left: 3px solid #ECECEA;
 }
 
@@ -65,7 +65,7 @@
 	height: 0;
 	border-top: 20px solid transparent;
 	border-bottom: 20px solid transparent;
-	border-left: 7px solid #D9853B;
+	border-left: 7px solid #46ad44;
 	margin-top: -10px;
 	margin-left: 180px;
 }

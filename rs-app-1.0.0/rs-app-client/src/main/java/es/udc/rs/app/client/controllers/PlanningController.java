@@ -83,12 +83,21 @@ public class PlanningController {
     	log.info(mainObj.toString());
 
     	// Find the first task
-		Task task = projectService.findFirstTask(id);
+    	List<Task> taskList = projectService.findProjectTasks(id);
+    	Long idPhase = 0L;
+    	Long idTask = 0L;
+    	
+    	if (!taskList.isEmpty()) {
+    		Task task = projectService.findFirstTask(id);
+    		idPhase = task.getPhase().getId();
+    		idTask = task.getId();
+    	}
+		
 		
     	// Send the data out to the model
     	model.addAttribute("idProject", id);
-    	model.addAttribute("idPhase", task.getPhase().getId());
-		model.addAttribute("idTask", task.getId());
+    	model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
     	model.addAttribute("dataProject", mainObj);
     	model.addAttribute("taskDetails", taskObj);
     	model.addAttribute("msDetails", msObj);

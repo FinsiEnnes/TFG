@@ -1,6 +1,7 @@
 package es.udc.rs.app.client.util;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -29,12 +30,16 @@ public class JsonConversor {
 		SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
 		String idPhase = "p" + phase.getId();
 		
+		// Get the phase dates. If it hasn't got it is assigned the ini project date
+		Date iniPhase = (phase.getIni() == null) ? phase.getProject().getIniPlan() : phase.getIni();
+		Date endPhase = (phase.getEnd() == null) ? phase.getProject().getIniPlan() : phase.getEnd();
+		
     	jsonObject.put("id", idPhase);
     	jsonObject.put("text", phase.getName());
     	
-    	jsonObject.put("start_date", fmt.format(phase.getIni()));
+    	jsonObject.put("start_date", fmt.format(iniPhase));
     	if (phase.getEnd() != null) {
-        	jsonObject.put("end", fmt.format(phase.getEnd()));
+        	jsonObject.put("end", fmt.format(endPhase));
     	}
     	
     	jsonObject.put("open", true);
