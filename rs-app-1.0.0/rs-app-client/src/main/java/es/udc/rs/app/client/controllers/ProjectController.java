@@ -209,11 +209,17 @@ public class ProjectController {
     public String updateHistoryProject(@Valid @ModelAttribute("historyProject") HistoryProjectDTO historyProjectDTO, 
     		BindingResult result, @PathVariable String idProject, @PathVariable String idState, Model model) throws InstanceNotFoundException, InputValidationException {
     	
+		if (idState.equals("EJEC")) {
+			historyProjectDTO.setEnd("Actualidad");
+		} else if (idState.equals("TERM")) {
+			historyProjectDTO.setEnd(historyProjectDTO.getIni());
+		}
+		
     	// Convert the object DTO to HistoryProject
     	HistoryProject hp = HistoryProjectDTOConversor.toHistoryProject(historyProjectDTO);
     	
     	// Update the data
-    	projectService.updateHistoryProject(hp);
+    	projectService.createHistoryProject(hp);
 		
 		return showHistoryProject(idProject, model);
 	}

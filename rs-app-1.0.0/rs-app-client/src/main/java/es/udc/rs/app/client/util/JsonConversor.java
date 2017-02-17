@@ -60,10 +60,13 @@ public class JsonConversor {
 		String idPhase = "p" + task.getPhase().getId();
 		String idTask = "t" + task.getId();
 		
+		String ini = task.getIniReal() == null ? fmt.format(task.getIniPlan()) : fmt.format(task.getIniReal());
+		String end = task.getEndReal() == null ? fmt.format(task.getEndPlan()) : fmt.format(task.getEndReal());
+		
     	jsonObject.put("id", idTask);
     	jsonObject.put("text", task.getName());
-    	jsonObject.put("start_date", fmt.format(task.getIniPlan()));
-    	jsonObject.put("end", fmt.format(task.getEndPlan()));
+    	jsonObject.put("start_date", ini);
+    	jsonObject.put("end", end);
     	jsonObject.put("duration", task.getDaysPlan());
     	jsonObject.put("parent", idPhase);
     	

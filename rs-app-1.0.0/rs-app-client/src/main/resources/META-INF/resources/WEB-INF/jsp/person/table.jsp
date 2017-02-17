@@ -223,7 +223,7 @@ small {
 							<table>
 								<tr>
 									<td>
-									<form action="/persons/${person.id}" method="get">
+									<form action="/projects/${idProject}/persons/${person.id}" method="get">
 										<button type="submit"
 											class="btn btn-info btn-xs center-block">
 											<span class="glyphicon glyphicon-info-sign"></span>
@@ -293,7 +293,7 @@ small {
 						<h4 class="modal-title">Creación de nueva persona</h4>
 					</div>
 					<div class="modal-body">
-						<form:form class="form" method="post" action='/persons'
+						<form:form class="form" method="post" action='/projects/${idProject}/persons'
 							modelAttribute="person" role="form" data-toggle="validator">
 
 							<!-- First row -->
@@ -487,7 +487,7 @@ small {
 				var name = button.data('name') + " " + button.data('surname1') + " " + button.data('surname2')
 				
 				var modal = $(this)
-				var url = "persons/" + id + "/delete"
+				var url = "/projects/" + ${idProject} + "/persons/" + id + "/delete"
 				var msg = "¿Seguro que desea eliminar los datos de " + name + "?"
 						
 				// Set the values at the modal components

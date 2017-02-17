@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import es.udc.rs.app.client.conversor.AptitudeDTOConversor;
+import es.udc.rs.app.client.conversor.HistoryPersonDTOConversor;
 import es.udc.rs.app.client.conversor.PersonDTOConversor;
 import es.udc.rs.app.client.conversor.TimeOffDTOConversor;
 import es.udc.rs.app.client.dto.AptitudeDTO;
+import es.udc.rs.app.client.dto.HistoryPersonDTO;
 import es.udc.rs.app.client.dto.PersonDTO;
 import es.udc.rs.app.client.dto.TimeOffDTO;
 import es.udc.rs.app.client.util.ClientConstants;
@@ -29,9 +31,12 @@ import es.udc.rs.app.exceptions.PaginationException;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Aptitude;
+import es.udc.rs.app.model.domain.HistoryPerson;
 import es.udc.rs.app.model.domain.Person;
+import es.udc.rs.app.model.domain.Task;
 import es.udc.rs.app.model.domain.TimeOff;
 import es.udc.rs.app.model.service.person.PersonService;
+import es.udc.rs.app.model.service.project.ProjectService;
 
 @Controller
 public class PersonController {
@@ -40,9 +45,12 @@ public class PersonController {
 	
 	@Autowired 
 	private PersonService personService;
+	
+	@Autowired 
+	private ProjectService projectService;
     
 	//-----------------------------------------------------------------------------------------------------
-	// [GET]-> /persons?keyword=&search-term=id || Person search by id.   
+	// [GET]-> projects/id/persons?keyword=&search-term=id || Person search by id.   
 	//-----------------------------------------------------------------------------------------------------
 	private List<Person> findPersonByID(Long id) throws InstanceNotFoundException {
 		
@@ -57,7 +65,7 @@ public class PersonController {
 	}
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [GET]-> /persons?keyword=&search-term=name || People search by name.   
+	// [GET]-> projects/id/persons?keyword=&search-term=name || People search by name.   
 	//-----------------------------------------------------------------------------------------------------
 	private List<Person> findPersonByName(String fullName) throws InputValidationException {
 		
@@ -78,7 +86,7 @@ public class PersonController {
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [GET]-> /persons?keyword=&search-term=nif || Person search by nif.   
+	// [GET]-> projects/id/persons?keyword=&search-term=nif || Person search by nif.   
 	//-----------------------------------------------------------------------------------------------------
 	private List<Person> findPersonByNif(String nif) throws InputValidationException, InstanceNotFoundException {
 		
@@ -94,15 +102,28 @@ public class PersonController {
 	
 	
 	//-----------------------------------------------------------------------------------------------------
-	// [GET]-> /persons || Main method that deals with the request to /persons   
+	// [GET]->  projects/id/persons || Main method that deals with the request to /persons   
 	//-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons", method=RequestMethod.GET)
+    @RequestMapping(value="/projects/{idProject}/persons", method=RequestMethod.GET)
     public String personTable 
-    	(@RequestParam(value="page", required=false) Integer pageNumber,
+    	(@PathVariable String idProject,
+    	 @RequestParam(value="page", required=false) Integer pageNumber,
     	 @RequestParam(value="search-term", required=false) String searchTerm,
     	 @RequestParam(value="keyword", required=false) String keyword,
     	 Model model) throws PaginationException, InputValidationException, 
-    	 					 NumberFormatException {
+    	 					 NumberFormatException, InstanceNotFoundException {
+    	
+    	// Get the idProject
+		Long longIdProject =  Long.parseLong(idProject, 10);
+    	model.addAttribute("idProject", longIdProject);
+    	
+		// Find the first task of this project
+		Task task = projectService.findFirstTask(longIdProject);
+		Long idTask = (task.getId() == null ? 0L : task.getId());
+		Long idPhase = (task.getId() == null ? 0L : task.getPhase().getId());
+		
+    	model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
     	
     	// Initialization of variables
     	List<PersonDTO> personsDTO = new ArrayList<PersonDTO>();
@@ -183,13 +204,29 @@ public class PersonController {
 	//-----------------------------------------------------------------------------------------------------
 	// [GET]-> /persons/id || Show the person information included the aptitudes and times off.   
 	//-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons/{idPerson}",  method=RequestMethod.GET)
-    public String personInfo(@PathVariable String idPerson, Model model) throws InstanceNotFoundException {
+    @RequestMapping(value="/projects/{idProject}/persons/{idPerson}",  method=RequestMethod.GET)
+    public String personInfo(@PathVariable String idProject,@PathVariable String idPerson, Model model) throws InstanceNotFoundException {
+    	
+    	// Get the idProject
+		Long longIdProject =  Long.parseLong(idProject, 10);
+    	model.addAttribute("idProject", longIdProject);
+    	
+		// Find the first task of this project
+		Task task = projectService.findFirstTask(longIdProject);
+		Long idTask = (task.getId() == null ? 0L : task.getId());
+		Long idPhase = (task.getId() == null ? 0L : task.getPhase().getId());
+		
+    	model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
     	
     	// Get the Person and convert it in PersonDTO
     	Long idPersonLong = Long.parseLong(idPerson, 10);
     	Person person = personService.findPerson(idPersonLong);
     	PersonDTO personDTO = PersonDTOConversor.toPersonDTO(person);
+    	
+    	// Get the historyPerson
+    	List<HistoryPerson> hps = personService.findHistoryPersonByPerson(person);
+    	List<HistoryPersonDTO> hpsDTO = HistoryPersonDTOConversor.toHistoryPersonDTOs(hps);
     	
     	// Get the corresponding aptitudes
     	List<Aptitude> aptitudes = personService.findAptitudeByPerson(person);
@@ -200,6 +237,7 @@ public class PersonController {
     	List<TimeOffDTO> timeOffDTOList = TimeOffDTOConversor.toTimeOffDTOList(timeOffs);
     	
     	model.addAttribute("person", personDTO);
+    	model.addAttribute("hpersons", hpsDTO);
     	model.addAttribute("aptitudes", aptitudeDTOList);
     	model.addAttribute("timeoffs", timeOffDTOList);
     	
@@ -214,10 +252,10 @@ public class PersonController {
     //-----------------------------------------------------------------------------------------------------
     // [POST]-> /persons || Addition of a new Person.   
     //-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons", method=RequestMethod.POST)
-    public String addPerson(@Valid @ModelAttribute("person")PersonDTO personDTO, 
+    @RequestMapping(value="/projects/{idProject}/persons", method=RequestMethod.POST)
+    public String addPerson(@PathVariable String idProject, @Valid @ModelAttribute("person")PersonDTO personDTO, 
     	      BindingResult result, Model model, HttpServletRequest request) throws InputValidationException, PaginationException, NumberFormatException, InstanceNotFoundException {
-    	
+		
     	// Get the PersonDTO
     	String hiredate = request.getParameter("hiredate");
     	personDTO.setHiredate(hiredate);
@@ -235,7 +273,7 @@ public class PersonController {
     	String msg = "Persona creada correctamente. Identificador asignado: " + idPerson;
     	
     	// Create the model     	
-    	personTable(lastPage,null,null,model);
+    	personTable(idProject,lastPage,null,null,model);
     	model.addAttribute("action", "correctCreation");
     	model.addAttribute("msg",msg);
     	
@@ -247,11 +285,11 @@ public class PersonController {
     //-----------------------------------------------------------------------------------------------------
     // [POST]-> /persons/id/update || Update a Person.   
     //-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons/{idPerson}/update", method=RequestMethod.POST)
-    public String updatePerson(@Valid @ModelAttribute("person")PersonDTO personDto, BindingResult result,
+    @RequestMapping(value="/projects/{idProject}/persons/{idPerson}/update", method=RequestMethod.POST)
+    public String updatePerson(@PathVariable String idProject,@Valid @ModelAttribute("person")PersonDTO personDto, BindingResult result,
     						   @PathVariable String idPerson, Model model, HttpServletRequest request) 
     							throws InstanceNotFoundException, InputValidationException {
-    
+    	
     	// Get the PersonDTO
     	String hiredate = request.getParameter("hiredate");
     	personDto.setId(Long.parseLong(idPerson, 10));
@@ -264,15 +302,15 @@ public class PersonController {
     	personService.updatePerson(person);
     	
     	// If the operation is correct, the view maintains
-    	return personInfo(idPerson, model);
+    	return personInfo(idProject,idPerson, model);
     	
     }
     
     //-----------------------------------------------------------------------------------------------------
     // [POST]-> /persons/id/delete || Delete a Person.   
     //-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons/{idPerson}/delete", method=RequestMethod.POST)
-    public String deletePerson(@PathVariable String idPerson, Model model) throws InstanceNotFoundException, NumberFormatException, PaginationException, InputValidationException {
+    @RequestMapping(value="/projects/{idProject}/persons/{idPerson}/delete", method=RequestMethod.POST)
+    public String deletePerson(@PathVariable String idProject,@PathVariable String idPerson, Model model) throws InstanceNotFoundException, NumberFormatException, PaginationException, InputValidationException {
     	
     	Long id = Long.parseLong(idPerson, 10);
     	
@@ -280,7 +318,7 @@ public class PersonController {
     	personService.removePerson(id);
     	
     	// Create the model     	
-    	personTable(1,null,null,model);
+    	personTable(idProject,1,null,null,model);
     	model.addAttribute("idPerson", idPerson);
     	model.addAttribute("action", "");
     	
@@ -292,8 +330,8 @@ public class PersonController {
 	//-----------------------------------------------------------------------------------------------------
 	// [POST]-> /persons/id/aptitude || Add new aptitudes at the Person.  
 	//-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons/{idPerson}/aptitude", method=RequestMethod.POST)
-    public String addAptitude(@Valid @ModelAttribute("aptitude")AptitudeDTO aptitudeDTO, 
+    @RequestMapping(value="/projects/{idProject}/persons/{idPerson}/aptitude", method=RequestMethod.POST)
+    public String addAptitude(@PathVariable String idProject,@Valid @ModelAttribute("aptitude")AptitudeDTO aptitudeDTO, 
     		 BindingResult result, @PathVariable String idPerson, Model model, HttpServletRequest request) 
     		throws InstanceNotFoundException, InputValidationException  {
     	
@@ -304,22 +342,15 @@ public class PersonController {
     	personService.createAptitude(aptitude);
     	
     	// Get all the data of this Person
-    	personInfo(idPerson, model);
-    	
-    	// The section2 is able
-    	model.addAttribute("section1State", "");
-    	model.addAttribute("section2State", "active");
-    	model.addAttribute("section3State", "");
-    	
-    	return "person/personInfo";
+    	return personInfo(idProject,idPerson, model);
     }
     
     
 	//-----------------------------------------------------------------------------------------------------
 	// [POST]-> /persons/id/aptitude/update || Update the Aptitude of a Person.  
 	//-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons/{idPerson}/aptitude/update", method=RequestMethod.POST)
-    public String updateAptitude(@Valid @ModelAttribute("aptitude")AptitudeDTO aptitudeDTO, 
+    @RequestMapping(value="/projects/{idProject}/persons/{idPerson}/aptitude/update", method=RequestMethod.POST)
+    public String updateAptitude(@PathVariable String idProject,@Valid @ModelAttribute("aptitude")AptitudeDTO aptitudeDTO, 
     		 BindingResult result, @PathVariable String idPerson, Model model, HttpServletRequest request) 
     		throws InstanceNotFoundException, InputValidationException  {
     	
@@ -330,21 +361,16 @@ public class PersonController {
     	personService.updateAptitude(aptitude);
     	
     	// Get all the data of this Person
-    	personInfo(idPerson, model);
-    	
-    	model.addAttribute("section1State", "");
-    	model.addAttribute("section2State", "active");
-    	model.addAttribute("section3State", "");
-    	
-    	return "person/personInfo";
+    	return personInfo(idProject,idPerson, model);
+
     }
     
    
 	//-----------------------------------------------------------------------------------------------------
 	// [POST]-> /persons/id/aptitude/delete || Delete aptitudes at the Person.  
 	//-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons/{idPerson}/aptitude/delete", method=RequestMethod.POST)
-    public String deleteAptitude(@PathVariable String idPerson, Model model, HttpServletRequest request) 
+    @RequestMapping(value="/projects/{idProject}/persons/{idPerson}/aptitude/delete", method=RequestMethod.POST)
+    public String deleteAptitude(@PathVariable String idProject,@PathVariable String idPerson, Model model, HttpServletRequest request) 
     		throws InstanceNotFoundException, InputValidationException  {
     	
     	// Get the aptitudes id to delete these
@@ -358,20 +384,14 @@ public class PersonController {
        }
     	
     	// Get all the data of this Person
-    	personInfo(idPerson, model);
-    	
-    	model.addAttribute("section1State", "");
-    	model.addAttribute("section2State", "active");
-    	model.addAttribute("section3State", "");
-    	
-    	return "person/personInfo";
+    	return personInfo(idProject,idPerson, model);
     }
     
 	//-----------------------------------------------------------------------------------------------------
 	// [POST]-> /persons/id/timeoff || Add new TimeOffs at the Person.  
 	//-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons/{idPerson}/timeoff", method=RequestMethod.POST)
-    public String addTimeOff(@Valid @ModelAttribute("timeoff")TimeOffDTO timeOffDTO, 
+    @RequestMapping(value="/projects/{idProject}/persons/{idPerson}/timeoff", method=RequestMethod.POST)
+    public String addTimeOff(@PathVariable String idProject,@Valid @ModelAttribute("timeoff")TimeOffDTO timeOffDTO, 
     		 BindingResult result, @PathVariable String idPerson, Model model, HttpServletRequest request) 
     		throws InstanceNotFoundException, InputValidationException  {
     	
@@ -382,21 +402,15 @@ public class PersonController {
     	personService.createTimeOff(timeOff);
     	
     	// Get all the data of this Person
-    	personInfo(idPerson, model);
-    	
-    	model.addAttribute("section1State", "");
-    	model.addAttribute("section2State", "");
-    	model.addAttribute("section3State", "active");
-    	
-    	return "person/personInfo";
+    	return personInfo(idProject,idPerson, model);
     }
     
     
 	//-----------------------------------------------------------------------------------------------------
 	// [POST]-> /persons/id/timeoff/update || Update the TimeOff of a Person.  
 	//-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons/{idPerson}/timeoff/update", method=RequestMethod.POST)
-    public String updateTimeOff(@Valid @ModelAttribute("timeoff")TimeOffDTO timeOffDTO, 
+    @RequestMapping(value="/projects/{idProject}/persons/{idPerson}/timeoff/update", method=RequestMethod.POST)
+    public String updateTimeOff(@PathVariable String idProject,@Valid @ModelAttribute("timeoff")TimeOffDTO timeOffDTO, 
     		 BindingResult result, @PathVariable String idPerson, Model model, HttpServletRequest request) 
     		throws InstanceNotFoundException, InputValidationException  {
     	
@@ -407,21 +421,15 @@ public class PersonController {
     	personService.updateTimeOff(timeOff);
     	
     	// Get all the data of this Person
-    	personInfo(idPerson, model);
-    	
-    	model.addAttribute("section1State", "");
-    	model.addAttribute("section2State", "");
-    	model.addAttribute("section3State", "active");
-    	
-    	return "person/personInfo";
+    	return personInfo(idProject,idPerson, model);
     }
     
     
 	//-----------------------------------------------------------------------------------------------------
 	// [POST]-> /persons/id/timeoff/delete || Delete the TimeOff of a Person.  
 	//-----------------------------------------------------------------------------------------------------
-    @RequestMapping(value="/persons/{idPerson}/timeoff/delete", method=RequestMethod.POST)
-    public String deleteTimeOff(@Valid @ModelAttribute("timeoff")TimeOffDTO timeOffDTO, 
+    @RequestMapping(value="/projects/{idProject}/persons/{idPerson}/timeoff/delete", method=RequestMethod.POST)
+    public String deleteTimeOff(@PathVariable String idProject,@Valid @ModelAttribute("timeoff")TimeOffDTO timeOffDTO, 
     		 BindingResult result, @PathVariable String idPerson, Model model, HttpServletRequest request) 
     		throws InstanceNotFoundException, InputValidationException  {
     	
@@ -436,13 +444,7 @@ public class PersonController {
        }
     	
     	// Get all the data of this Person
-    	personInfo(idPerson, model);
-    	
-    	model.addAttribute("section1State", "");
-    	model.addAttribute("section2State", "");
-    	model.addAttribute("section3State", "active");
-    	
-    	return "person/personInfo";
+    	return personInfo(idProject,idPerson, model);
     }
     
     

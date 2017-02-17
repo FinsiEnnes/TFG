@@ -77,8 +77,8 @@ small {
 				<li class="active"><a href="#"><font size="3">Proyecto</font></a></li>
 				<li><a href="/projects/${idProject}/phases/${idPhase}/tasks/${idTask}"><font size="3">Tarea</font></a></li>
 				<li><a href="/projects/${idProject}/milestones"><font size="3">Hito</font></a></li>
-				<li><a href="/persons"><font size="3">Personas</font></a></li>
-				<li><a href="/materials"><font size="3">Materiales</font></a></li>
+				<li><a href="/projects/${idProject}/persons"><font size="3">Personas</font></a></li>
+				<li><a href="/projects/${idProject}/materials"><font size="3">Materiales</font></a></li>
 			</ul>
 		</div>
 		<!-- /.navbar-collapse -->
@@ -141,7 +141,7 @@ small {
 							<li class="menu">
 								<ul>
 								<li>
-									<a href="#">Calendario
+									<a href="/projects/${idProject}/calendar">Calendario
 										<span class="glyphicon glyphicon-calendar pull-right"></span>
 									</a>
 								</li>
@@ -250,11 +250,10 @@ small {
 				</div>
 
 				<div class="row">
-					<form action="/projects/${project.id}/states" method="post">
-						<button type="submit" name="page" class="btn btn-success center-block">
-						<span class="glyphicon glyphicon-plus"></span> Nuevo estado
-						</button>
-					</form>
+					<button id="changeStateButton" type="submit" name="page" class="btn btn-success center-block" 
+					data-toggle="modal" data-target="#changeToEjec">
+					<span class="glyphicon glyphicon-plus"></span> Nuevo estado
+					</button>
 				</div>
 				
 				<br>
@@ -354,6 +353,129 @@ small {
 				</div>
 			</div>
 		</div>
+		
+		<!-- Modal: Change state to Ejecution
+    	================================================== -->
+		<div class="modal fade" id="changeToEjec" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Cambio de estado</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-9">
+								<h4>
+									Nuevo estado: <em>Ejecución</em><br> 
+									<small>
+										Para que pueda comenzar la ejecución del proyecto todas sus
+									</small>
+									<small>
+										tareas deben estar preparadas o canceladas. Realizado el cambio 
+									</small>
+									<small>
+										de estado, se calcularán automáticamente los datos previstos.
+									</small>
+								</h4>
+							</div>
+						</div>
+					
+						<div class="row">
+							<div class="col-md-12">
+								<form:form class="form" method="post" id="updateManagerForm"
+								action='/projects/${idProject}/states/EJEC/update'
+								modelAttribute="hproject" role="form" data-toggle="validator">
+
+									<!-- First row -->
+									<div class="form-group">
+										<div class="row">
+											<div class="form-group col-md-offset-4 col-md-4">
+												<label for="inputName" class="control-label">Inicio ejecución</label>
+												<input type="text" class="form-control datepicker"
+													data-format="dd/MM/yyyy" name="ini" id="ini"
+													placeholder="dd/mm/aaaa" required>
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<div class="row">
+											<button type="submit" class="btn btn-primary center-block">
+												Cambiar estado
+											</button>
+										</div>
+									</div>
+								</form:form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<!-- Modal: Change state to Terminate
+    	================================================== -->
+		<div class="modal fade" id="changeToTerm" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Cambio de estado</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-9">
+								<h4>
+									Nuevo estado: <em>Terminado</em><br> 
+									<small>
+										Para poder concluir el proyecto todas sus tareas deben haberlo 
+									</small>
+									<small>
+										hecho tambien. Realizado el cambio de estado, se calcularán
+									</small>
+									<small>
+										 automáticamente los datos reales.
+									</small>
+								</h4>
+							</div>
+						</div>
+					
+						<div class="row">
+							<div class="col-md-12">
+								<form:form class="form" method="post" id="updateManagerForm"
+								action='/projects/${idProject}/states/TERM/update'
+								modelAttribute="hproject" role="form" data-toggle="validator">
+
+									<!-- First row -->
+									<div class="form-group">
+										<div class="row">
+											<div class="form-group col-md-offset-4 col-md-4">
+												<label for="inputName" class="control-label">Fecha de finalización</label>
+												<input type="text" class="form-control datepicker"
+													data-format="dd/MM/yyyy" name="ini" id="ini"
+													placeholder="dd/mm/aaaa" required>
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<div class="row">
+											<button type="submit" class="btn btn-primary center-block">
+												Cambiar estado
+											</button>
+										</div>
+									</div>
+								</form:form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<!-- Bootstrap core JavaScript
@@ -379,6 +501,25 @@ small {
 				language : 'es'
 			});
 		})
+	</script>
+	
+		<!-- Script that fires when the window is loaded
+    ================================================== -->
+	<script type="text/javascript">
+		$(window).load(function() {
+			
+			if ('${currentState}' == "EJEC") {
+				$('#changeStateButton').attr('data-target','#changeToTerm');
+			}
+			
+			if ('${currentState}' == "CANC" || '${task.idState}' == "TERM") {
+				document.getElementById("changeStateButton").disabled = true;
+			}
+			
+			if ('${feedback}' == "active") {
+				$('#feedbackModal').modal('show');
+			}
+		});
 	</script>
 	
 	<!-- Fires when the edit button is clicked
