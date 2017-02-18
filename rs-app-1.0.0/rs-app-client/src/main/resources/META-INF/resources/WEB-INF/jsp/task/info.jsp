@@ -442,12 +442,6 @@ textarea {
 									<td>${task.iniReal}</td>
 									<td>${task.endReal}</td>
 								</tr>
-								
-								<tr>
-									<td class="text-info">Variación</td>
-									<td></td>
-									<td></td>
-								</tr>
 							</tbody>
 						</table>
 					</div>
@@ -483,9 +477,9 @@ textarea {
 								
 								<tr>
 									<td class="text-info">Variación</td>
-									<td></td>
-									<td></td>
-									<td></td>
+									<td>${daysVar}</td>
+									<td>${hoursVar}</td>
+									<td>${costVar}</td>
 								</tr>
 							</tbody>
 						</table>

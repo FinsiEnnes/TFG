@@ -1,8 +1,9 @@
 package es.udc.rs.app.client.conversor;
 
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,8 +32,13 @@ public class ProjectDTOConversor {
 			return ClientConstants.NOT_AVAILABLE;
 		}
 		
-	    long daysDiff = ChronoUnit.DAYS.between(firstDate.toInstant(), secondDate.toInstant());
-	    return Long.toString(Math.abs(daysDiff));
+		DateTime ini = new DateTime(firstDate);
+		DateTime end = new DateTime(secondDate);
+		
+		Days d = Days.daysBetween(ini, end);
+	    int days = d.getDays();
+
+	    return String.valueOf(days);
 	}
 	
 	public static ProjectDTO toProjectDTO(Project project) {

@@ -156,7 +156,7 @@ small {
 			
 				<!-- Search button -->
 				<div class="col-md-4">
-					<form class="form" role="search" action="/persons" method="get" data-toggle="validator">
+					<form class="form" role="search" action="/projects/${idProject}/persons" method="get" data-toggle="validator">
 						<div class="input-group">
 							<input id="searchInput" type="text" class="form-control" placeholder="Búsqueda por ID"
 								name="keyword" id="keyword" required>
@@ -262,7 +262,7 @@ small {
 			
 			<!-- Previous button -->
 			<div class="col-md-offset-7 col-md-1">
-				<form action="/persons" method="get">
+				<form action="/projects/${idProject}/persons" method="get">
 					<button type="submit" name="page" value="${previousPage}"
 						class="btn btn-default ${previousActive}">
 						<span class="glyphicon glyphicon-chevron-left"></span> Anterior
@@ -272,7 +272,7 @@ small {
 			
 			<!-- Next button -->
 			<div class="col-md-offset-1 col-md-1">
-				<form action="/persons" method="get">
+				<form action="/projects/${idProject}/persons" method="get">
 					<button type="submit" name="page" value="${nextPage}"
 						class="btn btn-default pull-right ${nextActive}">
 						Siguiente <span class="glyphicon glyphicon-chevron-right"></span>

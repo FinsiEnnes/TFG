@@ -225,7 +225,7 @@ small {
 						
 				<div class="row">
 					<div class="col-md-offset-10 col-md-1">
-						<button id="addPlanMaterialButton" type="button" class="btn btn-success pull-right"
+						<button id="newMaterialPlan" type="button" class="btn btn-success pull-right"
 							data-toggle="modal" data-target="#assignMaterial" data-type="plan">
 							<span class="glyphicon glyphicon-plus"></span> 
 							Asignar material
@@ -301,7 +301,7 @@ small {
 						
 				<div class="row">
 					<div class="col-md-offset-10 col-md-1">
-						<button id="addPlanMaterialButton" type="button" class="btn btn-success pull-right"
+						<button id="newMaterialReal" type="button" class="btn btn-success pull-right"
 							data-toggle="modal" data-target="#assignMaterial" data-type="real">
 							<span class="glyphicon glyphicon-plus"></span> 
 							Asignar material
@@ -598,6 +598,26 @@ small {
 				language : 'es'
 			});
 		})
+	</script>
+	
+	<!-- Script that fires when the window is loaded
+    ================================================== -->
+	<script type="text/javascript">
+		$(window).load(function() {
+			
+			if ('${idState}' == "PLAN") {
+				document.getElementById("newMaterialReal").disabled = true;	
+			}
+			
+			if ('${idState}' == "EJEC") {
+				document.getElementById("newMaterialPlan").disabled = true;
+			}
+			
+			if ('${idState}' == "CANC" || '${idState}' == "TERM" || '${idState}' == "PRPD") {
+				document.getElementById("newMaterialPlan").disabled = true;
+				document.getElementById("newMaterialReal").disabled = true;
+			}
+		});
 	</script>
 	
 	

@@ -561,6 +561,29 @@ small {
 				</div>
 			</div>
 		</div>
+		
+		<!-- Modal: Feedback modal
+    	================================================== -->
+		<div class="modal fade" id="feedbackModal" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Operación exitosa</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-12 center-block">${msg}</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success center-block"
+							data-dismiss="modal">Aceptar</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<!-- Bootstrap core JavaScript
@@ -607,6 +630,16 @@ small {
 	        ;
 
 		})
+	</script>
+	
+	<!-- Script that fires when the window is loaded
+    ================================================== -->
+	<script type="text/javascript">
+		$(window).load(function() {
+			if ('${feedback}' == "active") {
+				$('#feedbackModal').modal('show');
+			}
+		});
 	</script>
 	
 	

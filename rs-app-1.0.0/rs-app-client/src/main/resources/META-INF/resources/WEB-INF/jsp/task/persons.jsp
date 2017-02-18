@@ -214,7 +214,7 @@ small {
 						</h4>
 					</div>
 					<div class="col-md-offset-7 col-md-2">
-						<button type="button" class="btn btn-success pull-right"
+						<button id="newProfile" type="button" class="btn btn-success pull-right"
 							data-toggle="modal" data-target="#formProfileAssignation">
 							<span class="glyphicon glyphicon-plus"></span> 
 							Asignar perfil
@@ -340,7 +340,7 @@ small {
 						</h4>
 					</div>
 					<div class="col-md-offset-6 col-md-2">
-						<button type="button" class="btn btn-success pull-right"
+						<button id="newPerson" type="button" class="btn btn-success pull-right"
 							data-toggle="modal" data-target="#formPersonAssignation">
 							<span class="glyphicon glyphicon-plus"></span> 
 							Asignar persona
@@ -882,6 +882,31 @@ small {
 				language : 'es'
 			});
 		})
+	</script>
+	
+	<!-- Script that fires when the window is loaded
+    ================================================== -->
+	<script type="text/javascript">
+		$(window).load(function() {
+			
+			if ('${idState}' == "PLAN") {
+				document.getElementById("newPerson").disabled = true;	
+			}
+			
+			if ('${idState}' == "PRPD") {
+				document.getElementById("newProfile").disabled = true;
+				document.getElementById("newPerson").disabled = true;
+			}
+			
+			if ('${idState}' == "EJEC") {
+				document.getElementById("newProfile").disabled = true;
+			}
+			
+			if ('${idState}' == "CANC" || '${idState}' == "TERM" || '${idState}' == "PRPD") {
+				document.getElementById("newProfile").disabled = true;
+				document.getElementById("newPerson").disabled = true;
+			}
+		});
 	</script>
 	
 	

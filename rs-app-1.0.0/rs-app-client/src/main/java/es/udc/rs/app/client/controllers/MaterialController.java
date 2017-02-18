@@ -53,10 +53,13 @@ public class MaterialController {
 		Long longIdProject =  Long.parseLong(idProject, 10);
 		Task task = projectService.findFirstTask(longIdProject);
 		
+		Long idTask = (task.getId() == null ? 0L : task.getId());
+		Long idPhase = (task.getId() == null ? 0L : task.getPhase().getId());
+		
 		// Create the model
 		model.addAttribute("idProject", idProject);
-		model.addAttribute("idPhase", task.getPhase().getId());
-		model.addAttribute("idTask", task.getId());
+		model.addAttribute("idPhase", idPhase);
+		model.addAttribute("idTask", idTask);
 		model.addAttribute("materials", materialsDTO);
 		model.addAttribute("matDescriptions", materialDesc);
 		

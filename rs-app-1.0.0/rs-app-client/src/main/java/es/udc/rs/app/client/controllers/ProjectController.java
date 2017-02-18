@@ -1,11 +1,14 @@
 package es.udc.rs.app.client.controllers;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,6 +31,7 @@ import es.udc.rs.app.client.dto.HistoryProjectDTO;
 import es.udc.rs.app.client.dto.ProjectDTO;
 import es.udc.rs.app.client.dto.ProjectMgmtDTO;
 import es.udc.rs.app.client.dto.ProvinceDTO;
+import es.udc.rs.app.client.util.ClientUtilMethods;
 import es.udc.rs.app.exceptions.InputValidationException;
 import es.udc.rs.app.exceptions.InstanceNotFoundException;
 import es.udc.rs.app.model.domain.Customer;
@@ -96,11 +100,15 @@ public class ProjectController {
     	// Set the plan/real begin of the project
     	String iniProject = projectDTO.getIniPlan();
     	
-    	HistoryProject currentState = projectService.findCurrentHistoryProject(project);
-    	if (currentState.getState().getId().equals("EJEC")) {
-    		iniProject = projectDTO.getIniReal();
-    	}
+    	List<HistoryProject> hps = projectService.findHistoryProjectByProject(project);
     	
+    	if (!hps.isEmpty()) {
+        	HistoryProject currentState = projectService.findCurrentHistoryProject(project);
+        	if (currentState.getState().getId().equals("EJEC")) {
+        		iniProject = projectDTO.getIniReal();
+        	}
+    	}
+
     	// Find the provinces
     	List<Province> provinces = customerService.findAllProvinces();
     	Long idProvinceProject =  projectDTO.getIdProvince();
@@ -177,13 +185,21 @@ public class ProjectController {
     	Project project = projectService.findProject(id);
 
     	// Get the current state
-    	HistoryProject hp = projectService.findCurrentHistoryProject(project);
-    	HistoryProjectDTO currentState = HistoryProjectDTOConversor.toHistoryProjectDTO(hp);
-    	String stateDesc = hp.getState().getDescription();
-    	
-    	// Now find the project history states and convert it to DTO
     	List<HistoryProject> hps = projectService.findHistoryProjectByProject(project);
-    	List<HistoryProjectDTO> hpsDTO = HistoryProjectDTOConversor.toHistoryProjectDTOList(hps);
+    	HistoryProjectDTO currentState = null;
+    	String currentIdState = null;
+    	String stateDesc = null;
+    	List<HistoryProjectDTO> hpsDTO = new ArrayList<HistoryProjectDTO>();
+    	
+    	if (!hps.isEmpty()) {
+	    	HistoryProject hp = projectService.findCurrentHistoryProject(project);
+	    	currentState = HistoryProjectDTOConversor.toHistoryProjectDTO(hp);
+	    	currentIdState = currentState.getIdState();
+	    	stateDesc = hp.getState().getDescription();
+	    	
+	    	// Now find the project history states and convert it to DTO
+	    	hpsDTO = HistoryProjectDTOConversor.toHistoryProjectDTOList(hps);
+    	}
     	
 		// Find the first task of this project
 		Task task = projectService.findFirstTask(id);
@@ -195,10 +211,43 @@ public class ProjectController {
     	model.addAttribute("idPhase", idPhase);
 		model.addAttribute("idTask", idTask);
     	model.addAttribute("currentState", currentState);
+    	model.addAttribute("currentIdState", currentIdState);
     	model.addAttribute("stateDescription", stateDesc);
     	model.addAttribute("historyProject", hpsDTO);
 		
 		return "project/states";
+	}
+	
+	//-----------------------------------------------------------------------------------------------------
+	// [POST]-> /projects/id/states/id|| Create a history project   
+	//-----------------------------------------------------------------------------------------------------
+	@RequestMapping(value="/projects/{idProject}/states/{idState}",  method=RequestMethod.POST)
+    public String createHistoryProject(@Valid @ModelAttribute("historyProject") HistoryProjectDTO historyProjectDTO, 
+    		BindingResult result, @PathVariable String idProject, @PathVariable String idState, Model model) throws InstanceNotFoundException, InputValidationException {
+    	
+		if (idState.equals("PLAN") || idState.equals("EJEC")) {
+			historyProjectDTO.setEnd("Actualidad");
+		} else if (idState.equals("TERM")) {
+			Calendar c = Calendar.getInstance(); 
+			c.setTime(ClientUtilMethods.toDate(historyProjectDTO.getIni())); 
+			c.add(Calendar.DATE, 1);
+			Date endDate = c.getTime();
+			historyProjectDTO.setEnd(ClientUtilMethods.convertDateToString(endDate));
+		}
+		
+    	// Convert the object DTO to HistoryProject
+    	HistoryProject hp = HistoryProjectDTOConversor.toHistoryProject(historyProjectDTO);
+    	
+		// Update the Task
+		try {
+	    	projectService.createHistoryProject(hp);
+		} catch (DataAccessException e) {
+			String msg = e.getCause().getCause().getMessage();
+	    	model.addAttribute("msg", msg);
+	    	model.addAttribute("feedback", "active");
+		}
+		
+		return showHistoryProject(idProject, model);
 	}
 	
 	
@@ -208,18 +257,12 @@ public class ProjectController {
 	@RequestMapping(value="/projects/{idProject}/states/{idState}/update",  method=RequestMethod.POST)
     public String updateHistoryProject(@Valid @ModelAttribute("historyProject") HistoryProjectDTO historyProjectDTO, 
     		BindingResult result, @PathVariable String idProject, @PathVariable String idState, Model model) throws InstanceNotFoundException, InputValidationException {
-    	
-		if (idState.equals("EJEC")) {
-			historyProjectDTO.setEnd("Actualidad");
-		} else if (idState.equals("TERM")) {
-			historyProjectDTO.setEnd(historyProjectDTO.getIni());
-		}
 		
     	// Convert the object DTO to HistoryProject
     	HistoryProject hp = HistoryProjectDTOConversor.toHistoryProject(historyProjectDTO);
     	
     	// Update the data
-    	projectService.createHistoryProject(hp);
+    	projectService.updateHistoryProject(hp);
 		
 		return showHistoryProject(idProject, model);
 	}

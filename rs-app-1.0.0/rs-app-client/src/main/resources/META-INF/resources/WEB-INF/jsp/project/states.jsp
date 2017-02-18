@@ -251,7 +251,7 @@ small {
 
 				<div class="row">
 					<button id="changeStateButton" type="submit" name="page" class="btn btn-success center-block" 
-					data-toggle="modal" data-target="#changeToEjec">
+					data-toggle="modal" data-target="#changeToPlan">
 					<span class="glyphicon glyphicon-plus"></span> Nuevo estado
 					</button>
 				</div>
@@ -315,14 +315,16 @@ small {
 											<input type="hidden" name="idState" id="idState">
 											<div class="form-group col-md-6">
 												<label class="control-label">Inicio</label>
-												<input type="text" class="form-control" name="ini"
-													id="ini" required>
+												<input type="text" class="form-control datepicker"
+													data-format="dd/MM/yyyy" name="ini" id="ini"
+													placeholder="dd/mm/aaaa" required>
 											</div>
-
+											
 											<div class="form-group col-md-6">
-												<label class="control-label">Fin</label> 
-												<input type="text" class="form-control" name="end"
-													id="end" required>
+												<label class="control-label">Fin</label>
+												<input type="text" class="form-control datepicker"
+													data-format="dd/MM/yyyy" name="end" id="end"
+													placeholder="dd/mm/aaaa" required>
 											</div>
 										</div>
 									</div>
@@ -343,6 +345,61 @@ small {
 											<button id="updateButton" type="submit" disabled
 													class="btn btn-primary center-block">
 												Guardar cambios
+											</button>
+										</div>
+									</div>
+								</form:form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Modal: Change state to Planificacion
+    	================================================== -->
+		<div class="modal fade" id="changeToPlan" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Cambio de estado</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="form-group col-md-offset-1 col-md-9">
+								<h4>
+									Nuevo estado: <em>Planificación</em><br> 
+									<small>
+										Comienzo de la planificación del proyecto.
+									</small>
+								</h4>
+							</div>
+						</div>
+					
+						<div class="row">
+							<div class="col-md-12">
+								<form:form class="form" method="post" id="updateManagerForm"
+								action='/projects/${idProject}/states/PLAN'
+								modelAttribute="hproject" role="form" data-toggle="validator">
+
+									<!-- First row -->
+									<div class="form-group">
+										<div class="row">
+											<div class="form-group col-md-offset-4 col-md-4">
+												<label for="inputName" class="control-label">Inicio planificación</label>
+												<input type="text" class="form-control datepicker"
+													data-format="dd/MM/yyyy" name="ini" id="ini"
+													placeholder="dd/mm/aaaa" required>
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<div class="row">
+											<button type="submit" class="btn btn-primary center-block">
+												Cambiar estado
 											</button>
 										</div>
 									</div>
@@ -385,7 +442,7 @@ small {
 						<div class="row">
 							<div class="col-md-12">
 								<form:form class="form" method="post" id="updateManagerForm"
-								action='/projects/${idProject}/states/EJEC/update'
+								action='/projects/${idProject}/states/EJEC'
 								modelAttribute="hproject" role="form" data-toggle="validator">
 
 									<!-- First row -->
@@ -447,7 +504,7 @@ small {
 						<div class="row">
 							<div class="col-md-12">
 								<form:form class="form" method="post" id="updateManagerForm"
-								action='/projects/${idProject}/states/TERM/update'
+								action='/projects/${idProject}/states/TERM'
 								modelAttribute="hproject" role="form" data-toggle="validator">
 
 									<!-- First row -->
@@ -472,6 +529,29 @@ small {
 								</form:form>
 							</div>
 						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Modal: Feedback modal
+    	================================================== -->
+		<div class="modal fade" id="feedbackModal" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Operación exitosa</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-12 center-block">${msg}</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success center-block"
+							data-dismiss="modal">Aceptar</button>
 					</div>
 				</div>
 			</div>
@@ -503,16 +583,20 @@ small {
 		})
 	</script>
 	
-		<!-- Script that fires when the window is loaded
+	<!-- Script that fires when the window is loaded
     ================================================== -->
 	<script type="text/javascript">
 		$(window).load(function() {
 			
-			if ('${currentState}' == "EJEC") {
+			if ('${currentIdState}' == "PLAN") {
+				$('#changeStateButton').attr('data-target','#changeToEjec');
+			}
+			
+			if ('${currentIdState}' == "EJEC") {
 				$('#changeStateButton').attr('data-target','#changeToTerm');
 			}
 			
-			if ('${currentState}' == "CANC" || '${task.idState}' == "TERM") {
+			if ('${currentIdState}' == "CANC" || '${task.idState}' == "TERM") {
 				document.getElementById("changeStateButton").disabled = true;
 			}
 			
@@ -530,31 +614,36 @@ small {
 				
 				// Button that triggered the modal
 				var button = $(event.relatedTarget) 
+				var b = event.relatedTarget;
 				
-				// Extract info from data attributes
-				var id = button.data('id') 
-				var state = button.data('idstate') 
-				var name = button.data('name')
-				var ini = button.data('ini')
-				var end = button.data('end')
-				var comment = button.data('cmt')		
-				var url = "/projects/" + ${idProject} + "/states/" + id + "/update"
-						
-				// Set the values at the modal components
-				document.getElementById('stateSelected').innerHTML = name
-				document.getElementById('editFormHP').action = url
-				document.getElementById('id').value = id
-				document.getElementById('idState').value = state
-				document.getElementById('ini').value = ini
-				document.getElementById('end').value = end
-				document.getElementById('comment').value = comment
-				
-				// If the state is not the current, then we only can update the comment
-				if (end != "Actualidad") {
-					document.getElementById('ini').readOnly = true
-					document.getElementById('end').readOnly = true
-				}
-
+				// Only set the modal data if the event comes from the main edit botton
+				if (b != null)
+			    {		     	
+					
+					// Extract info from data attributes
+					var id = button.data('id') 
+					var state = button.data('idstate') 
+					var name = button.data('name')
+					var ini = button.data('ini')
+					var end = button.data('end')
+					var comment = button.data('cmt')		
+					var url = "/projects/" + ${idProject} + "/states/" + id + "/update"
+							
+					// Set the values at the modal components
+					document.getElementById('stateSelected').innerHTML = name
+					document.getElementById('editFormHP').action = url
+					document.getElementById('id').value = id
+					document.getElementById('idState').value = state
+					document.getElementById('ini').value = ini
+					document.getElementById('end').value = end
+					document.getElementById('comment').value = comment
+					
+					// If the state is not the current, then we only can update the comment
+					if (end != "Actualidad") {
+						document.getElementById('ini').readOnly = true
+						document.getElementById('end').readOnly = true
+					}
+			    }
 			})
 		});
 	</script>

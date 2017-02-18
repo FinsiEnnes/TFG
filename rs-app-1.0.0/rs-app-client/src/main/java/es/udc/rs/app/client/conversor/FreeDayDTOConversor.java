@@ -35,7 +35,7 @@ public class FreeDayDTOConversor {
 		} else if (weekDayN == 5) {
 			weekDay = "Sábado";
 		} else if (weekDayN == 6) {
-			weekDay = "Sábado";
+			weekDay = "Domingo";
 		} 
 		
 		return weekDay;

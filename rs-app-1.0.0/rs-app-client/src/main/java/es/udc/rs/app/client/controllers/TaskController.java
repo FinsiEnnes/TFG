@@ -122,11 +122,19 @@ public class TaskController {
 		List<HistoryPerson> persons = personService.findCurrentHistoryPersons();
 		List<HistoryPersonDTO> personsDTO = HistoryPersonDTOConversor.toHistoryPersonDTOs(persons);
 		
+		// Get the variations
+		Integer daysVar = taskDTO.getDaysReal() == null ? null : (taskDTO.getDaysReal() - taskDTO.getDaysPlan());
+		Integer hoursVar = taskDTO.getHoursReal() == null ? null : (taskDTO.getHoursReal() - taskDTO.getHoursPlan());
+		Integer costVar = taskDTO.getCostReal() == null ? null : (taskDTO.getCostReal() - taskDTO.getCostPlan());
+		
 		//Create the model
     	model.addAttribute("task", taskDTO);
     	model.addAttribute("phases", phasesDTO);
     	model.addAttribute("priorities", priorities);
     	model.addAttribute("persons", personsDTO);
+    	model.addAttribute("daysVar", daysVar);
+    	model.addAttribute("hoursVar", hoursVar);
+    	model.addAttribute("costVar", costVar);
 		
 		return "task/info";
 	}
@@ -551,6 +559,7 @@ public class TaskController {
 		model.addAttribute("idProject", idProject);
 		model.addAttribute("idPhase", idPhase);
 		model.addAttribute("idTask", idTask);
+		model.addAttribute("idState", task.getState().getId());
 		
 		// ProfessionalCategories and HPersons to select in the additions
     	model.addAttribute("profcatgs", allProfCatgsDTO);
@@ -770,7 +779,13 @@ public class TaskController {
 		Workload workload = WorkloadDTOConversor.toWorkload(workloadDTO);
 		
 		// Create the workload
-		assignmentService.createWorkload(workload);		
+		try {
+			assignmentService.createWorkload(workload);	
+		} catch (DataAccessException e) {
+			String msg = e.getCause().getCause().getMessage();
+	    	model.addAttribute("msg", msg);
+	    	model.addAttribute("feedback", "active");
+		}
 		
 		return showWorkload(idProject, idPhase, idTask, model);
 	}
@@ -856,6 +871,7 @@ public class TaskController {
 		model.addAttribute("idProject", idProject);
 		model.addAttribute("idPhase", idPhase);
 		model.addAttribute("idTask", idTask);
+		model.addAttribute("idState", task.getState().getId());
 		model.addAttribute("materials", materialsDTO);
 		model.addAttribute("assignedPlanMaterials", amPlanDTO);
 		model.addAttribute("assignedRealMaterials", amRealDTO);
