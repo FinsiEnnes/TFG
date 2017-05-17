@@ -1,11 +1,11 @@
 package es.udc.rs.app.others;
 
-import es.udc.rs.app.exceptions.FirstPageElementException;
+import es.udc.rs.app.exceptions.PaginationException;
 
 public class AssistantMethods {
 	
 	public static int getFirstPageElement(int pageNumber, int pageSize, int totalElements) 
-			throws FirstPageElementException {
+			throws PaginationException {
 		
 		int firstElement = 0;
 		
@@ -16,7 +16,7 @@ public class AssistantMethods {
 		if (totalElements > 0 && firstElement >= totalElements) {
 			String msg = "For this page, the first element would be " + firstElement + " and the total are " 
 					+ totalElements + " elements";
-			throw new FirstPageElementException(msg);
+			throw new PaginationException(msg);
 		}
 		
 		// Return the result

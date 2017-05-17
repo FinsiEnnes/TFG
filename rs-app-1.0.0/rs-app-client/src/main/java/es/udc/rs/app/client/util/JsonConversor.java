@@ -62,12 +62,13 @@ public class JsonConversor {
 		
 		String ini = task.getIniReal() == null ? fmt.format(task.getIniPlan()) : fmt.format(task.getIniReal());
 		String end = task.getEndReal() == null ? fmt.format(task.getEndPlan()) : fmt.format(task.getEndReal());
+		Integer duration = task.getDaysReal() == null ? task.getDaysPlan() : task.getDaysReal();
 		
     	jsonObject.put("id", idTask);
     	jsonObject.put("text", task.getName());
     	jsonObject.put("start_date", ini);
     	jsonObject.put("end", end);
-    	jsonObject.put("duration", task.getDaysPlan());
+    	jsonObject.put("duration", duration);
     	jsonObject.put("parent", idPhase);
     	
     	return jsonObject;
@@ -85,8 +86,8 @@ public class JsonConversor {
 		String idPhase = "p" + milestone.getPhase().getId();
 		String idMilestone = "m" + milestone.getId();
 		
-		String start = fmt.format(milestone.getDatePlan());
-		String end = fmt.format(ClientUtilMethods.plusDay(milestone.getDatePlan()));
+		String start = milestone.getDateReal() == null ? fmt.format(milestone.getDatePlan()) : fmt.format(milestone.getDateReal());
+		String end = milestone.getDateReal() == null ?  fmt.format(ClientUtilMethods.plusDay(milestone.getDatePlan())) : fmt.format(ClientUtilMethods.plusDay(milestone.getDateReal()));
 		
     	jsonObject.put("id", idMilestone);
     	jsonObject.put("text", milestone.getName());

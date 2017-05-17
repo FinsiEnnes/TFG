@@ -541,7 +541,7 @@ public class TaskController {
     	// PERSONS
     	//------------------------------------------------
     	// Get all the HistoryPersons
-    	List<HistoryPerson> hPersons = personService.findAllHistoryPerson();
+    	List<HistoryPerson> hPersons = personService.findCurrentHistoryPersons();
     	List<HistoryPersonDTO> allHPersonsDTO = HistoryPersonDTOConversor.toHistoryPersonDTOs(hPersons);
     	
     	List<AssignmentPerson> assigPersons = assignmentService.findAssignmentPersonByTask(task);
