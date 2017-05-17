@@ -1,0 +1,144 @@
+-- ------------------------------------------------------------------------------------
+-- --------------------------------- Customer -----------------------------------------
+-- ------------------------------------------------------------------------------------
+INSERT INTO Customer (idProvince,nameCustomer,idBusinessType,idBusinessCatg,idBusinessSize) VALUES 
+(1,'GaliGames','PROD','NAC','P'),
+(2,'Mercadona','SERV','NAC','M'),
+(1,'Inditex',  'PROD','NAC','G'),
+(8,'Santander','SERV','MUL','G'),
+(7,'Caja Bank','SERV','ADM','M'),
+(9,'Unicef',   'SERV','ONG','G'),
+(6,'Canteros ','EXTR','OTH','P');
+
+
+-- ------------------------------------------------------------------------------------
+-- --------------------------- ProfessionalCategory -----------------------------------
+-- ------------------------------------------------------------------------------------
+INSERT INTO ProfessionalCategory (nameProfCatg,idLevelProfCatg,minExpProfCatg,salProfCatg,salExtraProfCatg) VALUES 
+('Desarrollador SW', 'JUN',0,5,NULL),
+('Administrador DB', 'SEN',3,7,NULL),
+('Exp. en seguridad','ESP',5,8,NULL),
+('Jefe de proyecto', 'PDS',7,11,NULL);
+
+SELECT @idProCat1 := `idProfCatg` FROM ProfessionalCategory WHERE nameProfCatg = 'Desarrollador SW';
+SELECT @idProCat2 := `idProfCatg` FROM ProfessionalCategory WHERE nameProfCatg = 'Administrador DB';
+SELECT @idProCat3 := `idProfCatg` FROM ProfessionalCategory WHERE nameProfCatg = 'Exp. en seguridad';
+SELECT @idProCat4 := `idProfCatg` FROM ProfessionalCategory WHERE nameProfCatg = 'Jefe de proyecto';
+
+
+-- ------------------------------------------------------------------------------------
+-- ----------------------------------- Person -----------------------------------------
+-- ------------------------------------------------------------------------------------
+INSERT INTO Person (namePerson,surname1Person,surname2Person,emailPerson,nifPerson,hiredatePerson) VALUES 
+('Raul',   'Gonzalez', 'Costa',  'costa@gmail.com',    '11111111A','2011-02-01'),
+('Manolo', 'Ruiz',     'Sanchez','ruiz@gmail.com',     '54396782G','2011-08-10'),
+('Rebeca', 'Fernandez','Perez',  'rebe.fer@gmail.com', '78349685L','2012-01-08'),
+('Pocholo','Truis',    'Franco', 'pocholo@gmail.com',  '71896823H','2013-02-15');
+
+
+SELECT @idPerson1 := `idPerson` FROM Person WHERE namePerson = 'Raul';
+SELECT @idPerson2 := `idPerson` FROM Person WHERE namePerson = 'Manolo';
+SELECT @idPerson3 := `idPerson` FROM Person WHERE namePerson = 'Rebeca';
+SELECT @idPerson4 := `idPerson` FROM Person WHERE namePerson = 'Pocholo';
+
+
+INSERT INTO HistoryPerson (idPerson,idProfCatg,iniHPerson,salHPerson,salExtraHPerson) VALUES 
+(@idPerson1,@idProCat1,'2011-02-01',5,6),
+(@idPerson2,@idProCat2,'2011-08-10',7,8),
+(@idPerson3,@idProCat3,'2012-01-08',8,9),
+(@idPerson4,@idProCat4,'2013-02-15',11,13);
+
+SELECT @idHPrsn := `idHPerson` FROM HistoryPerson WHERE iniHPerson = '2011-02-01';
+
+
+-- ------------------------------------------------------------------------------------
+-- --------------------------------- Project ------------------------------------------
+-- ------------------------------------------------------------------------------------
+INSERT INTO Project (nameProject,stateDateProject,innerProject,idProvince,iniPlanProject) VALUES 
+('Sistema de control y gestion de proyectos','2016-11-14',true,1,'2016-05-28');
+
+SELECT @idProject := `idProject` FROM Project WHERE iniPlanProject = '2016-05-28';
+
+
+-- ------------------------------------------------------------------------------------
+-- ----------------------------- HistoryProject ---------------------------------------
+-- ------------------------------------------------------------------------------------
+INSERT INTO HistoryProject (idProject,idState,iniHProject,endHProject) VALUES 
+(@idProject,'PLAN','2016-05-20','2016-05-28');
+
+
+-- ------------------------------------------------------------------------------------
+-- --------------------------------- Phase --------------------------------------------
+-- ------------------------------------------------------------------------------------
+INSERT INTO Phase (idProject,namePhase) VALUES 
+(@idProject,'Base de Datos'), 
+(@idProject,'Capa modelo'), 
+(@idProject,'Capa cliente'),
+(@idProject,'Memoria'),
+(@idProject,'Pruebas del modelo');
+
+SELECT @phase1 := `idPhase` FROM Phase WHERE namePhase = 'Base de Datos';
+SELECT @phase2 := `idPhase` FROM Phase WHERE namePhase = 'Capa modelo';
+SELECT @phase3 := `idPhase` FROM Phase WHERE namePhase = 'Capa cliente';
+SELECT @phase4 := `idPhase` FROM Phase WHERE namePhase = 'Memoria';
+SELECT @phase5 := `idPhase` FROM Phase WHERE namePhase = 'Pruebas del modelo';
+
+
+-- ------------------------------------------------------------------------------------
+-- ------------------------------------ Task ------------------------------------------
+-- ------------------------------------------------------------------------------------
+INSERT INTO Task (idPhase,nameTask,idState,idPriority,idHPerson,daysPlanTask,iniPlanTask) VALUES
+(@phase1,'Diseño de la bbdd',            'PLAN','M',@idHPrsn,4,'2016-05-30'),
+(@phase1,'Creacion modelo relacional',   'PLAN','M',@idHPrsn,5,'2016-06-03'),
+(@phase1,'Implementacion de las tablas', 'PLAN','M',@idHPrsn,5,'2016-06-06'),
+(@phase1,'Disparadores y procedimientos','PLAN','M',@idHPrsn,3,'2016-06-13'),
+(@phase1,'Pruebas de la bbdd',           'PLAN','M',@idHPrsn,2, '2016-06-15'),
+
+(@phase2,'Creacion del dominio',     'PLAN','M',@idHPrsn,3,'2016-06-20'),
+(@phase2,'Implementacion de los DAO','PLAN','M',@idHPrsn,5,'2016-06-21'),
+(@phase2,'Servicios a exponer',      'PLAN','M',@idHPrsn,4,'2016-06-27'),
+
+(@phase5,'Creacion de los tests', 'PLAN','M',@idHPrsn,4,'2016-06-22'),
+(@phase5,'Ejecucion y valoracion','PLAN','M',@idHPrsn,2,'2016-06-28'),
+
+(@phase3,'Diseño de las interfaces',       'PLAN','M',@idHPrsn,1,'2016-07-01'),
+(@phase3,'Implementacion de controladores','PLAN','M',@idHPrsn,3,'2016-07-04'),
+
+(@phase4,'Desarrollo de la memoria','PLAN','M',@idHPrsn,4,'2016-07-07'),
+(@phase4,'Presentación del trabajo','PLAN','M',@idHPrsn,1,'2016-07-08'),
+(@phase4,'Grafico de la portada','PLAN','M',@idHPrsn,1,'2016-07-06');
+
+
+SELECT @task1 := `idTask` FROM Task WHERE iniPlanTask = '2016-05-30';
+SELECT @task2 := `idTask` FROM Task WHERE iniPlanTask = '2016-06-03';
+SELECT @task3 := `idTask` FROM Task WHERE iniPlanTask = '2016-06-06';
+SELECT @task4 := `idTask` FROM Task WHERE iniPlanTask = '2016-06-13';
+SELECT @task5 := `idTask` FROM Task WHERE iniPlanTask = '2016-06-15';
+SELECT @task6 := `idTask` FROM Task WHERE iniPlanTask = '2016-06-20';
+SELECT @task7 := `idTask` FROM Task WHERE iniPlanTask = '2016-06-21';
+SELECT @task8 := `idTask` FROM Task WHERE iniPlanTask = '2016-06-27';
+SELECT @task9 := `idTask` FROM Task WHERE iniPlanTask = '2016-07-01';
+SELECT @task10 := `idTask` FROM Task WHERE iniPlanTask = '2016-07-04';
+SELECT @task11 := `idTask` FROM Task WHERE iniPlanTask = '2016-07-07';
+SELECT @task12 := `idTask` FROM Task WHERE iniPlanTask = '2016-07-08';
+
+
+-- ------------------------------------------------------------------------------------
+-- --------------------------------- Predecessor --------------------------------------
+-- ------------------------------------------------------------------------------------
+INSERT INTO Predecessor (idTask,idTaskPred,idTaskLinkType) VALUES
+(@task2,@task1,'FC'),
+(@task3,@task2,'FF'),
+(@task5,@task3,'FC'),
+(@task5,@task4,'FC');
+
+
+-- ------------------------------------------------------------------------------------
+-- ------------------------------ AssignmentProfile -----------------------------------
+-- ------------------------------------------------------------------------------------
+INSERT INTO AssignmentProfile (idTask,idProfCatg,unitsAssigProf,hoursPerPersonAssigProf) VALUES 
+(@task1,@idProCat1,3,10),
+(@task1,@idProCat2,2,20),
+(@task1,@idProCat3,1,5);
+
+
